@@ -1,0 +1,40 @@
+import React, { useState } from "react";
+import Navbar from "../components/Navbar";
+import Sidebar from "./Sidebar";
+import { useNavigate } from "react-router-dom";
+
+const AdminDashboard = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const navigate = useNavigate();
+
+  return (
+    <div className="flex flex-col h-screen">
+      {/* Navbar fixed at top */}
+      <Navbar />
+
+      {/* Main wrapper */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+
+        {/* Content Area */}
+        <main className="flex-1 bg-neutral-900 text-white p-6 overflow-y-auto">
+          <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
+
+          {/* Card container */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-neutral-800 p-6 rounded-lg shadow-md text-center">
+              {/* <p className="text-xl">Hello</p> */}
+              <button onClick={() => navigate("/admin-user")} className="text-xl">User</button>
+            </div>
+            <div className="bg-neutral-800 p-6 rounded-lg shadow-md text-center">
+              <p className="text-xl">Job Opening</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;

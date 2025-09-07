@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Asap", ui-sans-serif, system-ui, sans-serif, 
+               "Apple Color Emoji", "Segoe UI Emoji", 
+               "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+body {
+  @apply font-sans;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
