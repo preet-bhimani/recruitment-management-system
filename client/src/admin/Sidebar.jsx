@@ -25,8 +25,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       title: "Job Opening",
       icon: <Box size={20} />,
       children: [
-        { name: "Admin Job Opening", path: "/admin-user" },
-        { name: "Add Job Opening ", path: "/admin-user" },
+        { name: "Admin Job Opening", path: "/admin-jobopening" },
+        { name: "Add Job Opening ", path: "/admin-add-jobopening" },
       ],
     },
   ];

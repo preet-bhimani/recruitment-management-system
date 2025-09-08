@@ -5,10 +5,10 @@ const AdminAddUser = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     return (
         <div className="flex flex-col h-screen">
-            {/* Navbar fixed at top */}
+            {/* Navbar */}
             <Navbar />
 
-            {/* Main wrapper */}
+            {/* Main Layout */}
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar */}
                 <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
@@ -237,7 +237,7 @@ const AdminAddUser = () => {
                             </select>
                         </div>
 
-                        {/* IsActive */}
+                        {/* Status */}
                         <div>
                             <label className="block mb-1 text-sm font-medium">Status</label>
                             <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700">

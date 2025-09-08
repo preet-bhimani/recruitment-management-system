@@ -28,7 +28,7 @@ const AdminDashboard = () => {
               <button onClick={() => navigate("/admin-user")} className="text-xl">User</button>
             </div>
             <div className="bg-neutral-800 p-6 rounded-lg shadow-md text-center">
-              <p className="text-xl">Job Opening</p>
+              <button onClick={() => navigate("/admin-jobopening")} className="text-xl">Job Opening</button>
             </div>
           </div>
         </main>
