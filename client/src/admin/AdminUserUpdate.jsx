@@ -37,12 +37,12 @@ const AdminUserUpdate = () => {
       {/* Navbar fixed at top */}
       <Navbar />
 
-      {/* Main wrapper */}
+      {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
-        {/* Content Area */}
+        {/* Main Content Area */}
         <main className="flex-1 bg-neutral-950 text-white p-3 sm:p-6 overflow-y-auto">
           <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-blue-400">Update User</h1>
 
@@ -201,6 +201,7 @@ const AdminUserUpdate = () => {
                 <input
                   type="number"
                   name="bachelorPercentage"
+                  min="0"
                   placeholder="Enter percentage"
                   className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
               </div>
@@ -229,6 +230,7 @@ const AdminUserUpdate = () => {
                 <input
                   type="number"
                   name="masterPercentage"
+                  min="0"
                   placeholder="Enter percentage"
                   className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
               </div>
@@ -239,6 +241,7 @@ const AdminUserUpdate = () => {
                 <input
                   type="number"
                   name="yearsOfExperience"
+                  min="0"
                   placeholder="Enter years"
                   className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
               </div>

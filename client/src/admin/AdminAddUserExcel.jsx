@@ -17,12 +17,12 @@ const AdminAddUserExcel = () => {
         <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
         {/* Content Area */}
-        <main className="flex-1 bg-neutral-900 text-white p-3 sm:p-6 overflow-y-auto">
+        <main className="flex-1 bg-neutral-950 text-white p-3 sm:p-6 overflow-y-auto">
           <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-blue-400">Add Users via Excel</h1>
 
           {/* File Upload Card */}
           <div className="max-w-2xl mx-auto">
-            <div className="bg-neutral-800 p-4 sm:p-6 lg:p-8 rounded-lg shadow-md">
+            <div className="bg-neutral-900 p-4 sm:p-6 lg:p-8 rounded-lg shadow-md">
               <div className="text-center">
                 <FileSpreadsheet className="mx-auto mb-3 sm:mb-4 text-neutral-400" size={40} />
                 <h2 className="text-lg sm:text-xl font-semibold mb-2">Upload Excel File</h2>

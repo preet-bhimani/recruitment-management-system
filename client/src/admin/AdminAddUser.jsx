@@ -14,11 +14,11 @@ const AdminAddUser = () => {
                 <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed}/>
 
                 {/* Page Content */}
-                <main className="flex-1 bg-neutral-900 text-white p-6 overflow-y-auto">
+                <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
                     <h1 className="text-2xl font-bold mb-6 text-blue-400">Add New User</h1>
 
 
-                    <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-950 p-6 rounded-lg shadow-lg">
+                    <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
                         {/* Full Name */}
                         <div>
                             <label className="block mb-1 text-sm font-medium">
@@ -141,6 +141,7 @@ const AdminAddUser = () => {
                             <input
                                 type="number"
                                 placeholder="Enter percentage"
+                                min="0"
                                 className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
                         </div>
 
@@ -166,6 +167,7 @@ const AdminAddUser = () => {
                             <input
                                 type="number"
                                 placeholder="Enter percentage"
+                                min="0"
                                 className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
                         </div>
 
@@ -175,6 +177,7 @@ const AdminAddUser = () => {
                             <input
                                 type="number"
                                 placeholder="Enter years"
+                                min="0"
                                 className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
                         </div>
 

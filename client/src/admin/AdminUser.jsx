@@ -56,7 +56,7 @@ const AdminUser = () => {
 
         {/* User List */}
         <div className="flex-1 p-4 overflow-y-auto">
-          <h1 className="text-xl font-semibold mb-4">Admin Users</h1>
+          <h1 className="text-2xl font-semibold mb-4 text-blue-400">Admin Users</h1>
 
           {/* Add New User */}
           <div className="flex gap-3 mb-4">
@@ -85,15 +85,15 @@ const AdminUser = () => {
                     className="w-10 h-10 rounded-full border border-neutral-600" />
                   {/* Details */}
                   <div className="grid grid-cols-4 gap-x-6 gap-y-1 flex-1">
-                    <p><span className="font-medium">ID:</span> {user.userId}</p>
-                    <p><span className="font-medium">Name:</span> {user.fullName}</p>
-                    <p><span className="font-medium">Email:</span> {user.email}</p>
-                    <p><span className="font-medium">Phone:</span> {user.phone}</p>
-                    <p><span className="font-medium">City:</span> {user.city}</p>
-                    <p><span className="font-medium">DOB:</span> {user.dob}</p>
-                    <p><span className="font-medium">Role:</span> {user.role}</p>
+                    <p><span className="font-medium text-amber-200">UserID:</span> {user.userId}</p>
+                    <p><span className="font-medium text-amber-200">Name:</span> {user.fullName}</p>
+                    <p><span className="font-medium text-amber-200">Email:</span> {user.email}</p>
+                    <p><span className="font-medium text-amber-200">Phone:</span> {user.phone}</p>
+                    <p><span className="font-medium text-amber-200">City:</span> {user.city}</p>
+                    <p><span className="font-medium text-amber-200">DOB:</span> {user.dob}</p>
+                    <p><span className="font-medium text-amber-200">Role:</span> {user.role}</p>
                     <p>
-                      <span className="font-medium">Status:</span>{" "}
+                      <span className="font-medium text-amber-200">Status:</span>{" "}
                       <span
                         className={`px-2 py-0.5 rounded text-xs ${user.isActive === "Active"
                           ? "bg-emerald-800 text-emerald-200"

@@ -6,7 +6,8 @@ import {
   Menu,
   X,
   User,
-  Box,
+  BriefcaseBusiness ,
+  FileUser,
 } from "lucide-react";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
@@ -23,10 +24,18 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     },
     {
       title: "Job Opening",
-      icon: <Box size={20} />,
+      icon: <BriefcaseBusiness size={20} />,
       children: [
         { name: "Admin Job Opening", path: "/admin-jobopening" },
         { name: "Add Job Opening ", path: "/admin-add-jobopening" },
+      ],
+    },
+    {
+      title: "Job Application",
+      icon: <FileUser size={20} />,
+      children: [
+        { name: "Admin Job Application", path: "/admin-jobapplication" },
+        { name: "Add Job Application ", path: "/admin-add-jobapplication" },
       ],
     },
   ];

@@ -17,12 +17,12 @@ const AdminAddUserResume = () => {
                 <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
                 {/* Content Area */}
-                <main className="flex-1 bg-neutral-900 text-white p-3 sm:p-6 overflow-y-auto">
+                <main className="flex-1 bg-neutral-950 text-white p-3 sm:p-6 overflow-y-auto">
                     <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-blue-400">Add User with Resume</h1>
 
                     {/* Resume Upload Card */}
                     <div className="max-w-xl mx-auto mb-6">
-                        <div className="bg-neutral-800 p-4 rounded-lg shadow-md">
+                        <div className="bg-neutral-900 p-4 rounded-lg shadow-md">
                             <div className="text-center">
                                 <FileText className="mx-auto mb-2 text-neutral-400" size={32} />
                                 <h2 className="text-lg font-semibold mb-2">Upload Resume</h2>
@@ -60,7 +60,7 @@ const AdminAddUserResume = () => {
 
                     {/* User Details Form */}
                     <div className="max-w-6xl mx-auto">
-                        <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg">
+                        <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg">
 
                             {/* Full Name */}
                             <div>
@@ -70,7 +70,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter full name"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             {/* Email */}
@@ -81,7 +81,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="email"
                                     placeholder="Enter email"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             {/* Password */}
@@ -92,7 +92,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="password"
                                     placeholder="Enter password"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             {/* Phone Number */}
@@ -103,7 +103,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter phone number"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             {/* City */}
@@ -114,7 +114,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter city"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             {/* DOB */}
@@ -124,7 +124,7 @@ const AdminAddUserResume = () => {
                                 </label>
                                 <input
                                     type="date"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 focus:outline-none focus:ring-2 focus:ring-sky-600"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 focus:outline-none focus:ring-2 focus:ring-sky-600"/>
                             </div>
 
                             {/* Skills */}
@@ -133,7 +133,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="text"
                                     placeholder="e.g., React, Java"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             {/* Photo */}
@@ -144,7 +144,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    className="w-full p-1.5 rounded bg-neutral-700 border border-neutral-600 text-neutral-100
+                                    className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-600 text-neutral-100
                   file:h-8.5 file:px-3 file:rounded file:border-0 
                   file:bg-neutral-600 file:text-white hover:file:bg-sky-800 cursor-pointer"/>
                             </div>
@@ -155,7 +155,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter degree"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             <div>
@@ -163,7 +163,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter university"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             <div>
@@ -171,7 +171,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="number"
                                     placeholder="Enter percentage"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             {/* Master Details */}
@@ -180,7 +180,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter degree"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             <div>
@@ -188,7 +188,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter university"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             <div>
@@ -196,7 +196,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="number"
                                     placeholder="Enter percentage"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             {/* Experience */}
@@ -205,7 +205,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="number"
                                     placeholder="Enter years"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             <div>
@@ -213,7 +213,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter company"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             <div>
@@ -221,7 +221,7 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter title"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             {/* Reference */}
@@ -229,7 +229,7 @@ const AdminAddUserResume = () => {
                                 <label className="block mb-1 text-sm font-medium">
                                     Reference <span className="text-rose-500">*</span>
                                 </label>
-                                <select className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100">
+                                <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100">
                                     <option value="" disabled selected hidden>Select Reference</option>
                                     <option value="Campus Drive">Campus Drive</option>
                                     <option value="Walk in drive">Walk in drive</option>
@@ -245,13 +245,13 @@ const AdminAddUserResume = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter CDID"
-                                    className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400"/>
                             </div>
 
                             {/* Role */}
                             <div>
                                 <label className="block mb-1 text-sm font-medium">Role</label>
-                                <select className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100">
+                                <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100">
                                     <option value="" disabled selected hidden>Select Role</option>
                                     <option value="Candidate">Candidate</option>
                                     <option value="Recruiter">Recruiter</option>
@@ -266,7 +266,7 @@ const AdminAddUserResume = () => {
                             {/* IsActive */}
                             <div>
                                 <label className="block mb-1 text-sm font-medium">Status</label>
-                                <select className="w-full p-2 rounded bg-neutral-700 border border-neutral-600 text-neutral-100">
+                                <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100">
                                     <option value="Active">Active</option>
                                     <option value="Inactive">Inactive</option>
                                 </select>

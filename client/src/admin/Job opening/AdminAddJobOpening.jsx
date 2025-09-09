@@ -16,10 +16,10 @@ const AdminAddJobOpening = () => {
       <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
       {/* Page Content */}
-      <main className="flex-1 bg-neutral-900 text-white p-6 overflow-y-auto">
-        <h1 className="text-2xl font-bold mb-6 text-blue-400">Add New User</h1>
+      <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
+        <h1 className="text-2xl font-bold mb-6 text-blue-400">Add Job Opening</h1>
 
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-950 p-6 rounded-lg shadow-lg">
+        <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
           {/* Title */}
           <div>
             <label className="block mb-1 text-sm font-medium">
@@ -37,8 +37,9 @@ const AdminAddJobOpening = () => {
               No of Opening <span className="text-rose-500">*</span>
             </label>
             <input
-              type="text area"
+              type="number"
               placeholder="Enter No of Opening"
+              min="1"
               className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
           </div>
 
@@ -56,7 +57,7 @@ const AdminAddJobOpening = () => {
           {/* Preferred Skills */}
           <div>
             <label className="block mb-1 text-sm font-medium">
-              Preferred Skills <span className="text-rose-500">*</span>
+              Preferred Skills 
             </label>
             <input
               type="text"
@@ -81,8 +82,9 @@ const AdminAddJobOpening = () => {
               Experience <span className="text-rose-500">*</span>
             </label>
             <input
-              type="text"
+              type="number"
               placeholder="Enter Experience"
+              min="0"
               className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
           </div>
 
@@ -94,20 +96,20 @@ const AdminAddJobOpening = () => {
             <textarea
               placeholder="Enter Description"
               rows="4"
-              className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 resize-none"
-            ></textarea>
+              className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 resize-none">
+            </textarea>
           </div>
 
           {/* Comment */}
           <div>
             <label className="block mb-1 text-sm font-medium">
-              Comment <span className="text-rose-500">*</span>
+              Comment 
             </label>
             <textarea
               placeholder="Enter Comment"
               rows="4"
-              className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 resize-none"
-            ></textarea>
+              className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 resize-none">
+            </textarea>
           </div>
 
           {/* Status */}

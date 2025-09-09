@@ -9,6 +9,9 @@ import AdminAddUserResume from './admin/AdminAddUserResume';
 import AdminUserUpdate from './admin/AdminUserUpdate';
 import AdminJobOpening from './admin/Job opening/AdminJobOpening';
 import AdminAddJobOpening from './admin/Job opening/AdminAddJobOpening';
+import AdminUpdateJobOpening from './admin/Job opening/AdminUpdateJobOpening';
+import AdminJobApplication from './admin/Job Application/AdminJobApplication';
+import AdminAddJobApplication from './admin/Job Application/AdminAddJobApplication';
 function App() {
   const [count, setCount] = useState(0)
   return (
@@ -23,6 +26,9 @@ function App() {
             <Route path='/admin-user-update/8723A287-BBB3-46C9-BD23-08DDAE2FEC35' element={<AdminUserUpdate />} />
             <Route path='/admin-jobopening' element={<AdminJobOpening />} />
             <Route path='/admin-add-jobopening' element={<AdminAddJobOpening />} />
+            <Route path='/admin-update-jobopening/8723B287-CCC3-46D9-CE23-08EEBF2GFD35' element={<AdminUpdateJobOpening />} />
+            <Route path='/admin-jobapplication' element={<AdminJobApplication />} />
+            <Route path='/admin-add-jobapplication' element={<AdminAddJobApplication />} />
         </Routes>
     </Router>
     </>
