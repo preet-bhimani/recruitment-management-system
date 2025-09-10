@@ -69,10 +69,10 @@ const AdminJobApplication = () => {
                             </div>
                             {/* Bottons */}
                             <div className="flex gap-2 ml-4">
-                                <button className="flex items-center gap-1 px-2 py-1 bg-sky-800 hover:bg-sky-700 rounded text-xs" onClick={() => navigate('/admin-update-jobopening/8723B287-CCC3-46D9-CE23-08EEBF2GFD35')}>
+                                <button className="flex items-center gap-1 px-2 py-1 bg-sky-800 hover:bg-sky-700 rounded text-xs" onClick={() => navigate('/admin-update/jobapplication/9834B398-CCC4-57D0-CE34-19EEBF3GFD46')}>
                                     <Eye size={14} /> View
                                 </button>
-                                <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs" onClick={() => navigate('/admin-update-jobopening/8723B287-CCC3-46D9-CE23-08EEBF2GFD35')}>
+                                <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs" onClick={() => navigate('/admin-update/jobapplication/9834B398-CCC4-57D0-CE34-19EEBF3GFD46')}>
                                     <Edit size={14} /> Update
                                 </button>
                                 <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">

@@ -12,6 +12,9 @@ import AdminAddJobOpening from './admin/Job opening/AdminAddJobOpening';
 import AdminUpdateJobOpening from './admin/Job opening/AdminUpdateJobOpening';
 import AdminJobApplication from './admin/Job Application/AdminJobApplication';
 import AdminAddJobApplication from './admin/Job Application/AdminAddJobApplication';
+import AdminUpdateJobApplication from './admin/Job Application/AdminUpdateJobApplication';
+import AdminTechInterview from './admin/Technical Interview/AdminTechInterview';
+
 function App() {
   const [count, setCount] = useState(0)
   return (
@@ -29,6 +32,8 @@ function App() {
             <Route path='/admin-update-jobopening/8723B287-CCC3-46D9-CE23-08EEBF2GFD35' element={<AdminUpdateJobOpening />} />
             <Route path='/admin-jobapplication' element={<AdminJobApplication />} />
             <Route path='/admin-add-jobapplication' element={<AdminAddJobApplication />} />
+            <Route path='/admin-update/jobapplication/9834B398-CCC4-57D0-CE34-19EEBF3GFD46' element={<AdminUpdateJobApplication />} />
+            <Route path='/admin-techinterview' element={<AdminTechInterview />} />
         </Routes>
     </Router>
     </>

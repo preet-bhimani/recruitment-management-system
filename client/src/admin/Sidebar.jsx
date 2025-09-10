@@ -8,6 +8,8 @@ import {
   User,
   BriefcaseBusiness ,
   FileUser,
+  HatGlasses,
+  Speech,
 } from "lucide-react";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
@@ -36,6 +38,22 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       children: [
         { name: "Admin Job Application", path: "/admin-jobapplication" },
         { name: "Add Job Application ", path: "/admin-add-jobapplication" },
+      ],
+    },
+    {
+      title: "Technical Interview",
+      icon: <Speech size={20} />,
+      children: [
+        { name: "Admin Tech Interview", path: "/admin-techinterview" },
+        { name: "Add Tech Interview ", path: "/admin-add-jobapplication" },
+      ],
+    },
+    {
+      title: "HR Interview",
+      icon: <HatGlasses  size={20} />,
+      children: [
+        { name: "Admin HR Interview", path: "/admin-jobapplication" },
+        { name: "Add HR Interview ", path: "/admin-add-jobapplication" },
       ],
     },
   ];
