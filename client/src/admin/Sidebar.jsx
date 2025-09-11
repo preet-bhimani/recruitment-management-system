@@ -52,7 +52,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       title: "HR Interview",
       icon: <HatGlasses  size={20} />,
       children: [
-        { name: "Admin HR Interview", path: "/admin-jobapplication" },
+        { name: "Admin HR Interview", path: "/admin-hrinterview" },
         { name: "Add HR Interview ", path: "/admin-add-jobapplication" },
       ],
     },
