@@ -317,8 +317,8 @@ const AdminUserUpdate = () => {
                   name="isActive"
                   defaultValue={userData.isActive}
                   className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100">
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
+                  <option value="Active">Clear</option>
+                  <option value="Inactive">Not Clear</option>
                 </select>
               </div>
 

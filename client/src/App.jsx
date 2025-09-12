@@ -17,6 +17,9 @@ import AdminTechInterview from './admin/Technical Interview/AdminTechInterview';
 import AdminHRInterview from './admin/HR Interview/AdminHRInterview';
 import AdminAddTechInterview from './admin/Technical Interview/AdminAddTechInterview';
 import AdminMeetingSchedual from './admin/Technical Interview/AdminMeetingSchedual';
+import AdminUpdateTechInterview from './admin/Technical Interview/AdminUpdateTechInterview';
+import AdminAddHRInterview from './admin/HR Interview/AdminAddHRInterview';
+import AdminUpdateHRInterview from './admin/HR Interview/AdminUpdateHRInterview';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -38,7 +41,10 @@ function App() {
             <Route path='/admin-update/jobapplication/9834B398-CCC4-57D0-CE34-19EEBF3GFD46' element={<AdminUpdateJobApplication />} />
             <Route path='/admin-techinterview' element={<AdminTechInterview />} />
             <Route path='/admin-add-techinterview' element={<AdminAddTechInterview />} />
+            <Route path='/admin-update-techinterview' element={<AdminUpdateTechInterview />} />
             <Route path='/admin-hrinterview' element={<AdminHRInterview />} />
+            <Route path='admin-add-hrinterview' element={<AdminAddHRInterview />} />
+            <Route path='/admin-update-hrinterview' element={<AdminUpdateHRInterview />} />
             <Route path='/admin-add-meeting' element={<AdminMeetingSchedual />} />
         </Routes>
     </Router>

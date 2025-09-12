@@ -3,12 +3,30 @@ import Navbar from "../../components/Navbar";
 import Sidebar from "../Sidebar";
 import { Clock } from "lucide-react";
 
-const AdminMeetingSchedual = () => {
+const AdminUpdateTechInterview = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [selectedType, setSelectedType] = useState('technical');
 
+    const [techData, setTechData] = useState({
+        tiId: "8171H347-JAK0-31N8-WO47-29KZMN0EPL48",
+        jaId: "9282H458-JAK1-42N9-WO58-30KZMN1EPL589",
+        userID: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
+        joId: "8723B287-CCC3-46D9-CE23-08EEBF2GFD35",
+        meetingSubject: "Tech Round 1",
+        interviewEmail: "preet@gmail.com",
+        interviewerName: "Paresh Tanna",
+        date: "2024-09-14",
+        time: "12:00",
+        feedback: "Congratulation!!! You completed first round. Now prepare for next round",
+        rating: 4.5,
+        IsClear: "Pass",
+        meetingLink: "www.microsoftteams.com",
+        status: "Clear"
+    }
+    )
+
     const getDuration = (type) => {
-        return type === 'technical' ? 2 : 1; 
+        return type === 'technical' ? 2 : 1;
     };
 
     const getDurationText = (type) => {
@@ -49,7 +67,7 @@ const AdminMeetingSchedual = () => {
                                         value="technical"
                                         className="mr-3"
                                         defaultChecked
-                                        onChange={handleTypeChange}/>
+                                        onChange={handleTypeChange} />
                                     <div>
                                         <div className="font-medium text-blue-400">Technical Interview</div>
                                     </div>
@@ -60,7 +78,7 @@ const AdminMeetingSchedual = () => {
                                         name="meetingType"
                                         value="hr"
                                         className="mr-3"
-                                        onChange={handleTypeChange}/>
+                                        onChange={handleTypeChange} />
                                     <div>
                                         <div className="font-medium text-green-400">HR Interview</div>
                                     </div>
@@ -81,9 +99,19 @@ const AdminMeetingSchedual = () => {
 
                         {/* Meeting Details */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
+                            <div className="md:col-span-2">
+                                <label className="block mb-1 text-sm font-medium text-neutral-300">
+                                    Tech Interview ID
+                                </label>
+                                <input
+                                    type="text"
+                                    defaultValue={techData.tiId}
+                                    disabled
+                                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-300 cursor-not-allowed" />
+                            </div>
                             {/* Left Column */}
                             <div className="space-y-4">
+
                                 <h3 className="text-lg font-medium text-amber-200 border-b border-neutral-600 pb-2">Meeting Information</h3>
 
                                 {/* Meeting Subject */}
@@ -93,9 +121,8 @@ const AdminMeetingSchedual = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        name="meetingSubject"
-                                        placeholder="Enter Meeting Subject"
-                                        className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400"/>
+                                        defaultValue={techData.meetingSubject}
+                                        className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
                                 {/* Job Application ID */}
@@ -105,9 +132,8 @@ const AdminMeetingSchedual = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        name="jaid"
-                                        placeholder="Enter JAID"
-                                        className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400"/>
+                                        defaultValue={techData.jaId}
+                                        className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
                                 {/* User ID */}
@@ -117,8 +143,7 @@ const AdminMeetingSchedual = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        name="userID"
-                                        placeholder="Enter User ID"
+                                        defaultValue={techData.userID}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
@@ -129,9 +154,34 @@ const AdminMeetingSchedual = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        name="joid"
-                                        placeholder="Enter JOID"
+                                        defaultValue={techData.joId}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                                </div>
+
+                                {/* Feedback */}
+                                <div>
+                                    <label className="block mb-1 text-sm font-medium">
+                                        Feedback
+                                    </label>
+                                    <textarea
+                                        placeholder="Enter Comment"
+                                        rows="4"
+                                        defaultValue={techData.feedback}
+                                        className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 resize-none">
+                                    </textarea>
+                                </div>
+
+                                {/* IsClear */}
+                                <div>
+                                    <label className="block mb-1 text-sm font-medium">IsClear</label>
+                                    <select
+                                        name="isClear"
+                                        defaultValue={techData.IsClear}
+                                        className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100">
+                                        <option value="Pass">Pass</option>
+                                        <option value="Fail">Fail</option>
+                                        <option value="Wait">Wait</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -146,7 +196,7 @@ const AdminMeetingSchedual = () => {
                                     </label>
                                     <input
                                         type="date"
-                                        name="date"
+                                        defaultValue={techData.date}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
                                 </div>
 
@@ -157,7 +207,7 @@ const AdminMeetingSchedual = () => {
                                     </label>
                                     <input
                                         type="time"
-                                        name="time"
+                                        defaultValue={techData.time}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
                                 </div>
 
@@ -168,8 +218,7 @@ const AdminMeetingSchedual = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        name="interviewerName"
-                                        placeholder="Enter Interviewer's name"
+                                        defaultValue={techData.interviewerName}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
@@ -180,9 +229,45 @@ const AdminMeetingSchedual = () => {
                                     </label>
                                     <input
                                         type="email"
-                                        name="interviewerEmail"
-                                        placeholder="Enter Interviewer's email"
+                                        defaultValue={techData.interviewEmail}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                                </div>
+
+                                {/* Meeting Link */}
+                                <div>
+                                    <label className="block mb-1 text-sm font-medium">
+                                        Meeting Link <span className="text-rose-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        defaultValue={techData.meetingLink}
+                                        className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                                </div>
+
+                                {/* Rating */}
+                                <div>
+                                    <label className="block mb-1 text-sm font-medium">
+                                        Rating <span className="text-rose-500">*</span>
+                                    </label>
+                                    <input
+                                        type="number"
+                                        max={5}
+                                        min={0}
+                                        defaultValue={techData.rating}
+                                        className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                                </div>
+                                {/* Status */}
+                                <div>
+                                    <label className="block mb-1 text-sm font-medium">Status</label>
+                                    <select
+                                        name="Status"
+                                        defaultValue={techData.status}
+                                        className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100">
+                                        <option value="Clear">Clear</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Hold">Hold</option>
+                                        <option value="Inactive">Not Clear</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -192,8 +277,8 @@ const AdminMeetingSchedual = () => {
                             <button
                                 type="button"
                                 className="px-6 py-2 bg-sky-700 hover:bg-sky-600 rounded font-medium transition text-white flex items-center gap-2">
-                                
-                                + ADD {selectedType === 'technical' ? 'Technical' : 'HR'} Meeting
+
+                                + Update {selectedType === 'technical' ? 'Technical' : 'HR'} Interview
                             </button>
                         </div>
                     </form>
@@ -203,4 +288,4 @@ const AdminMeetingSchedual = () => {
     </div>;
 };
 
-export default AdminMeetingSchedual;
+export default AdminUpdateTechInterview;

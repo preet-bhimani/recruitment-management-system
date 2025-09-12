@@ -45,7 +45,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       icon: <Speech size={20} />,
       children: [
         { name: "Admin Tech Interview", path: "/admin-techinterview" },
-        { name: "Add Tech Interview ", path: "/admin-add-jobapplication" },
+        { name: "Add Tech Interview ", path: "/admin-add-techinterview" },
       ],
     },
     {
@@ -53,7 +53,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       icon: <HatGlasses  size={20} />,
       children: [
         { name: "Admin HR Interview", path: "/admin-hrinterview" },
-        { name: "Add HR Interview ", path: "/admin-add-jobapplication" },
+        { name: "Add HR Interview ", path: "/admin-add-hrinterview" },
       ],
     },
   ];

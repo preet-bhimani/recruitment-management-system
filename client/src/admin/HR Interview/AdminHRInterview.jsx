@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../Sidebar";
+import { useNavigate } from "react-router-dom";
 import { Eye, Edit, Trash2 } from "lucide-react";
 
 const AdminHRInterview = () => {
@@ -14,7 +15,7 @@ const AdminHRInterview = () => {
             email: "preet@gmail.com",
             date: "2024-12-22",
             isClear: "Pass",
-            status: "Completed",
+            status: "Clear",
             rating: "5",
         },
         {
@@ -24,10 +25,12 @@ const AdminHRInterview = () => {
             email: "sahil@gamil.com",
             date: "2025-08-01",
             isClear: "Fail",
-            status: "Completed",
+            status: "Not Clear",
             rating: "2",
         }
     ]
+
+    const navigate = useNavigate();
 
     return <div className="flex flex-col h-screen bg-neutral-950 text-neutral-100">
         {/* Navbar */}
@@ -43,7 +46,7 @@ const AdminHRInterview = () => {
 
                 {/* Add New HR Interview */}
                 <div className="flex gap-3 mb-4 justify-end">
-                    <button className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm" onClick={() => navigate("/admin-add-jobapplication")}>
+                    <button className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm" onClick={() => navigate("/admin-add-hrinterview")}>
                         + Add HR Interview
                     </button>
                 </div>
@@ -74,9 +77,13 @@ const AdminHRInterview = () => {
                                     <p>
                                         <span className="font-medium text-amber-200">status:</span>{" "}
                                         <span
-                                            className={`px-2 py-0.5 rounded text-xs ${hr.status === "Completed"
+                                            className={`px-2 py-0.5 rounded text-xs ${hr.status === "Clear"
                                                 ? "bg-emerald-800 text-emerald-200"
-                                                : "bg-yellow-800 text-yellow-200"}`}>
+                                                : hr.status === "In Progress"
+                                                    ? "bg-yellow-800 text-yellow-200"
+                                                    : hr.status === "Hold"
+                                                        ? "bg-sky-800 text-sky-200"
+                                                        : "bg-rose-800 text-rose-200"}`}>
                                             {hr.status}
                                         </span>
                                     </p>
@@ -85,10 +92,10 @@ const AdminHRInterview = () => {
                             </div>
                             {/* Bottons */}
                             <div className="flex gap-2 ml-4">
-                                <button className="flex items-center gap-1 px-2 py-1 bg-sky-800 hover:bg-sky-700 rounded text-xs" onClick={() => navigate('/admin-update/jobapplication/9834B398-CCC4-57D0-CE34-19EEBF3GFD46')}>
+                                <button className="flex items-center gap-1 px-2 py-1 bg-sky-800 hover:bg-sky-700 rounded text-xs" onClick={() => navigate('/admin-update-hrinterview')}>
                                     <Eye size={14} /> View
                                 </button>
-                                <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs" onClick={() => navigate('/admin-update/jobapplication/9834B398-CCC4-57D0-CE34-19EEBF3GFD46')}>
+                                <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs" onClick={() => navigate('/admin-update-hrinterview')}>
                                     <Edit size={14} /> Update
                                 </button>
                                 <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
