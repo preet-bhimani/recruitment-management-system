@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AdminUser from "./admin/AdminUser";
+import AdminUser from "./admin/User/AdminUser";
 import AdminDashboard from './admin/AdminDashboard'
-import AdminAddUser from './admin/AdminAddUser';
-import AdminAddUserExcel from './admin/AdminAddUserExcel';
-import AdminAddUserResume from './admin/AdminAddUserResume';
-import AdminUserUpdate from './admin/AdminUserUpdate';
+import AdminAddUser from './admin/User/AdminAddUser';
+import AdminAddUserExcel from './admin/User/AdminAddUserExcel';
+import AdminAddUserResume from './admin/User/AdminAddUserResume';
+import AdminUserUpdate from './admin/User/AdminUserUpdate';
 import AdminJobOpening from './admin/Job opening/AdminJobOpening';
 import AdminAddJobOpening from './admin/Job opening/AdminAddJobOpening';
 import AdminUpdateJobOpening from './admin/Job opening/AdminUpdateJobOpening';
@@ -20,9 +20,20 @@ import AdminMeetingSchedual from './admin/Technical Interview/AdminMeetingSchedu
 import AdminUpdateTechInterview from './admin/Technical Interview/AdminUpdateTechInterview';
 import AdminAddHRInterview from './admin/HR Interview/AdminAddHRInterview';
 import AdminUpdateHRInterview from './admin/HR Interview/AdminUpdateHRInterview';
+import AdminSelection from './admin/selection/AdminSelection';
+import AdminSentMailSelection from './admin/selection/AdminSentMailSelection';
+import AdminUpdateSelection from './admin/selection/AdminUpdateSelection';
+import AdminDocuments from './admin/Documents/AdminDocuments';
+import AdminAddDocuments from './admin/Documents/AdminAddDocuments';
+import AdminUpdateDocuments from './admin/Documents/AdminUpdateDocuments';
+import AdminCampusDrive from './admin/Campus Drive/AdminCampusDrive';
+import AdminAddCampusDrive from './admin/Campus Drive/AdminAddCampusDrive';
+import AdminUpdateCampusDrive from './admin/Campus Drive/AdminUpdateCampusDrive';
+import AdminEmployee from './admin/Employee/AdminEmployee';
+import AdminAddEmployee from './admin/Employee/AdminAddEmployee';
+import AdminUpdateEmployee from './admin/Employee/AdminUpdateEmployee';
 
 function App() {
-  const [count, setCount] = useState(0)
   return (
     <>
       <Router>
@@ -46,6 +57,18 @@ function App() {
             <Route path='admin-add-hrinterview' element={<AdminAddHRInterview />} />
             <Route path='/admin-update-hrinterview' element={<AdminUpdateHRInterview />} />
             <Route path='/admin-add-meeting' element={<AdminMeetingSchedual />} />
+            <Route path='/admin-selection' element={<AdminSelection />} />
+            <Route path='/admin-sentmail-selection' element={<AdminSentMailSelection />} />
+            <Route path='/admin-update-selection' element={<AdminUpdateSelection />} /> 
+            <Route path='/admin-document' element={<AdminDocuments />} />
+            <Route path='/admin-add-document' element={<AdminAddDocuments />} />
+            <Route path='/admin-update-document' element={<AdminUpdateDocuments />} />
+            <Route path='/admin-campusdrive' element={<AdminCampusDrive />} />
+            <Route path='/admin-add-campusdrive' element={<AdminAddCampusDrive />} />
+            <Route path='/admin-update-campusdrive' element={<AdminUpdateCampusDrive />} />
+            <Route path='/admin-employee' element={<AdminEmployee />} />
+            <Route path='/admin-add-employee' element={<AdminAddEmployee />} />
+            <Route path='/admin-update-employee' element={<AdminUpdateEmployee />} />
         </Routes>
     </Router>
     </>

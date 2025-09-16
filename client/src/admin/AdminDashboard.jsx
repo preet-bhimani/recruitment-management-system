@@ -38,6 +38,18 @@ const AdminDashboard = () => {
             <div className="bg-neutral-800 p-6 rounded-lg shadow-md text-center">
               <button onClick={() => navigate("/admin-hrinterview")} className="text-xl">HR Interview</button>
             </div>
+            <div className="bg-neutral-800 p-6 rounded-lg shadow-md text-center">
+              <button onClick={() => navigate("/admin-selection")} className="text-xl">Selection</button>
+            </div>
+            <div className="bg-neutral-800 p-6 rounded-lg shadow-md text-center">
+              <button onClick={() => navigate("/admin-document")} className="text-xl">Document List</button>
+            </div>
+            <div className="bg-neutral-800 p-6 rounded-lg shadow-md text-center">
+              <button onClick={() => navigate("/admin-campusdrive")} className="text-xl">Campus Drive</button>
+            </div>
+            <div className="bg-neutral-800 p-6 rounded-lg shadow-md text-center">
+              <button onClick={() => navigate("/admin-employee")} className="text-xl">Employee</button>
+            </div>
           </div>
         </main>
       </div>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Sidebar from "./Sidebar";
-import Navbar from "../components/Navbar";
-import { Eye, Edit, Trash2 } from "lucide-react";
+import Sidebar from "../Sidebar";
+import Navbar from "../../components/Navbar";
+import { Eye, Edit, Trash2, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const AdminUser = () => {
@@ -59,15 +59,18 @@ const AdminUser = () => {
           <h1 className="text-2xl font-semibold mb-4 text-blue-400">Admin Users</h1>
 
           {/* Add New User */}
-          <div className="flex gap-3 mb-4">
+          <div className="flex gap-3 mb-4 justify-end">
             <button className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm" onClick={() => navigate("/admin-add-user")}>
-              + Add
+              + Add Employee
             </button>
             <button className="px-3 py-1 bg-sky-700 hover:bg-sky-600 rounded text-sm" onClick={() => navigate("/admin-add-user-excel")}>
               + Add Excel
             </button>
             <button className="px-3 py-1 bg-fuchsia-700 hover:bg-fuchsia-600 rounded text-sm" onClick={() => navigate("/admin-add-user-resume")}>
               + Add Resume
+            </button>
+            <button className="flex items-center gap-1 px-3 py-1 bg-violet-700 hover:bg-violet-600 rounded text-sm" >
+              <Filter size={14} /> Filters
             </button>
           </div>
 

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../Sidebar";
-import { Eye, Edit, Trash2 } from "lucide-react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Eye, Edit, Trash2, Filter } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AdminJobApplication = () => {
 
@@ -42,6 +42,9 @@ const AdminJobApplication = () => {
                     <button className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm" onClick={() => navigate("/admin-add-jobapplication")}>
                         + Add Job Application
                     </button>
+                    <button className="flex items-center gap-1 px-3 py-1 bg-violet-700 hover:bg-violet-600 rounded text-sm" >
+                        <Filter size={14} /> Filters
+                    </button>
                 </div>
 
                 <div className="space-y-2">
@@ -53,7 +56,7 @@ const AdminJobApplication = () => {
                                 <div className="grid grid-cols-4 gap-x-6 gap-y-1 flex-1">
                                     <p><span className="font-medium text-amber-200">JaId:</span> {ja.jaId}</p>
                                     <p><span className="font-medium text-amber-200">UserId:</span> {ja.userId}</p>
-                                    <p><span className="font-medium text-amber-200">JaId:</span> {ja.joId}</p>
+                                    <p><span className="font-medium text-amber-200">JoId:</span> {ja.joId}</p>
                                     <p>
                                         <span className="font-medium text-amber-200">TestResult:</span>{" "}
                                         <span

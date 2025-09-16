@@ -10,6 +10,10 @@ import {
   FileUser,
   HatGlasses,
   Speech,
+  BadgeCheck,
+  DockIcon,
+  University,
+  IdCardLanyard ,
 } from "lucide-react";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
@@ -54,6 +58,36 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       children: [
         { name: "Admin HR Interview", path: "/admin-hrinterview" },
         { name: "Add HR Interview ", path: "/admin-add-hrinterview" },
+      ],
+    },
+    {
+      title: "Selection",
+      icon: <BadgeCheck size={20} />,
+      children: [
+        { name: "Admin Selection", path: "/admin-selection" },
+      ],
+    },
+    {
+      title: "Document List",
+      icon: <DockIcon size={20} />,
+      children: [
+        { name: "Admin Document List", path: "/admin-document" },
+      ],
+    },
+    {
+      title: "Campus Drive",
+      icon: <University size={20} />,
+      children: [
+        { name: "Admin Campus Drive", path: "/admin-campusdrive" },
+        { name: "Add Campus Drive ", path: "/admin-add-campusdrive" },
+      ],
+    },
+    {
+      title: "Employee",
+      icon: <IdCardLanyard size={20} />,
+      children: [
+        { name: "Admin Employee", path: "/admin-employee" },
+        { name: "Add Employee ", path: "/admin-add-employee" },
       ],
     },
   ];

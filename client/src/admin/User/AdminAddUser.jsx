@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import Sidebar from "./Sidebar";
+import Navbar from "../../components/Navbar";
+import Sidebar from "../Sidebar";
+
 const AdminAddUser = () => {
+    
     const [isCollapsed, setIsCollapsed] = useState(false);
+
     return (
         <div className="flex flex-col h-screen">
             {/* Navbar */}

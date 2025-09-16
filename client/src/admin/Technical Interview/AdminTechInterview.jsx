@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../Sidebar";
 import { useNavigate } from "react-router-dom";
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye, Edit, Trash2, Filter } from "lucide-react";
 
 const AdminTechInterview = () => {
 
@@ -54,6 +54,9 @@ const AdminTechInterview = () => {
           <button className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm" onClick={() => navigate("/admin-add-techinterview")}>
             + Add Tech Interview
           </button>
+          <button className="flex items-center gap-1 px-3 py-1 bg-violet-700 hover:bg-violet-600 rounded text-sm" >
+            <Filter size={14} /> Filters
+          </button>
         </div>
 
         <div className="space-y-2">
@@ -90,9 +93,9 @@ const AdminTechInterview = () => {
                         ? "bg-emerald-800 text-emerald-200"
                         : tech.status === "In Progress"
                           ? "bg-yellow-800 text-yellow-200"
-                        : tech.status === "Hold"
-                          ? "bg-sky-800 text-sky-200"
-                          : "bg-rose-800 text-rose-200"}`}>
+                          : tech.status === "Hold"
+                            ? "bg-sky-800 text-sky-200"
+                            : "bg-rose-800 text-rose-200"}`}>
                       {tech.status}
                     </span>
                   </p>

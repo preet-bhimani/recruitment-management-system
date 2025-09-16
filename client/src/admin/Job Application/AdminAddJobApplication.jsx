@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "../Sidebar";
 import Navbar from "../../components/Navbar";
+
 const AdminAddJobApplication = () => {
 
   const [isCollapsed, setIsCollapsed] = useState(false);

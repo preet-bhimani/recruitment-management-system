@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import Sidebar from "./Sidebar";
+import Navbar from "../../components/Navbar";
+import Sidebar from "../Sidebar";
 import { Upload, FileText } from "lucide-react";
 
 const AdminAddUserResume = () => {
@@ -20,7 +20,7 @@ const AdminAddUserResume = () => {
                 <main className="flex-1 bg-neutral-950 text-white p-3 sm:p-6 overflow-y-auto">
                     <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-blue-400">Add User with Resume</h1>
 
-                    {/* Resume Upload Card */}
+                    {/* Resume Upload */}
                     <div className="max-w-xl mx-auto mb-6">
                         <div className="bg-neutral-900 p-4 rounded-lg shadow-md">
                             <div className="text-center">
@@ -30,7 +30,7 @@ const AdminAddUserResume = () => {
                                     Upload resume file to auto-fill user details
                                 </p>
 
-                                {/* File Upload Area */}
+                                {/* File Upload */}
                                 <div className="border-2 border-dashed border-neutral-600 rounded-lg p-4 mb-3 hover:border-neutral-500 transition">
                                     <input
                                         id="resume-upload"

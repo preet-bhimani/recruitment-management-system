@@ -2,7 +2,7 @@ import Reac, { useState } from "react";
 import Navbar from "../../components/Navbar";
 import Sidebar from "../Sidebar";
 import { useNavigate } from 'react-router-dom';
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye, Edit, Trash2, Filter } from "lucide-react";
 
 const AdminJobOpening = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -46,6 +46,9 @@ const AdminJobOpening = () => {
                 <div className="flex gap-3 mb-4 justify-end">
                     <button className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm" onClick={() => navigate("/admin-add-jobopening")}>
                         + Add Job Opening
+                    </button>
+                    <button className="flex items-center gap-1 px-3 py-1 bg-violet-700 hover:bg-violet-600 rounded text-sm" >
+                        <Filter size={14} /> Filters
                     </button>
                 </div>
 

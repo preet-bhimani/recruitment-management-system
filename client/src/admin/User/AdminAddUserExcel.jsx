@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Upload, FileSpreadsheet } from "lucide-react";
-import Navbar from "../components/Navbar";
-import Sidebar from "./Sidebar";
+import Navbar from "../../components/Navbar";
+import Sidebar from "../Sidebar";
 
 const AdminAddUserExcel = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);

@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import Sidebar from "./Sidebar";
+import Navbar from "../../components/Navbar";
+import Sidebar from "../Sidebar";
 
 const AdminUserUpdate = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-
 
   const [userData, setUserData] = useState({
     userId: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
