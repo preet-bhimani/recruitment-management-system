@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Sidebar from "../Sidebar";
-import Navbar from "../../components/Navbar";
+import Navbar from "../Navbar";
 import { Eye, Edit, Trash2, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

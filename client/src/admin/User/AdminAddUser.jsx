@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Navbar from "../../components/Navbar";
+import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 
 const AdminAddUser = () => {
@@ -19,7 +19,6 @@ const AdminAddUser = () => {
                 {/* Page Content */}
                 <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
                     <h1 className="text-2xl font-bold mb-6 text-blue-400">Add New User</h1>
-
 
                     <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
                         {/* Full Name */}
@@ -211,9 +210,9 @@ const AdminAddUser = () => {
                                 <option value="" disabled>Select Reference</option>
                                 <option value="Campus Drive">Campus Drive</option>
                                 <option value="Walk in drive">Walk in drive</option>
-                                <option value="Recruitment Apps">Recruitment Apps</option>
-                                <option value="Friends">Family/Friends</option>
-                                <option value="Others">Others</option>
+                                <option value="Job Platform">Job Platform</option>
+                                <option value="Family friend">Family/Friends</option>
+                                <option value="Internet">Internet</option>
                             </select>
                         </div>
 

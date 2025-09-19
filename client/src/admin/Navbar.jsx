@@ -4,7 +4,7 @@ import { Search } from "lucide-react";
 const Navbar = () => {
   return (
     <header className="bg-neutral-900 text-neutral-100 px-4 py-3 flex items-center justify-between border-b border-neutral-700">
-      {/* Left Section (Logo / Title if needed) */}
+      {/* Company Name */}
       <div className="text-lg font-semibold tracking-wide">
         Dashboard
       </div>

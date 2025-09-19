@@ -32,13 +32,16 @@ import AdminUpdateCampusDrive from './admin/Campus Drive/AdminUpdateCampusDrive'
 import AdminEmployee from './admin/Employee/AdminEmployee';
 import AdminAddEmployee from './admin/Employee/AdminAddEmployee';
 import AdminUpdateEmployee from './admin/Employee/AdminUpdateEmployee';
-
+import Register from './components/Register';
+import Login from './components/Login';
+import CandidateDashboard from './candidate/CandidateDashboard';
+import JobDescription from './candidate/JobDescription';
 function App() {
   return (
     <>
       <Router>
         <Routes>
-            <Route path='/' element={<AdminDashboard />} />
+            <Route path='/admin' element={<AdminDashboard />} />
             <Route path='/admin-user' element={<AdminUser />} />
             <Route path='/admin-add-user' element={<AdminAddUser />} />
             <Route path='/admin-add-user-excel' element={<AdminAddUserExcel />}/>
@@ -69,6 +72,10 @@ function App() {
             <Route path='/admin-employee' element={<AdminEmployee />} />
             <Route path='/admin-add-employee' element={<AdminAddEmployee />} />
             <Route path='/admin-update-employee' element={<AdminUpdateEmployee />} />
+            <Route path='/' element={<CandidateDashboard />} />
+            <Route path='/register' element={<Register />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/job-description' element={<JobDescription />} />
         </Routes>
     </Router>
     </>
