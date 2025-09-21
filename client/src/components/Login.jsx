@@ -3,13 +3,13 @@ import { LogIn } from "lucide-react";
 
 const Login = () => {
     return (
-        <div className="min-h-screen bg-neutral-900 flex items-center justify-center p-4">
-            <div className="w-full max-w-md bg-neutral-800 rounded-xl shadow-xl p-8">
+        <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
+            <div className="w-full max-w-md bg-neutral-900 rounded-xl shadow-xl p-8">
 
                 {/* Page Content */}
                 <div className="mb-8">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <div className="w-10 h-10 bg-purple-700 rounded-lg flex items-center justify-center">
                             <LogIn className="w-6 h-6 text-white" />
                         </div>
                         <h1 className="text-2xl font-bold text-white">Login Portal</h1>
@@ -27,7 +27,7 @@ const Login = () => {
                         <input
                             type="email"
                             placeholder="Enter your email"
-                            className="w-full px-4 py-3 bg-neutral-700 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
                     </div>
 
                     {/* Password */}
@@ -36,23 +36,23 @@ const Login = () => {
                         <input
                             type="password"
                             placeholder="Enter your password"
-                            className="w-full px-4 py-3 bg-neutral-700 border border-neutral-600 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                            className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
                     </div>
 
                     {/* Submit */}
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition duration-200 flex items-center justify-center gap-2">
+                        className="w-full bg-purple-700 hover:bg-purple-800 text-white font-medium py-3 rounded-lg transition duration-200 flex items-center justify-center gap-2">
                         <LogIn className="w-5 h-5" />
                         Login
                     </button>
                 </form>
 
                 {/* Register Page Link */}
-                <div className="text-center mt-6 pt-4 border-t border-neutral-700">
+                <div className="text-center mt-6 pt-4 border-t border-neutral-800">
                     <p className="text-neutral-400 text-sm">
                         Don't have an account?{" "}
-                        <a href="/register" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                        <a href="/register" className="text-purple-400 hover:text-purple-300 font-medium transition-colors">
                             Create new account
                         </a>
                     </p>

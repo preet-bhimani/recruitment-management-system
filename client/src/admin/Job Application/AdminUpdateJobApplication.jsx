@@ -23,7 +23,7 @@ const AdminUpdateJobApplication = () => {
         <div className="flex flex-1 overflow-hidden">
             <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
-            {/* Main Content Area */}
+            {/* Main Content */}
             <main className="flex-1 bg-neutral-950 text-white p-3 sm:p-6 overflow-y-auto">
                 <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-blue-400">Update Job Application</h1>
 

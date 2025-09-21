@@ -36,6 +36,14 @@ import Register from './components/Register';
 import Login from './components/Login';
 import CandidateDashboard from './candidate/CandidateDashboard';
 import JobDescription from './candidate/JobDescription';
+import Resume from './candidate/Resume';
+import UpdateProfile from './candidate/UpdateProfile';
+import UpdatePasswordMail from './candidate/UpdatePasswordMail';
+import UpdatePasswordOTP from './candidate/UpdatePasswordOTP';
+import UpdatePassword from './candidate/UpdatePassword';
+import Notifications from './candidate/Notifications';
+import MyJobs from './candidate/MyJobs';
+import UploadDocuments from './candidate/UploadDocuments';
 function App() {
   return (
     <>
@@ -76,6 +84,14 @@ function App() {
             <Route path='/register' element={<Register />} />
             <Route path='/login' element={<Login />} />
             <Route path='/job-description' element={<JobDescription />} />
+            <Route path='/resume' element={<Resume />} />
+            <Route path='/update-profile' element={<UpdateProfile />} />
+            <Route path='/update-password-mail' element={<UpdatePasswordMail />} />
+            <Route path='/update-password-otp' element={<UpdatePasswordOTP />} />
+            <Route path='/update-password' element={<UpdatePassword />} />
+            <Route path='/notifications' element={<Notifications />} />
+            <Route path='/myjobs' element={<MyJobs />} />
+            <Route path='/upload-documents' element={<UploadDocuments />} />
         </Routes>
     </Router>
     </>

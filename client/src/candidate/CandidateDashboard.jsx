@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import Footer from "../components/Footer";
 import { MapPin, Briefcase, Plus } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 const CandidateDashboard = () => {
 
@@ -67,11 +68,13 @@ const CandidateDashboard = () => {
     }
   ];
 
-  return <div className="min-h-screen flex flex-col bg-neutral-900">
-    {/* Navbar */}
-    <CommonNavbar isLoggedIn={true} />
+  const navigate = useNavigate();
 
-    {/* Main Content */}
+  return <div className="min-h-screen flex flex-col bg-neutral-950">
+    {/* Navbar */}
+    <CommonNavbar isLoggedIn hasSelectedApplication/>
+
+    {/* Main Layout */}
     <main className="flex-1 py-8 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-8">
@@ -80,7 +83,7 @@ const CandidateDashboard = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-neutral-800 rounded-lg p-6 mb-8">
+        <div className="bg-neutral-900 rounded-lg p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
             {/* Location Filter */}
@@ -89,7 +92,7 @@ const CandidateDashboard = () => {
               <select
                 value={filters.city}
                 onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-                className="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                 {location.map(city => (
                   <option key={city} value={city}>{city}</option>
                 ))}
@@ -102,7 +105,7 @@ const CandidateDashboard = () => {
               <select
                 value={filters.experience}
                 onChange={(e) => setFilters({ ...filters, experience: e.target.value })}
-                className="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                 {experienceLevels.map(exp => (
                   <option key={exp} value={exp}>{exp}</option>
                 ))}
@@ -111,7 +114,7 @@ const CandidateDashboard = () => {
 
             {/* Apply Filters */}
             <div className="flex items-end">
-              <button className="w-full px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition">
+              <button className="w-full px-6 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-medium transition">
                 Apply Filters
               </button>
             </div>
@@ -120,7 +123,7 @@ const CandidateDashboard = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {jobs.map(job => (
-            <div key={job.id} className="bg-neutral-800 border border-neutral-700 rounded-lg p-6 hover:border-neutral-600 transition">
+            <div key={job.id} className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-neutral-600 transition">
 
               {/* Job Details */}
               <div className="flex items-start justify-between mb-4">
@@ -142,8 +145,8 @@ const CandidateDashboard = () => {
 
                 {/* View Job Button */}
                 <button
-                  onClick={() => console.log(`Viewing job: ${job.title}`)}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition ml-4">
+                  onClick={() => navigate('/job-description')}
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-medium transition ml-4">
                   <Plus className="w-4 h-4" />
                   View Job
                 </button>

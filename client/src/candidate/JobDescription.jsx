@@ -40,7 +40,7 @@ const JobDescription = () => {
       {/* Navbar */}
       <CommonNavbar isLoggedIn={true} />
 
-      {/* Main Content */}
+      {/* Main Layout */}
       <main className="flex-1 py-8 px-4">
         <div className="max-w-4xl mx-auto">
 

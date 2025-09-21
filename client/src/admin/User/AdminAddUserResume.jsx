@@ -8,15 +8,14 @@ const AdminAddUserResume = () => {
 
     return (
         <div className="flex flex-col h-screen">
-            {/* Navbar fixed at top */}
+            {/* Navbar */}
             <Navbar />
 
-            {/* Main wrapper */}
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar */}
                 <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
-                {/* Content Area */}
+                {/* Main Layout */}
                 <main className="flex-1 bg-neutral-950 text-white p-3 sm:p-6 overflow-y-auto">
                     <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-blue-400">Add User with Resume</h1>
 

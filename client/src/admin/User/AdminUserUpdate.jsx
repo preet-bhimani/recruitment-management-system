@@ -33,7 +33,7 @@ const AdminUserUpdate = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* Navbar fixed at top */}
+      {/* Navbar */}
       <Navbar />
 
       {/* Main Layout */}
@@ -41,7 +41,7 @@ const AdminUserUpdate = () => {
         {/* Sidebar */}
         <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
-        {/* Main Content Area */}
+        {/* Main Content */}
         <main className="flex-1 bg-neutral-950 text-white p-3 sm:p-6 overflow-y-auto">
           <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-blue-400">Update User</h1>
 
