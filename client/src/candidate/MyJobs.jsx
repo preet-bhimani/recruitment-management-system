@@ -14,7 +14,6 @@ const MyJobs = () => {
         "Rejected"
     ];
 
-
     const appliedJobs = [
         {
             joid: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
@@ -73,7 +72,6 @@ const MyJobs = () => {
         }
     };
 
-
     const getStatusColor = (status) => {
         switch (status) {
             case "Selected":
@@ -87,7 +85,6 @@ const MyJobs = () => {
         }
     };
 
-
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-IN', {
@@ -100,7 +97,7 @@ const MyJobs = () => {
     return (
         <div className="min-h-screen flex flex-col bg-neutral-950">
             {/* Navbar */}
-            <CommonNavbar isLoggedIn />
+            <CommonNavbar isLoggedIn role="Candidates"/>
 
             {/* Main Layout */}
             <main className="flex-1 py-8 px-4">

@@ -72,7 +72,7 @@ const CandidateDashboard = () => {
 
   return <div className="min-h-screen flex flex-col bg-neutral-950">
     {/* Navbar */}
-    <CommonNavbar isLoggedIn hasSelectedApplication/>
+    <CommonNavbar isLoggedIn hasSelectedApplication role="Candidates"/>
 
     {/* Main Layout */}
     <main className="flex-1 py-8 px-4">

@@ -161,9 +161,9 @@ const Notifications = () => {
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950">
       {/* Navbar */}
-      <CommonNavbar isLoggedIn />
+      <CommonNavbar isLoggedIn role="Candidates" />
 
-      {/* Main Content */}
+      {/* Main Layout */}
       <main className="flex-1 py-8 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">

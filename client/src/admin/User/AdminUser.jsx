@@ -61,7 +61,7 @@ const AdminUser = () => {
           {/* Add New User */}
           <div className="flex gap-3 mb-4 justify-end">
             <button className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm" onClick={() => navigate("/admin-add-user")}>
-              + Add Employee
+              + Add User
             </button>
             <button className="px-3 py-1 bg-sky-700 hover:bg-sky-600 rounded text-sm" onClick={() => navigate("/admin-add-user-excel")}>
               + Add Excel

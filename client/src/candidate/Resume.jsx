@@ -5,7 +5,7 @@ import { Upload, FileText } from "lucide-react";
 const Resume = () => {
     return <div className="flex flex-col h-screen">
         {/* Navbar */}
-        < CommonNavbar />
+        < CommonNavbar isLoggedIn role="Candidates" />
 
         <div className="flex flex-1 overflow-hidden">
             

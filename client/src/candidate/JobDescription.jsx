@@ -36,15 +36,15 @@ const JobDescription = () => {
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-900">
+    <div className="min-h-screen flex flex-col bg-neutral-950">
       {/* Navbar */}
-      <CommonNavbar isLoggedIn={true} />
+      <CommonNavbar isLoggedIn={true} role="Candidates"/>
 
       {/* Main Layout */}
       <main className="flex-1 py-8 px-4">
         <div className="max-w-4xl mx-auto">
 
-          <div className="bg-neutral-800 rounded-lg p-8 mb-8">
+          <div className="bg-neutral-900 rounded-lg p-8 mb-8">
             <h1 className="text-4xl font-bold text-white mb-4">{jobData.title}</h1>
 
             <div className="flex flex-wrap items-center gap-6 text-neutral-400 mb-6">
@@ -64,7 +64,7 @@ const JobDescription = () => {
 
             {/* Apply Button */}
             <button
-              className="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold text-lg transition">
+              className="px-8 py-3 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-semibold text-lg transition">
               Apply for This Job
             </button>
           </div>
@@ -73,7 +73,7 @@ const JobDescription = () => {
           <div className="space-y-8">
 
             {/* Qualification */}
-            <div className="bg-neutral-800 rounded-lg p-6">
+            <div className="bg-neutral-900 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                 <GraduationCap className="w-6 h-6 text-blue-400" />
                 Qualification
@@ -82,7 +82,7 @@ const JobDescription = () => {
             </div>
 
             {/*  Required Skills */}
-            <div className="bg-neutral-800 rounded-lg p-6">
+            <div className="bg-neutral-900 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                 <CheckCircle className="w-6 h-6 text-green-400" />
                 Required Skills
@@ -91,7 +91,7 @@ const JobDescription = () => {
                 {jobData.requiredSkills.map((skill, index) => (
                   <span
                     key={index}
-                    className="px-3 py-2 bg-neutral-700 text-neutral-300 rounded-lg text-sm">
+                    className="px-3 py-2 bg-neutral-800 text-neutral-300 rounded-lg text-sm">
                     {skill}
                   </span>
                 ))}
@@ -99,7 +99,7 @@ const JobDescription = () => {
             </div>
 
             {/* Preferred Skills */}
-            <div className="bg-neutral-800 rounded-lg p-6">
+            <div className="bg-neutral-900 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                 <Star className="w-6 h-6 text-yellow-400" />
                 Preferred Skills
@@ -108,7 +108,7 @@ const JobDescription = () => {
                 {jobData.preferredSkills.map((skill, index) => (
                   <span
                     key={index}
-                    className="px-3 py-2 bg-yellow-900/20 text-yellow-300 rounded-lg text-sm border border-yellow-700">
+                    className="px-3 py-2 bg-yellow-900/20 text-yellow-300 rounded-lg text-sm border border-yellow-800">
                     {skill}
                   </span>
                 ))}
@@ -116,7 +116,7 @@ const JobDescription = () => {
             </div>
 
             {/* Roles & Responsibilities */}
-            <div className="bg-neutral-800 rounded-lg p-6">
+            <div className="bg-neutral-900 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                 <Briefcase className="w-6 h-6 text-purple-400" />
                 Roles & Responsibilities
@@ -132,7 +132,7 @@ const JobDescription = () => {
             </div>
 
             {/* About Roima */}
-            <div className="bg-neutral-800 rounded-lg p-6">
+            <div className="bg-neutral-900 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                 <Building2 className="w-6 h-6 text-indigo-400" />
                 About Roima
@@ -143,7 +143,7 @@ const JobDescription = () => {
             {/* Apply Button */}
             <div className="text-center pt-6">
               <button
-                className="px-12 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold text-lg transition shadow-lg">
+                className="px-12 py-4 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-semibold text-lg transition shadow-lg">
                 Apply for This Job
               </button>
             </div>
