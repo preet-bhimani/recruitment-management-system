@@ -46,6 +46,8 @@ import MyJobs from './candidate/MyJobs';
 import UploadDocuments from './candidate/UploadDocuments';
 import RecruiterDashboard from './recruiter/RecruiterDashboard';
 import RecruiterCandidate from './recruiter/RecruiterCandidate';
+import CandidateCard from './recruiter/CandidateCard';
+
 function App() {
   return (
     <>
@@ -96,6 +98,7 @@ function App() {
             <Route path='/upload-documents' element={<UploadDocuments />} />
             <Route path='/recruiter-dashboard' element={<RecruiterDashboard />} />
             <Route path='/recruiter-candidate' element={<RecruiterCandidate />} />
+            <Route path='/demo' element={<CandidateCard />} />
         </Routes>
     </Router>
     </>
