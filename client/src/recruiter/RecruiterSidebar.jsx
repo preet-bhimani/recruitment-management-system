@@ -18,8 +18,8 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
       title: "Candidates",
       icon: <Users size={20} />,
       children: [
-        { name: "Candidates", path: "/recruiter-candidates" },
-        { name: "Add Candidates", path: "/recruiter-add-candidates" },
+        { name: "Candidates", path: "/recruiter-candidate" },
+        { name: "Add Candidates", path: "/recruiter-add-candidate" },
         { name: "Add Candidates by Resume", path: "/recruiter-add-candidates-resume" },
         { name: "Add Candidates by Excel", path: "/recruiter-add-candidates-excel" },
       ],
