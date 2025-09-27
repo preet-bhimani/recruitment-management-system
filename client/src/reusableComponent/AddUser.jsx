@@ -244,7 +244,7 @@ const AddUser = () => {
                 <button
                     type="button"
                     className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                    + Add User
+                    + Add Candidate
                 </button>
             </div>
         </form>

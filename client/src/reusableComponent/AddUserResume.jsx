@@ -232,7 +232,6 @@ const AddUserResume = () => {
                         placeholder="Enter CDID"
                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
                 </div>
-
                 {userRole === 'admin' && (
                     <>
                         {/* Role */}
@@ -260,12 +259,13 @@ const AddUserResume = () => {
                         </div>
                     </>
                 )}
+
                 {/* Submit */}
                 <div className="md:col-span-2">
                     <button
                         type="button"
                         className="w-full bg-purple-600 hover:bg-purple-500 p-3 rounded font-medium transition text-white">
-                        + Add User
+                        + Add Candidate
                     </button>
                 </div>
             </form>

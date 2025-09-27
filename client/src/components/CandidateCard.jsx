@@ -421,22 +421,6 @@ const CandidateCard = ({ candidate }) => {
         </div>
       )}
 
-      {/* Meeting Schedule UI*/}
-      {(showMessage === `meet-tech-${candidate.id}` || showMessage === `meet-hr-${candidate.id}`) && (
-        <div className="bg-neutral-800 border border-neutral-600 rounded-lg p-3 mt-3 relative z-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <input placeholder="Meeting link (optional)" value={meetingInputs.link} onChange={(e) => setMeetingInputs(s => ({ ...s, link: e.target.value }))}
-              className="px-2 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm w-64" />
-            <input type="date" value={meetingInputs.date} onChange={(e) => setMeetingInputs(s => ({ ...s, date: e.target.value }))}
-              className="px-2 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm" />
-            <input type="time" value={meetingInputs.time} onChange={(e) => setMeetingInputs(s => ({ ...s, time: e.target.value }))}
-              className="px-2 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm" />
-            <button onClick={closeAllModals} className="px-3 py-1 bg-neutral-600 rounded text-white text-xs flex items-center gap-1"><X size={12} />Cancel</button>
-            <button onClick={() => { const type = showMessage.includes('meet-tech') ? 'tech' : 'hr'; onCreateRound(type); }} className="px-3 py-1 bg-indigo-700 rounded text-white text-xs">Create Round</button>
-          </div>
-        </div>
-      )}
-
       {/* Message for All Requirnments */}
       {(showMessage === `applied-pass-${candidate.id}` ||
         showMessage === `applied-fail-${candidate.id}` ||

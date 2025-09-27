@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
-import AddUser from "../../reusable component/AddUser";
+import AddUser from "../../reusableComponent/AddUser";
 
 const AdminAddUser = () => {
 

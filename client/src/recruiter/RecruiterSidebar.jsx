@@ -20,8 +20,8 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
       children: [
         { name: "Candidates", path: "/recruiter-candidate" },
         { name: "Add Candidates", path: "/recruiter-add-candidate" },
-        { name: "Add Candidates by Resume", path: "/recruiter-add-candidates-resume" },
-        { name: "Add Candidates by Excel", path: "/recruiter-add-candidates-excel" },
+        { name: "Add Candidates by Resume", path: "/recruiter-add-candidate-resume" },
+        { name: "Add Candidates by Excel", path: "/recruiter-add-candidate-excel" },
       ],
     },
     {
@@ -30,14 +30,6 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
       children: [
         { name: "Job Opening", path: "/recruiter-job-opening" },
         { name: "Create Job Opening", path: "/recruiter-create-job-opening" },
-      ],
-    },
-    {
-      title: "Interviews",
-      icon: <Calendar size={20} />,
-      children: [
-        { name: "Interviews", path: "/recruiter-interviews" },
-        { name: "Schedule Meeting", path: "/recruiter-schedule-meeting" },
       ],
     },
   ];

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import { Upload, FileText } from "lucide-react";
-import AddUserResume from "../../reusable component/AddUserResume";
+import AddUserResume from "../../reusableComponent/AddUserResume";
 
 const AdminAddUserResume = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);

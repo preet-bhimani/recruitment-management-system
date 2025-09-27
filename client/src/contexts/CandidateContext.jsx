@@ -16,8 +16,8 @@ const makeRound = (roundNo, link = '', date = '', time = '') => ({
   Time: time,
   Feedback: '',
   Rating: 0,
-  IsClear: 'In Progress',   
-  Status: 'In Progress'    
+  IsClear: 'In Progress',
+  Status: 'In Progress'
 });
 
 // Candidates Details
@@ -61,7 +61,7 @@ export const CandidateProvider = ({ children }) => {
       jobApplicationStatus: "Shortlisted",
       overallStatus: "Technical Interview",
       photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-      techRounds: [],    
+      techRounds: [],
       hrRounds: [],
       isNextRound: false
     },
@@ -109,9 +109,9 @@ export const CandidateProvider = ({ children }) => {
     }
   ]);
 
-  const [tempStatuses, setTempStatuses] = useState({}); 
+  const [tempStatuses, setTempStatuses] = useState({});
 
-  // Round Details
+  // Round Details helpers
   const getRounds = (c, type) => type === 'tech' ? c.techRounds : c.hrRounds;
   const setRounds = (c, type, rounds) => type === 'tech' ? { ...c, techRounds: rounds } : { ...c, hrRounds: rounds };
   const getLatestRound = (c, type) => {
@@ -120,13 +120,32 @@ export const CandidateProvider = ({ children }) => {
   };
   const getRoundCount = (c, type) => getRounds(c, type).length;
 
+  /**
+   * updateCandidate
+   * - Accepts either:
+   *    - updater function: (c) => newC
+   *    - plain object: { key: value, ... }  (will merge into matched candidate)
+   */
   const updateCandidate = (id, updater) => {
-    setCandidates(prev => prev.map(c => c.id === id ? updater(c) : c));
+    if (typeof updater === 'function') {
+      setCandidates(prev => prev.map(c => c.id === id ? updater(c) : c));
+    } else {
+      // treat updater as an object of fields to merge into candidate
+      setCandidates(prev => prev.map(c => c.id === id ? { ...c, ...updater } : c));
+    }
   };
 
-  // Exam scheduling
-  const scheduleExam = (id, date) => {
-    updateCandidate(id, c => ({ ...c, jobApplicationStatus: 'Exam', overallStatus: 'Exam', examDate: date }));
+  // Exam scheduling: accept either a date string or an object { date, time }
+  const scheduleExam = (id, payload) => {
+    let date = '';
+    let time = '';
+    if (typeof payload === 'string') {
+      date = payload;
+    } else if (payload && typeof payload === 'object') {
+      date = payload.date || payload.examDate || '';
+      time = payload.time || payload.examTime || '';
+    }
+    updateCandidate(id, c => ({ ...c, jobApplicationStatus: 'Exam', overallStatus: 'Exam', examDate: date, examTime: time }));
   };
 
   // If Tech/HR interview Cleared and Move to Next Stage
@@ -234,7 +253,7 @@ export const CandidateProvider = ({ children }) => {
       return updated;
     });
 
-    // Tempraorary Status Clean 
+    // Temporary Status Clean 
     setTempStatuses(prev => {
       const out = { ...prev };
       Object.keys(out).forEach(k => { if (k.startsWith(`${id}-`)) delete out[k]; });
