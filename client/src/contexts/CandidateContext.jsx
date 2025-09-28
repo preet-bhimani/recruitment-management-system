@@ -24,7 +24,7 @@ const makeRound = (roundNo, link = '', date = '', time = '') => ({
 export const CandidateProvider = ({ children }) => {
   const [candidates, setCandidates] = useState([
     {
-      id: 1,
+      id: "8fb58e32-8421-403d-8132-08155fe65994",
       fullName: "Preet Bhimani",
       email: "preet@gmail.com",
       jobTitle: "Data Science",
@@ -38,7 +38,7 @@ export const CandidateProvider = ({ children }) => {
       isNextRound: false
     },
     {
-      id: 2,
+      id: "a3180004-9693-4639-afe6-0fb6871398f0",
       fullName: "Umang Paneri",
       email: "umang@gmail.com",
       jobTitle: "Sr. Developer",
@@ -52,7 +52,7 @@ export const CandidateProvider = ({ children }) => {
       isNextRound: false
     },
     {
-      id: 3,
+      id: "8cad1fa2-3293-48e4-bc56-b114f91e4038",
       fullName: "Vishva Antala",
       email: "vishva@gmail.com",
       jobTitle: "UI/UX Designer",
@@ -66,7 +66,7 @@ export const CandidateProvider = ({ children }) => {
       isNextRound: false
     },
     {
-      id: 4,
+      id: "3f546907-b189-45bd-b381-206bd5b88623",
       fullName: "Sahil Boghara",
       email: "sahil@gmail.com",
       jobTitle: "Full Stack Developer",
@@ -80,7 +80,32 @@ export const CandidateProvider = ({ children }) => {
       isNextRound: false
     },
     {
-      id: 5,
+      id: "e3e0b08f-aa25-4621-bf46-3fb763d4ec42",
+      fullName: "Kevin Tilala",
+      email: "kevin.@gmail.com",
+      jobTitle: "Full Stack Developer",
+      phone: "9876543210",
+      appliedDate: "2025-09-28",
+      jobApplicationStatus: "Shortlisted",
+      overallStatus: "Technical Interview",
+      photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",  
+      techRounds: [
+        {
+          RoundNo: 1,
+          MeetingLink: "", 
+          Date: "2025-09-28",   
+          Time: "11:00",        
+          Feedback: "",
+          Rating: 0,
+          IsClear: "In Progress", 
+          Status: "In Progress"    
+        }
+      ],
+      hrRounds: [],
+      isNextRound: false
+    },
+    {
+      id: "f26d8515-1d35-4a58-a5da-083987977fee",
       fullName: "Paras Bhut",
       email: "paras@gmail.com",
       jobTitle: "Backend Developer",
@@ -94,7 +119,7 @@ export const CandidateProvider = ({ children }) => {
       isNextRound: false
     },
     {
-      id: 6,
+      id: "6488528a-468e-4b41-945d-ac746bec9300",
       fullName: "Nehal Padhiyar",
       email: "nehal@gmail.com",
       jobTitle: "Product Manager",
@@ -120,22 +145,15 @@ export const CandidateProvider = ({ children }) => {
   };
   const getRoundCount = (c, type) => getRounds(c, type).length;
 
-  /**
-   * updateCandidate
-   * - Accepts either:
-   *    - updater function: (c) => newC
-   *    - plain object: { key: value, ... }  (will merge into matched candidate)
-   */
   const updateCandidate = (id, updater) => {
     if (typeof updater === 'function') {
       setCandidates(prev => prev.map(c => c.id === id ? updater(c) : c));
     } else {
-      // treat updater as an object of fields to merge into candidate
       setCandidates(prev => prev.map(c => c.id === id ? { ...c, ...updater } : c));
     }
   };
 
-  // Exam scheduling: accept either a date string or an object { date, time }
+  // Exam Schedule
   const scheduleExam = (id, payload) => {
     let date = '';
     let time = '';

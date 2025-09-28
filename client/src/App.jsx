@@ -50,6 +50,8 @@ import RecruiterAddUser from './recruiter/RecruiterAddUser';
 import ReviewerDashboard from './reviewer/ReviewerDashboard';
 import RecruiterAddUserExcel from './recruiter/RecruiterAddUserExcel';
 import RecruiterAddUserResume from './recruiter/RecruiterAddUserResume';
+import InterviewerFeedback from './interviewer/InterviewerFeedback';
+import InterviewerMeetingDetails from './interviewer/InterviewerMeetingDetails';
 
 function App() {
   return (
@@ -105,6 +107,8 @@ function App() {
             <Route path='/recruiter-add-candidate-excel' element={<RecruiterAddUserExcel />} />
             <Route path='/recruiter-add-candidate-resume' element={<RecruiterAddUserResume />} />
             <Route path='/reviewer-dashboard' element={<ReviewerDashboard />} />
+            <Route path='/interviewer-feedback' element={<InterviewerFeedback />} />
+            <Route path='/interviewer-meeting-details' element={<InterviewerMeetingDetails />} />
         </Routes>
     </Router>
     </>
