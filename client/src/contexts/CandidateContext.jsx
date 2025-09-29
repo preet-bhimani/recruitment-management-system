@@ -88,17 +88,17 @@ export const CandidateProvider = ({ children }) => {
       appliedDate: "2025-09-28",
       jobApplicationStatus: "Shortlisted",
       overallStatus: "Technical Interview",
-      photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",  
+      photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
       techRounds: [
         {
           RoundNo: 1,
-          MeetingLink: "", 
-          Date: "2025-09-28",   
-          Time: "11:00",        
+          MeetingLink: "",
+          Date: "2025-09-28",
+          Time: "11:00",
           Feedback: "",
           Rating: 0,
-          IsClear: "In Progress", 
-          Status: "In Progress"    
+          IsClear: "In Progress",
+          Status: "In Progress"
         }
       ],
       hrRounds: [],
@@ -130,6 +130,69 @@ export const CandidateProvider = ({ children }) => {
       photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
       techRounds: [{ RoundNo: 1, MeetingLink: '', Date: '2024-09-25', Time: '14:00', Feedback: '', Rating: 3, IsClear: 'Clear', Status: 'In Progress' }],
       hrRounds: [{ RoundNo: 1, MeetingLink: '', Date: '2024-09-28', Time: '16:00', Feedback: '', Rating: 0, IsClear: 'In Progress', Status: 'In Progress' }],
+      isNextRound: false
+    },
+    {
+      id: "aa196370-895c-4b9a-9164-7d98f390d439",
+      fullName: "Meet Tank",
+      email: "meet@gmail.com",
+      jobTitle: "QA Engineer",
+      phone: "9000012345",
+      appliedDate: "2024-11-01",
+      jobApplicationStatus: "Shortlisted",
+      overallStatus: "Selected",
+      photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
+      techRounds: [],
+      hrRounds: [], 
+      selectionStatus: "Document Pending", 
+      isNextRound: false
+    },
+
+    {
+      id: "00e22c17-34c4-4f75-94c2-9dd3517f0d97",
+      fullName: "Viraj Chotaliya",
+      email: "viraj@gmail.com",
+      jobTitle: "QA Engineer",
+      phone: "9000054321",
+      appliedDate: "2024-11-02",
+      jobApplicationStatus: "Shortlisted",
+      overallStatus: "Selected",
+      photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
+      techRounds: [],
+      hrRounds: [], 
+      selectionStatus: "Pending", 
+      isNextRound: false
+    },
+
+    {
+      id: "117ee786-19b6-4b00-adee-818125ac21af",
+      fullName: "Yash Dobariya",
+      email: "yash@gmail.com",
+      jobTitle: "Backend Developer",
+      phone: "9000067890",
+      appliedDate: "2024-11-03",
+      jobApplicationStatus: "Shortlisted",
+      overallStatus: "Selected",
+      photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
+      techRounds: [],
+      hrRounds: [],
+      selectionStatus: "Accepted", 
+      isNextRound: false
+    },
+
+    {
+      id: "f461a3b7-0aea-4110-b0f7-c39ef44d798b",
+      fullName: "Parth Nagariya",
+      email: "parth@gmail.com",
+      jobTitle: "Backend Developer",
+      phone: "9000009876",
+      appliedDate: "2024-11-04",
+      jobApplicationStatus: "Shortlisted",
+      overallStatus: "Selected",
+      photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
+      techRounds: [],
+      hrRounds: [],
+      selectionStatus: "Declined", 
       isNextRound: false
     }
   ]);

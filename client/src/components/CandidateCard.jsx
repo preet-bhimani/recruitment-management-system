@@ -199,8 +199,7 @@ const CandidateCard = ({ candidate }) => {
           <select
             value={tempStatuses[`${candidate.id}-jobApplicationStatus`] ?? candidate.jobApplicationStatus}
             onChange={(e) => updateTemp(candidate.id, 'jobApplicationStatus', e.target.value)}
-            className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white"
-          >
+            className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
             <option value="Applied">Applied</option>
             <option value="Exam">Exam</option>
             <option value="Shortlisted">Shortlisted</option>
@@ -262,8 +261,7 @@ const CandidateCard = ({ candidate }) => {
         <select
           value={tempStatuses[`${candidate.id}-overallStatus`] ?? candidate.overallStatus}
           onChange={(e) => updateTemp(candidate.id, 'overallStatus', e.target.value)}
-          className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white"
-        >
+          className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
           <option value="Applied">Applied</option>
           <option value="Exam">Exam</option>
           <option value="Technical Interview">Tech Interview</option>
