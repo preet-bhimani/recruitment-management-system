@@ -75,7 +75,7 @@ export const CandidateProvider = ({ children }) => {
       jobApplicationStatus: "Shortlisted",
       overallStatus: "Technical Interview",
       photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-      techRounds: [{ RoundNo: 1, MeetingLink: '', Date: '2024-09-27', Time: '11:00', Feedback: '', Rating: 0, IsClear: 'In Progress', Status: 'In Progress' }],
+      techRounds: [{ RoundNo: 1, MeetingLink: 'https://www.microsoft.com/en-in/microsoft-teams/group-chat-software', Date: '2024-09-27', Time: '11:00', Feedback: '', Rating: 0, IsClear: 'In Progress', Status: 'In Progress' }],
       hrRounds: [],
       isNextRound: false
     },
@@ -89,18 +89,7 @@ export const CandidateProvider = ({ children }) => {
       jobApplicationStatus: "Shortlisted",
       overallStatus: "Technical Interview",
       photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-      techRounds: [
-        {
-          RoundNo: 1,
-          MeetingLink: "",
-          Date: "2025-09-28",
-          Time: "11:00",
-          Feedback: "",
-          Rating: 0,
-          IsClear: "In Progress",
-          Status: "In Progress"
-        }
-      ],
+      techRounds: [{RoundNo: 1, MeetingLink: 'https://www.microsoft.com/en-in/microsoft-teams/group-chat-software', Date: "2025-09-28", Time: "11:00", Feedback: "", Rating: 0, IsClear: "In Progress", Status: "In Progress"}],
       hrRounds: [],
       isNextRound: false
     },
@@ -114,7 +103,7 @@ export const CandidateProvider = ({ children }) => {
       jobApplicationStatus: "Shortlisted",
       overallStatus: "HR Interview",
       photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-      techRounds: [{ RoundNo: 1, MeetingLink: '', Date: '2024-09-26', Time: '12:00', Feedback: '', Rating: 4, IsClear: 'Clear', Status: 'In Progress' }],
+      techRounds: [{ RoundNo: 1, MeetingLink: '', Date: '2024-09-26', Time: '12:00', Feedback: '', Rating: 4, IsClear: 'Clear', Status: 'Clear' }],
       hrRounds: [],
       isNextRound: false
     },
@@ -128,8 +117,8 @@ export const CandidateProvider = ({ children }) => {
       jobApplicationStatus: "Shortlisted",
       overallStatus: "HR Interview",
       photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-      techRounds: [{ RoundNo: 1, MeetingLink: '', Date: '2024-09-25', Time: '14:00', Feedback: '', Rating: 3, IsClear: 'Clear', Status: 'In Progress' }],
-      hrRounds: [{ RoundNo: 1, MeetingLink: '', Date: '2024-09-28', Time: '16:00', Feedback: '', Rating: 0, IsClear: 'In Progress', Status: 'In Progress' }],
+      techRounds: [{ RoundNo: 1, MeetingLink: '', Date: '2024-09-25', Time: '14:00', Feedback: '', Rating: 5, IsClear: 'Clear', Status: 'Clear' }],
+      hrRounds: [{ RoundNo: 1, MeetingLink: 'https://www.microsoft.com/en-in/microsoft-teams/group-chat-software', Date: '2024-09-28', Time: '16:00', Feedback: '', Rating: 0, IsClear: 'In Progress', Status: 'In Progress' }],
       isNextRound: false
     },
     {
@@ -143,8 +132,8 @@ export const CandidateProvider = ({ children }) => {
       overallStatus: "Selected",
       photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
       techRounds: [],
-      hrRounds: [], 
-      selectionStatus: "Document Pending", 
+      hrRounds: [],
+      selectionStatus: "Document Pending",
       isNextRound: false
     },
 
@@ -159,8 +148,16 @@ export const CandidateProvider = ({ children }) => {
       overallStatus: "Selected",
       photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
       techRounds: [],
-      hrRounds: [], 
-      selectionStatus: "Pending", 
+      hrRounds: [],
+      selectionStatus: "Pending",
+      documents: {
+        aadhar: "https://akm-img-a-in.tosshub.com/businesstoday/images/story/202304/untitled_design_90-sixteen_nine.jpg?size=948:533", 
+        pan: "https://www.pancardapp.com/blog/wp-content/uploads/2019/04/sample-pan-card.jpg",
+        experienceLetter: "https://careers.bhel.in/ar_2025/Experience%20Certificate%20Proforma.pdf", 
+        bankName: "ICICI Bank",
+        bankAccount: "1234567890",
+        bankIFSC: "ICIC0001234",
+      },
       isNextRound: false
     },
 
@@ -176,7 +173,7 @@ export const CandidateProvider = ({ children }) => {
       photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
       techRounds: [],
       hrRounds: [],
-      selectionStatus: "Accepted", 
+      selectionStatus: "Accepted",
       isNextRound: false
     },
 
@@ -192,7 +189,7 @@ export const CandidateProvider = ({ children }) => {
       photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
       techRounds: [],
       hrRounds: [],
-      selectionStatus: "Declined", 
+      selectionStatus: "Declined",
       isNextRound: false
     }
   ]);

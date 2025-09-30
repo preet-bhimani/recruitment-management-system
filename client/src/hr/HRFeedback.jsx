@@ -221,7 +221,7 @@ const HRFeedbackContent = () => {
       <main className="container mx-auto px-4 py-6 flex-1">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-semibold">HR Feedback</h1>
-          <button onClick={() => navigate('/interviewer/meetings')} className="px-3 py-2 bg-blue-600 rounded text-sm text-white">Meeting Details</button>
+          <button onClick={() => navigate('/interview-meeting-details', { state: { role: 'HR' } })} className="px-3 py-2 bg-blue-600 rounded text-sm text-white">Meeting Details</button>
         </div>
 
         {/* Filters */}
@@ -270,11 +270,13 @@ const HRFeedbackContent = () => {
                       {/* Canddidate Details */}
                       <div className="flex items-center gap-3 mb-1">
                         <h3 className="text-sm font-medium text-white truncate">{c.fullName}</h3>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium text-white ${badge(c.overallStatus)}`}>{c.overallStatus}</span>
+
                         {c.overallStatus === 'HR Interview' && (
                           <span className="bg-orange-500 text-white px-2 py-0.5 rounded-full text-xs">HR Round: {hrRoundsCount}</span>
                         )}
                         {c.overallStatus === 'Selected' && (
-                          <span className="bg-green-600 text-white px-2 py-0.5 rounded-full text-xs">{(c.selectionStatus ?? 'Document Pending')}</span>
+                          <span className="bg-purple-600 text-white px-2 py-0.5 rounded-full text-xs">{(c.selectionStatus ?? 'Document Pending')}</span>
                         )}
                       </div>
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-neutral-400">
@@ -349,9 +351,10 @@ const HRFeedbackContent = () => {
                       </>
                     )}
 
-                    {/* Wait for Schedule Meeting */}
                     {c.overallStatus === 'HR Interview' && (
-                      <button onClick={() => navigate('/admin-add-meeting')} className="px-2 py-1 bg-blue-600 rounded text-xs text-white">Create Meeting</button>
+                      ((!latestHR) || (latestHR.IsClear === 'Clear') || (latestHR.IsClear === 'Pending')) && (
+                        <button onClick={() => navigate('/admin-add-meeting')} className="px-2 py-1 bg-blue-600 rounded text-xs text-white">Create Meeting</button>
+                      )
                     )}
 
                     {/* Selected Status*/}
@@ -359,7 +362,7 @@ const HRFeedbackContent = () => {
                       <>
                         {/* If Status Pending or Sent */}
                         {(selectionStatus === 'Pending' || selectionStatus === 'Sent') && (
-                          <button onClick={() => navigate('/')} className="px-2 py-1 bg-yellow-600 rounded text-xs text-white">Document</button>
+                          <button onClick={() => navigate(`/hr-documents-check/${c.id}`)} className="px-2 py-1 bg-yellow-600 rounded text-xs text-white">Document</button>
                         )}
 
                         {/* If Status Pending */}
@@ -376,7 +379,7 @@ const HRFeedbackContent = () => {
                   </div>
                 </div>
 
-                {/* Collapsible schedule UI (when Create Meeting clicked) */}
+                {/* Collapsible Schedule UI  */}
                 {collapseOpen[c.id] && (
                   <div className="ml-auto flex gap-2">
                     <button className="px-3 py-1 bg-blue-600 rounded text-sm text-white">Schedule</button>
@@ -433,7 +436,8 @@ const HRFeedbackContent = () => {
         </div>
       </main>
 
-      {typeof Footer !== 'undefined' && <Footer />}
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

@@ -186,7 +186,8 @@ const InterviewerFeedbackContent = () => {
     };
 
     const goToPage = (p) => setCurrentPage(Math.min(Math.max(1, p), totalPages));
-    const goToMeetings = () => navigate('/interviewer-meeting-details');
+    const goToMeetings = () => navigate('/interview-meeting-details', { state: { role: 'Interviewer' } });
+
 
     return (
         <div className="min-h-screen flex flex-col bg-neutral-950 text-white">

@@ -53,6 +53,7 @@ import RecruiterAddUserResume from './recruiter/RecruiterAddUserResume';
 import InterviewerFeedback from './interviewer/InterviewerFeedback';
 import InterviewerMeetingDetails from './interviewer/InterviewerMeetingDetails';
 import HRFeedback from './hr/HRFeedback';
+import HRDocumentsCheck from './hr/HRDocumentsCheck';
 
 function App() {
   return (
@@ -109,8 +110,9 @@ function App() {
             <Route path='/recruiter-add-candidate-resume' element={<RecruiterAddUserResume />} />
             <Route path='/reviewer-dashboard' element={<ReviewerDashboard />} />
             <Route path='/interviewer-feedback' element={<InterviewerFeedback />} />
-            <Route path='/interviewer-meeting-details' element={<InterviewerMeetingDetails />} />
+            <Route path='/interview-meeting-details' element={<InterviewerMeetingDetails />} />
             <Route path='/hr-feedback' element={<HRFeedback />} />
+            <Route path='/hr-documents-check/:candidateId' element={<HRDocumentsCheck />} />
         </Routes>
     </Router>
     </>
