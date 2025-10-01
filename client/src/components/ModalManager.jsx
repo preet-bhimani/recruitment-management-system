@@ -1,6 +1,5 @@
-// components/ModalManager.jsx - FIXED VERSION
 import React from 'react';
-import { X, Send, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { useUI } from '../contexts/UIContext';
 import { useCandidates } from '../contexts/CandidateContext';
 

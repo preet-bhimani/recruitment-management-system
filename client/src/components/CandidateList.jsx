@@ -25,8 +25,7 @@ const CandidateList = () => {
           <p className="text-neutral-400">No candidates match the current filters.</p>
           <button
             onClick={clearAllFilters}
-            className="mt-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded text-white text-sm"
-          >
+            className="mt-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded text-white text-sm">
             Clear All Filters
           </button>
         </div>
