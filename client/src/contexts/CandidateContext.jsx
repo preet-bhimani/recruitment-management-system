@@ -89,7 +89,7 @@ export const CandidateProvider = ({ children }) => {
       jobApplicationStatus: "Shortlisted",
       overallStatus: "Technical Interview",
       photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-      techRounds: [{RoundNo: 1, MeetingLink: 'https://www.microsoft.com/en-in/microsoft-teams/group-chat-software', Date: "2025-09-28", Time: "11:00", Feedback: "", Rating: 0, IsClear: "In Progress", Status: "In Progress"}],
+      techRounds: [{ RoundNo: 1, MeetingLink: 'https://www.microsoft.com/en-in/microsoft-teams/group-chat-software', Date: "2025-09-28", Time: "11:00", Feedback: "", Rating: 0, IsClear: "In Progress", Status: "In Progress" }],
       hrRounds: [],
       isNextRound: false
     },
@@ -151,9 +151,9 @@ export const CandidateProvider = ({ children }) => {
       hrRounds: [],
       selectionStatus: "Pending",
       documents: {
-        aadhar: "https://akm-img-a-in.tosshub.com/businesstoday/images/story/202304/untitled_design_90-sixteen_nine.jpg?size=948:533", 
+        aadhar: "https://akm-img-a-in.tosshub.com/businesstoday/images/story/202304/untitled_design_90-sixteen_nine.jpg?size=948:533",
         pan: "https://www.pancardapp.com/blog/wp-content/uploads/2019/04/sample-pan-card.jpg",
-        experienceLetter: "https://careers.bhel.in/ar_2025/Experience%20Certificate%20Proforma.pdf", 
+        experienceLetter: "https://careers.bhel.in/ar_2025/Experience%20Certificate%20Proforma.pdf",
         bankName: "ICICI Bank",
         bankAccount: "1234567890",
         bankIFSC: "ICIC0001234",
@@ -252,17 +252,18 @@ export const CandidateProvider = ({ children }) => {
 
   // Pass Round
   const passRound = (id, type, { rating = 0, feedback = '' } = {}) => {
-    updateCandidate(id, c => {
-      const rounds = getRounds(c, type);
-      if (!rounds.length) return c;
-      const last = { ...rounds[rounds.length - 1] };
-      last.Rating = rating;
-      last.Feedback = feedback;
-      last.IsClear = 'Clear';
-      const newRounds = [...rounds.slice(0, -1), last];
-      return setRounds(c, type, newRounds);
-    });
-  };
+  updateCandidate(id, c => {
+    const rounds = getRounds(c, type);
+    if (!rounds.length) return c;
+    const last = { ...rounds[rounds.length - 1] };
+    last.Rating = rating;
+    last.Feedback = feedback;
+    last.IsClear = 'Clear';
+    const newRounds = [...rounds.slice(0, -1), last];
+    return setRounds(c, type, newRounds);
+  });
+};
+
 
   // Fail Round
   const failRound = (id, type, { rating = 0, feedback = '' } = {}) => {
@@ -289,55 +290,43 @@ export const CandidateProvider = ({ children }) => {
 
       changes.forEach(([key, value]) => {
         const field = key.split('-').slice(1).join('-');
+
         if (field === 'overallStatus') {
           updated.overallStatus = value;
-        } else if (field === 'techStatus') {
-          if (latestTech) {
-            latestTech = { ...latestTech, Status: value };
-            const rs = getRounds(updated, 'tech');
-            const newRs = [...rs.slice(0, -1), latestTech];
-            updated = setRounds(updated, 'tech', newRs);
-            updated = promoteIfClear(updated, 'tech', value);
-          }
-        } else if (field === 'techIsClear') {
-          if (latestTech) {
-            latestTech = { ...latestTech, IsClear: value };
-            const rs = getRounds(updated, 'tech');
-            const newRs = [...rs.slice(0, -1), latestTech];
-            updated = setRounds(updated, 'tech', newRs);
-          }
-        } else if (field === 'hrStatus') {
-          if (latestHr) {
-            latestHr = { ...latestHr, Status: value };
-            const rs = getRounds(updated, 'hr');
-            const newRs = [...rs.slice(0, -1), latestHr];
-            updated = setRounds(updated, 'hr', newRs);
-            updated = promoteIfClear(updated, 'hr', value);
-          }
-        } else if (field === 'hrIsClear') {
-          if (latestHr) {
-            latestHr = { ...latestHr, IsClear: value };
-            const rs = getRounds(updated, 'hr');
-            const newRs = [...rs.slice(0, -1), latestHr];
-            updated = setRounds(updated, 'hr', newRs);
-          }
+          if (value === 'Selected') updated.jobApplicationStatus = 'Selected';
+          else if (value === 'Rejected') updated.jobApplicationStatus = 'Rejected';
         } else if (field === 'jobApplicationStatus') {
           updated.jobApplicationStatus = value;
           if (value === 'Shortlisted') updated.overallStatus = 'Technical Interview';
-          if (value === 'Rejected' || value === 'Fail') updated.overallStatus = 'Rejected';
+          else if (value === 'Rejected' || value === 'Fail') updated.overallStatus = 'Rejected';
+        } else if (field === 'techStatus' && latestTech) {
+          latestTech = { ...latestTech, Status: value };
+          updated = setRounds(updated, 'tech', [...getRounds(updated, 'tech').slice(0, -1), latestTech]);
+          updated = promoteIfClear(updated, 'tech', value);
+        } else if (field === 'techIsClear' && latestTech) {
+          latestTech = { ...latestTech, IsClear: value };
+          updated = setRounds(updated, 'tech', [...getRounds(updated, 'tech').slice(0, -1), latestTech]);
+        } else if (field === 'hrStatus' && latestHr) {
+          latestHr = { ...latestHr, Status: value };
+          updated = setRounds(updated, 'hr', [...getRounds(updated, 'hr').slice(0, -1), latestHr]);
+          updated = promoteIfClear(updated, 'hr', value);
+        } else if (field === 'hrIsClear' && latestHr) {
+          latestHr = { ...latestHr, IsClear: value };
+          updated = setRounds(updated, 'hr', [...getRounds(updated, 'hr').slice(0, -1), latestHr]);
         }
       });
 
       return updated;
     });
 
-    // Temporary Status Clean 
+    // Claer Temp Status
     setTempStatuses(prev => {
       const out = { ...prev };
       Object.keys(out).forEach(k => { if (k.startsWith(`${id}-`)) delete out[k]; });
       return out;
     });
   };
+
 
   const updateTemp = (id, field, value) => {
     setTempStatuses(prev => ({ ...prev, [`${id}-${field}`]: value }));
