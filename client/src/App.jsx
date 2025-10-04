@@ -54,6 +54,8 @@ import InterviewerFeedback from './interviewer/InterviewerFeedback';
 import InterviewerMeetingDetails from './interviewer/InterviewerMeetingDetails';
 import HRFeedback from './hr/HRFeedback';
 import HRDocumentsCheck from './hr/HRDocumentsCheck';
+import RecruiterJobOpening from './recruiter/RecruiterJobOpening';
+import RecruiterAddJobOpening from './recruiter/RecruiterAddJobOpening';
 
 function App() {
   return (
@@ -108,6 +110,8 @@ function App() {
             <Route path='/recruiter-add-candidate' element={<RecruiterAddUser />} />
             <Route path='/recruiter-add-candidate-excel' element={<RecruiterAddUserExcel />} />
             <Route path='/recruiter-add-candidate-resume' element={<RecruiterAddUserResume />} />
+            <Route path='/recruiter-jobopening' element={<RecruiterJobOpening />} />
+            <Route path='/recruiter-add-jobopening' element={<RecruiterAddJobOpening />} />
             <Route path='/reviewer-dashboard' element={<ReviewerDashboard />} />
             <Route path='/interviewer-feedback' element={<InterviewerFeedback />} />
             <Route path='/interview-meeting-details' element={<InterviewerMeetingDetails />} />

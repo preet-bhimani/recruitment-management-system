@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import RecruiterSidebar from "./RecruiterSidebar";
-import AddUser from "../reusableComponent/AddUser";
 import Footer from "../components/Footer";
+import JobOpening from "../reusableComponent/JobOpening";
 
-const RecruiterAddUser = () => {
+const RecruiterJobOpening = () => {
 
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -18,11 +18,11 @@ const RecruiterAddUser = () => {
             <RecruiterSidebar isCollapsed={sidebarCollapsed} setIsCollapsed={setSidebarCollapsed} />
 
             {/* Main Content */}
-                <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
+            <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
                 <div className="text-center mt-8 mb-8">
-                    <h1 className="text-4xl font-bold text-center text-white mb-4">Add Candidate</h1>
+                    <h1 className="text-4xl font-bold text-center text-white mb-4">Job Opening</h1>
                 </div>
-                <AddUser />
+                <JobOpening role="recruiter"/>
             </main>
         </div>
         {/* Footer */}
@@ -30,4 +30,4 @@ const RecruiterAddUser = () => {
     </div>;
 };
 
-export default RecruiterAddUser;
+export default RecruiterJobOpening;

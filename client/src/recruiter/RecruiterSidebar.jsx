@@ -7,7 +7,6 @@ import {
   X,
   Users,
   Briefcase,
-  Calendar
 } from "lucide-react";
 
 const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
@@ -28,8 +27,8 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
       title: "Job Opening",
       icon: <Briefcase size={20} />,
       children: [
-        { name: "Job Opening", path: "/recruiter-job-opening" },
-        { name: "Create Job Opening", path: "/recruiter-create-job-opening" },
+        { name: "Job Opening", path: "/recruiter-jobopening" },
+        { name: "Create Job Opening", path: "/recruiter-add-jobopening" },
       ],
     },
   ];
@@ -42,8 +41,7 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
     <div
       className={`bg-neutral-900 text-neutral-200 border-r border-neutral-700 transition-all duration-300 ${
         isCollapsed ? "w-16" : "w-64"
-      }`}
-    >
+      }`}>
       {/* Header */}
       <div className="p-4 border-b border-neutral-700 flex justify-between items-center">
         {!isCollapsed && (
@@ -51,8 +49,7 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
         )}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2 rounded-lg hover:bg-neutral-800 transition ml-auto"
-        >
+          className="p-2 rounded-lg hover:bg-neutral-800 transition ml-auto">
           {isCollapsed ? <Menu size={18} /> : <X size={18} />}
         </button>
       </div>
@@ -64,8 +61,7 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
             <li key={index}>
               <button
                 onClick={() => toggleItem(index)}
-                className="w-full flex items-center p-2 rounded-lg hover:bg-neutral-800 transition"
-              >
+                className="w-full flex items-center p-2 rounded-lg hover:bg-neutral-800 transition">
                 <span className="mr-2">{item.icon}</span>
                 {!isCollapsed && <span className="flex-1 text-left">{item.title}</span>}
                 {!isCollapsed &&
@@ -82,8 +78,7 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
                     <li key={i}>
                       <Link
                         to={child.path}
-                        className="block p-2 rounded hover:text-neutral-100 hover:bg-neutral-800 transition"
-                      >
+                        className="block p-2 rounded hover:text-neutral-100 hover:bg-neutral-800 transition">
                         {child.name}
                       </Link>
                     </li>
