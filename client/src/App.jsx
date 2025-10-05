@@ -56,6 +56,9 @@ import HRFeedback from './hr/HRFeedback';
 import HRDocumentsCheck from './hr/HRDocumentsCheck';
 import RecruiterJobOpening from './recruiter/RecruiterJobOpening';
 import RecruiterAddJobOpening from './recruiter/RecruiterAddJobOpening';
+import ViewerJobOpening from './viewer/ViewerJobOpening';
+import ViewJobOpening from './reusableComponent/Job Opening/ViewJobOpening';
+import RecruiterUpdateJobOpening from './recruiter/RecruiterUpdateJobOpening';
 
 function App() {
   return (
@@ -70,7 +73,7 @@ function App() {
             <Route path='/admin-user-update/8723A287-BBB3-46C9-BD23-08DDAE2FEC35' element={<AdminUserUpdate />} />
             <Route path='/admin-jobopening' element={<AdminJobOpening />} />
             <Route path='/admin-add-jobopening' element={<AdminAddJobOpening />} />
-            <Route path='/admin-update-jobopening/8723B287-CCC3-46D9-CE23-08EEBF2GFD35' element={<AdminUpdateJobOpening />} />
+            <Route path='/admin-update-jobopening' element={<AdminUpdateJobOpening />} />
             <Route path='/admin-jobapplication' element={<AdminJobApplication />} />
             <Route path='/admin-add-jobapplication' element={<AdminAddJobApplication />} />
             <Route path='/admin-update/jobapplication/9834B398-CCC4-57D0-CE34-19EEBF3GFD46' element={<AdminUpdateJobApplication />} />
@@ -112,11 +115,14 @@ function App() {
             <Route path='/recruiter-add-candidate-resume' element={<RecruiterAddUserResume />} />
             <Route path='/recruiter-jobopening' element={<RecruiterJobOpening />} />
             <Route path='/recruiter-add-jobopening' element={<RecruiterAddJobOpening />} />
+            <Route path='/recruiter-update-jobopening'element={<RecruiterUpdateJobOpening />} />
             <Route path='/reviewer-dashboard' element={<ReviewerDashboard />} />
             <Route path='/interviewer-feedback' element={<InterviewerFeedback />} />
             <Route path='/interview-meeting-details' element={<InterviewerMeetingDetails />} />
             <Route path='/hr-feedback' element={<HRFeedback />} />
             <Route path='/hr-documents-check/:candidateId' element={<HRDocumentsCheck />} />
+            <Route path='/viewer-jobopening' element={<ViewerJobOpening />} />
+            <Route path='/view-jobopening' element={<ViewJobOpening />} />
         </Routes>
     </Router>
     </>

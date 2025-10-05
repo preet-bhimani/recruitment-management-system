@@ -10,7 +10,9 @@ const UpdateJobOpening = () => {
         preferredSkills: "Git Azure",
         location: "Ahmedabad",
         experience: "1",
-        description: "Bachelor s/Master s degree in Engineering, Computer Science (or equivalent experience). At least 1+ years of relevant experience as a software engineer. A minimum of 1+ years of C#, .Net Core, and SQL development experience. Excellent English communication skills",
+        qualification: "BTech MTech MCA",
+        jobtype: "Full time Job",
+        description: "Bachelors/Masters degree in Engineering, Computer Science (or equivalent experience). At least 1+ years of relevant experience as a software engineer. A minimum of 1+ years of C#, .Net Core, and SQL development experience. Excellent English communication skills",
         status: "Open"
     });
 
@@ -138,6 +140,7 @@ const UpdateJobOpening = () => {
                     <input
                         type="text"
                         placeholder="Enter Qualification"
+                        defaultValue={jobsData.qualification}
                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
                 </div>
 
@@ -166,7 +169,7 @@ const UpdateJobOpening = () => {
                 <div className="md:col-span-2">
                     <button
                         type="button"
-                        className="w-full bg-blue-600 hover:bg-blue-500 p-2 rounded font-medium">
+                        className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
                         + Update Job Opening
                     </button>
                 </div>
