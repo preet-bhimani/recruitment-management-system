@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import RecruiterSidebar from "./RecruiterSidebar";
-import UpdateJobOpening from "../reusableComponent/UpdateJobOpening";
+import UpdateJobOpening from "../reusableComponent/Job Opening/UpdateJobOpening";
 import Footer from "../components/Footer";
 
 function RecruiterUpdateJobOpening() {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import Footer from "../components/Footer";
-import JobOpening from "../reusableComponent/JobOpening";
+import JobOpening from "../reusableComponent/Job Opening/JobOpening"
 import ViewerSidebar from "./ViewerSidebar";
 
 const ViewerJobOpening = () => {

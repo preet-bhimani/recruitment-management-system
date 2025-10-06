@@ -2,7 +2,7 @@ import React,{ useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import RecruiterSidebar from "./RecruiterSidebar";
 import Footer from "../components/Footer";
-import AddUserExcel from "../reusableComponent/AddUserExcel";
+import AddUserExcel from "../reusableComponent/User/AddUserExcel";
 const RecruiterAddUserExcel = () => {
 
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);

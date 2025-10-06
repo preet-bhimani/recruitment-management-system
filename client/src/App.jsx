@@ -59,6 +59,8 @@ import RecruiterAddJobOpening from './recruiter/RecruiterAddJobOpening';
 import ViewerJobOpening from './viewer/ViewerJobOpening';
 import ViewJobOpening from './reusableComponent/Job Opening/ViewJobOpening';
 import RecruiterUpdateJobOpening from './recruiter/RecruiterUpdateJobOpening';
+import ViewUser from './reusableComponent/User/ViewUser';
+import ViewerUser from './viewer/ViewerUser';
 
 function App() {
   return (
@@ -123,6 +125,8 @@ function App() {
             <Route path='/hr-documents-check/:candidateId' element={<HRDocumentsCheck />} />
             <Route path='/viewer-jobopening' element={<ViewerJobOpening />} />
             <Route path='/view-jobopening' element={<ViewJobOpening />} />
+            <Route path='/view-user' element={<ViewUser />} />
+            <Route path='/viewer-user' element={<ViewerUser />} />
         </Routes>
     </Router>
     </>

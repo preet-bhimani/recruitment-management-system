@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import RecruiterSidebar from "./RecruiterSidebar";
 import Footer from "../components/Footer";
-import JobOpening from "../reusableComponent/JobOpening";
+import JobOpening from "../reusableComponent/Job Opening/JobOpening";
 
 const RecruiterJobOpening = () => {
 

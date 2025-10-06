@@ -1,27 +1,27 @@
 import React, { useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
-import RecruiterSidebar from "./RecruiterSidebar";
+import ViewerSidebar from "./ViewerSidebar";
+import AllUsers from "../reusableComponent/User/AllUsers";
 import Footer from "../components/Footer";
-import AddJobOpening from "../reusableComponent/Job Opening/AddJobOpening";
 
-const RecruiterAddJobOpening = () => {
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+const ViewerUser = () => {
+
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     return <div className="min-h-screen flex flex-col bg-neutral-950">
         {/* Navbar */}
-        <CommonNavbar isLoggedIn={true} role="Recruiter" />
+        <CommonNavbar isLoggedIn={true} role="viewer" />
 
         {/* Main Layout */}
         <div className="flex flex-1 overflow-hidden">
-            {/* Sidebar */}
-            <RecruiterSidebar isCollapsed={sidebarCollapsed} setIsCollapsed={setSidebarCollapsed} />
+            <ViewerSidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
             {/* Main Content */}
             <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
                 <div className="text-center mt-8 mb-8">
-                    <h1 className="text-4xl font-bold text-center text-white mb-4">Add Job Opening</h1>
+                    <h1 className="text-4xl font-bold text-center text-white mb-4">User Details</h1>
                 </div>
-                <AddJobOpening />
+                <AllUsers role="viewer" />
             </main>
         </div>
         {/* Footer */}
@@ -29,4 +29,4 @@ const RecruiterAddJobOpening = () => {
     </div>;
 };
 
-export default RecruiterAddJobOpening;
+export default ViewerUser;

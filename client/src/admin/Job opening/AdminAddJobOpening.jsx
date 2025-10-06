@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
-import AddJobOpening from "../../reusableComponent/AddJobOpening";
+import AddJobOpening from "../../reusableComponent/Job Opening/AddJobOpening";
 
 const AdminAddJobOpening = () => {
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
-import AddUserExcel from "../../reusableComponent/AddUserExcel";
+import AddUserExcel from "../../reusableComponent/User/AddUserExcel";
 
 const AdminAddUserExcel = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);

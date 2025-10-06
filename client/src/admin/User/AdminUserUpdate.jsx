@@ -18,14 +18,14 @@ const AdminUserUpdate = () => {
     photo: null,
     resume: null,
     reference: "Friends",
-    skills: "",
-    bachelorDegree: "",
-    bachelorUniversity: "",
-    bachelorPercentage: "",
-    masterDegree: "",
-    masterUniversity: "",
-    masterPercentage: "",
-    yearsOfExperience: "",
+    skills: "ASP.NET React JavaScript Java Git",
+    bachelorDegree: "Bachelor of Computer Appications",
+    bachelorUniversity: "RK University",
+    bachelorPercentage: "78.3",
+    masterDegree: "Master of Computer Applications",
+    masterUniversity: "RK University",
+    masterPercentage: "90.0",
+    yearsOfExperience: "0",
     previousCompanyName: "",
     previousCompanyTitle: "",
     cdid: ""
@@ -43,7 +43,9 @@ const AdminUserUpdate = () => {
 
         {/* Main Content */}
         <main className="flex-1 bg-neutral-950 text-white p-3 sm:p-6 overflow-y-auto">
-          <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-blue-400">Update User</h1>
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-white mb-4">Admin User Update</h1>
+          </div>
 
           {/* User Update Form */}
           <div className="max-w-6xl mx-auto">
@@ -135,7 +137,7 @@ const AdminUserUpdate = () => {
                   type="date"
                   name="dob"
                   defaultValue={userData.dob}
-                  className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 focus:outline-none focus:ring-2 focus:ring-sky-600" />
+                  className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-600" />
               </div>
 
               {/* Skills */}
@@ -159,7 +161,7 @@ const AdminUserUpdate = () => {
                   accept="image/*"
                   className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-600 text-neutral-100
                   file:h-8.5 file:px-3 file:rounded file:border-0 
-                  file:bg-neutral-700 file:text-white hover:file:bg-sky-800 cursor-pointer"/>
+                  file:bg-neutral-700 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
               </div>
 
               {/* Resume */}
@@ -173,7 +175,7 @@ const AdminUserUpdate = () => {
                   accept=".pdf,.doc,.docx"
                   className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-600 text-neutral-100
                   file:h-8.5 file:px-3 file:rounded file:border-0 
-                  file:bg-neutral-700 file:text-white hover:file:bg-sky-800 cursor-pointer"/>
+                  file:bg-neutral-700 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
               </div>
 
               {/* Bachelor Details */}
@@ -325,7 +327,7 @@ const AdminUserUpdate = () => {
               <div className="md:col-span-2">
                 <button
                   type="button"
-                  className="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded font-medium transition text-white">
+                  className="w-full bg-purple-600 hover:bg-purple-500 p-3 rounded font-medium transition text-white">
                   Update User
                 </button>
               </div>

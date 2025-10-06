@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import RecruiterSidebar from "./RecruiterSidebar";
 import Footer from "../components/Footer";
-import AddUserResume from "../reusableComponent/AddUserResume";
+import AddUserResume from "../reusableComponent/User/AddUserResume";
 
 const RecruiterAddUserResume = () => {
 

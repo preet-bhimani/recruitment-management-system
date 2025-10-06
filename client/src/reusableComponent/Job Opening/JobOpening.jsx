@@ -41,15 +41,6 @@ const JobOpening = ({ role = "admin" }) => {
       experience: "7",
       status: "Open"
     },
-    {
-      joId: "8723B287-CCC3-46D9-CE23-08EEBF2GFD35",
-      title: "Jr. Software Engineer",
-      noOfOpening: 4,
-      requiredSkills: "Asp.Net ReactJS",
-      location: "Ahmedabad",
-      experience: "1",
-      status: "Open"
-    },
   ];
 
   // Pagination

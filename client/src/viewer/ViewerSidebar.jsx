@@ -15,10 +15,10 @@ const ViewerSidebar = ({ isCollapsed, setIsCollapsed }) => {
 
     const items = [
         {
-            title: "Candidates",
+            title: "Users",
             icon: <Users size={20} />,
             children: [
-                { name: "Candidates", path: "/viewer-candidate" },
+                { name: "Candidates", path: "/viewer-user" },
             ],
         },
         {
@@ -34,9 +34,7 @@ const ViewerSidebar = ({ isCollapsed, setIsCollapsed }) => {
         setOpenItem(openItem === index ? null : index);
     };
 
-    return <div
-        className={`bg-neutral-900 text-neutral-200 border-r border-neutral-700 transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"
-            }`}>
+    return <div className={`bg-neutral-900 text-neutral-200 border-r border-neutral-700 transition-all duration-300 ${isCollapsed ? "w-16" : "w-64"}`}>
 
         {/* Heading & Collapsed Button */}
         <div className="p-4 border-b border-neutral-700 flex justify-between items-center">

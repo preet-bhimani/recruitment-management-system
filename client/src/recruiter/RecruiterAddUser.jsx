@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import RecruiterSidebar from "./RecruiterSidebar";
-import AddUser from "../reusableComponent/AddUser";
+import AddUser from "../reusableComponent/User/AddUser";
 import Footer from "../components/Footer";
 
 const RecruiterAddUser = () => {
@@ -10,7 +10,7 @@ const RecruiterAddUser = () => {
 
     return <div className="min-h-screen flex flex-col bg-neutral-950">
         {/* Navbar */}
-        <CommonNavbar isLoggedIn={true} role="Recruiter" />
+        <CommonNavbar isLoggedIn={true} role="recruiter" />
 
         {/* Main Layout */}
         <div className="flex flex-1 overflow-hidden">
@@ -22,7 +22,7 @@ const RecruiterAddUser = () => {
                 <div className="text-center mt-8 mb-8">
                     <h1 className="text-4xl font-bold text-center text-white mb-4">Add Candidate</h1>
                 </div>
-                <AddUser />
+                <AddUser role = "recruiter"/>
             </main>
         </div>
         {/* Footer */}

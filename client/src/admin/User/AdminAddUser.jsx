@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
-import AddUser from "../../reusableComponent/AddUser";
+import AddUser from "../../reusableComponent/User/AddUser";
 
 const AdminAddUser = () => {
 
@@ -22,7 +22,7 @@ const AdminAddUser = () => {
                     <div className="text-center mb-8">
                         <h1 className="text-4xl font-bold text-white mb-4">Add User</h1>
                     </div>
-                    <AddUser userRole="admin" />
+                    <AddUser role="admin" />
                 </main>
             </div>
         </div >

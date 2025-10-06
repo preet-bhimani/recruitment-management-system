@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 
-const AddUser = () => {
-
-    const [userRole, setUserRole] = useState('');
+const AddUser = ({ role = "admin" }) => {
 
     return <>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
@@ -68,8 +66,7 @@ const AddUser = () => {
                 </label>
                 <input
                     type="date"
-                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                           focus:outline-none focus:ring-2 focus:ring-sky-600"/>
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-sky-600"/>
             </div>
 
             {/* Skills */}
@@ -90,8 +87,8 @@ const AddUser = () => {
                     type="file"
                     accept="image/*"
                     className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                           file:h-8.5 file:px-3 file:rounded file:border-0 
-                                         file:bg-neutral-600 file:text-white hover:file:bg-sky-800 cursor-pointer"/>
+                    file:h-8.5 file:px-3 file:rounded file:border-0 
+                  file:bg-neutral-600 file:text-white hover:file:bg-sky-800 cursor-pointer"/>
             </div>
 
             {/* Resume */}
@@ -210,7 +207,7 @@ const AddUser = () => {
                     className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
             </div>
 
-            {userRole === 'admin' && (
+            {role === 'admin' && (
                 <>
                     {/* Role */}
                     <div>
