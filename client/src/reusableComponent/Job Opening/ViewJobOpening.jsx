@@ -59,9 +59,9 @@ const ViewJobOpening = () => {
                                     {jobsData.title}
                                 </h1>
                                 <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-neutral-400">
-                                    <span className="flex items-center gap-1"><Users size={14} /> {jobsData.noOfOpening} openings</span>
-                                    <span className="flex items-center gap-1"><Briefcase size={14} /> {jobsData.jobtype}</span>
-                                    <span className="flex items-center gap-1"><Clock size={14} /> {jobsData.experience}+ yr</span>
+                                    <span className="flex items-center gap-1"><Users size={14} className="text-purple-400"/> {jobsData.noOfOpening} openings</span>
+                                    <span className="flex items-center gap-1"><Briefcase size={14} className="text-purple-400"/> {jobsData.jobtype}</span>
+                                    <span className="flex items-center gap-1"><Clock size={14} className="text-purple-400"/> {jobsData.experience}+ yr</span>
                                 </div>
                                 <div className="mt-3 h-0.5 w-24 rounded-full bg-gradient-to-r from-purple-500 to-indigo-400" />
                             </div>

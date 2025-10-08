@@ -30,7 +30,7 @@ const AdminUpdateJobApplication = () => {
             {/* Main Content */}
             <main className="flex-1 bg-neutral-950 text-white p-3 sm:p-6 overflow-y-auto">
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-white mb-4">Admin Update Job Application</h1>
+                    <h1 className="text-4xl font-bold text-white mb-4">Update Job Application</h1>
                 </div>
                 {/* User Update Form */}
                 <div className="max-w-6xl mx-auto">
@@ -71,7 +71,7 @@ const AdminUpdateJobApplication = () => {
                                 className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
                         </div>
 
-                        {/* Exam date */}
+                        {/* Exam Date */}
                         <div>
                             <label className="block mb-1 text-sm font-medium">
                                 Exam Date
@@ -80,13 +80,13 @@ const AdminUpdateJobApplication = () => {
                                 type="date"
                                 name="exam date"
                                 defaultValue={jobapp.examDate}
-                                className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-600" />
+                                className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100" />
                         </div>
 
                         {/* Exam Result */}
                         <div>
                             <label className="block mb-1 text-sm font-medium">Exam Result</label>
-                            <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" defaultValue={jobapp.testResult}>
+                            <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" defaultValue={jobapp.examResult}>
                                 <option value="" disabled>Select Exam Result</option>
                                 <option value="Pass">Pass</option>
                                 <option value="Fail">Fail</option>

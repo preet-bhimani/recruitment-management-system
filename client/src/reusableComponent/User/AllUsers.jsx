@@ -45,8 +45,7 @@ const AllUsers = ({ role = "admin" }) => {
     ];
 
     const navigate = useNavigate();
-    // const [role, setrole] = useState("");
-
+    
     // Filters
     const [showFilters, setShowFilters] = useState(false);
     const [filters, setFilters] = useState({
@@ -117,12 +116,11 @@ const AllUsers = ({ role = "admin" }) => {
 
                 {/* Filter Button */}
                 <button
-                    className="flex items-center gap-1 px-3 py-1 bg-purple-700 hover:bg-purple-600 rounded text-sm"
+                    className="flex items-center gap-1 px-3 py-1 bg-blue-700 hover:bg-blue-600 rounded text-sm"
                     onClick={() => setShowFilters((s) => !s)}>
                     <Filter size={14} /> Filters
                 </button>
             </div>
-
 
             {/* Filters Panel */}
             {showFilters && (
@@ -199,14 +197,14 @@ const AllUsers = ({ role = "admin" }) => {
                                 alt={user.fullName}
                                 className="w-10 h-10 rounded-full border border-neutral-600" />
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-1 flex-1">
-                                <p><span className="font-medium text-amber-200">UserID:</span> {user.userId || "-"}</p>
-                                <p><span className="font-medium text-amber-200">Name:</span> {user.fullName || "-"}</p>
-                                <p><span className="font-medium text-amber-200">Email:</span> {user.email || "-"}</p>
-                                <p><span className="font-medium text-amber-200">Phone:</span> {user.phone || "-"}</p>
-                                <p><span className="font-medium text-amber-200">City:</span> {user.city || "-"}</p>
-                                <p><span className="font-medium text-amber-200">DOB:</span> {user.dob || "-"}</p>
-                                <p><span className="font-medium text-amber-200">Role:</span> {user.role || "-"}</p>
-                                <p><span className="font-medium text-amber-200">Status:</span>{" "}
+                                <p><span className="font-medium text-purple-300">UserID:</span> {user.userId || "-"}</p>
+                                <p><span className="font-medium text-purple-300">Name:</span> {user.fullName || "-"}</p>
+                                <p><span className="font-medium text-purple-300">Email:</span> {user.email || "-"}</p>
+                                <p><span className="font-medium text-purple-300">Phone:</span> {user.phone || "-"}</p>
+                                <p><span className="font-medium text-purple-300">City:</span> {user.city || "-"}</p>
+                                <p><span className="font-medium text-purple-300">DOB:</span> {user.dob || "-"}</p>
+                                <p><span className="font-medium text-purple-300">Role:</span> {user.role || "-"}</p>
+                                <p><span className="font-medium text-purple-300">Status:</span>{" "}
                                     <span
                                         className={`px-2 py-0.5 rounded text-xs ${user.isActive === "Active"
                                             ? "bg-emerald-800 text-emerald-200"
@@ -229,9 +227,7 @@ const AllUsers = ({ role = "admin" }) => {
                                 <>
                                     <button
                                         className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                        onClick={() =>
-                                            navigate("/admin-user-update/8723A287-BBB3-46C9-BD23-08DDAE2FEC35")
-                                        }>
+                                        onClick={() => navigate("/admin-user-update")}>
                                         <Edit size={14} /> Update
                                     </button>
                                     <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">

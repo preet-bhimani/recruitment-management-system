@@ -305,7 +305,7 @@ const CandidateCard = ({ candidate }) => {
   const onSaveAll = () => applyTempToCandidate();
 
   const openMeeting = (type) => {
-    navigate('/admin-add-meeting', { state: { candidateId: candidate.id, type } });
+    navigate('/recruiter-meeting-scheduling', { state: { candidateId: candidate.id, type } });
   };
 
   // Control Bar

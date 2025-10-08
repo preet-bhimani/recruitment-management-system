@@ -23,24 +23,6 @@ const JobOpening = ({ role = "admin" }) => {
       experience: "7",
       status: "Open"
     },
-    {
-      joId: "8723B287-CCC3-46D9-CE23-08EEBF2GFD35",
-      title: "Jr. Software Engineer",
-      noOfOpening: 4,
-      requiredSkills: "Asp.Net ReactJS",
-      location: "Ahmedabad",
-      experience: "1",
-      status: "Open"
-    },
-    {
-      joId: "8723C287-DDD3-46E9-BF23-08FFCE2HGE35",
-      title: "Sr. AI Engineer",
-      noOfOpening: 2,
-      requiredSkills: "Pyhton Sklearn GenAI PyTorch",
-      location: "Ahmedabad",
-      experience: "7",
-      status: "Open"
-    },
   ];
 
   // Pagination
@@ -79,7 +61,7 @@ const JobOpening = ({ role = "admin" }) => {
           + Add Job Opening
         </button>
       )}
-      <button className="flex items-center justify-center gap-1 px-3 py-1 bg-sky-700 hover:bg-sky-600 rounded text-sm w-full sm:w-auto">
+      <button className="flex items-center justify-center gap-1 px-3 py-1 bg-blue-700 hover:bg-blue-600 rounded text-sm w-full sm:w-auto">
         <Filter size={14} /> Filters
       </button>
     </div>
@@ -92,14 +74,14 @@ const JobOpening = ({ role = "admin" }) => {
           className="bg-neutral-900 border border-neutral-700 rounded-md p-3 sm:p-4 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
           <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0">
-              <p className="break-all"><span className="font-medium text-amber-200">JoId:</span> {job.joId}</p>
-              <p className="break-words"><span className="font-medium text-amber-200">Title:</span> {job.title}</p>
-              <p className="break-words"><span className="font-medium text-amber-200">No of Openings:</span> {job.noOfOpening}</p>
-              <p className="break-words"><span className="font-medium text-amber-200">Required Skills:</span> {job.requiredSkills}</p>
-              <p className="break-words"><span className="font-medium text-amber-200">Location:</span> {job.location}</p>
-              <p className="break-words"><span className="font-medium text-amber-200">Experience:</span> {job.experience}</p>
+              <p className="break-all"><span className="font-medium text-purple-300">JoId:</span> {job.joId}</p>
+              <p className="break-words"><span className="font-medium text-purple-300">Title:</span> {job.title}</p>
+              <p className="break-words"><span className="font-medium text-purple-300">No of Openings:</span> {job.noOfOpening}</p>
+              <p className="break-words"><span className="font-medium text-purple-300">Required Skills:</span> {job.requiredSkills}</p>
+              <p className="break-words"><span className="font-medium text-purple-300">Location:</span> {job.location}</p>
+              <p className="break-words"><span className="font-medium text-purple-300">Experience:</span> {job.experience}</p>
               <p className="break-words">
-                <span className="font-medium text-amber-200">Status:</span>{" "}
+                <span className="font-medium text-purple-200">Status:</span>{" "}
                 <span
                   className={`px-2 py-0.5 rounded text-xs ${job.status === "Open"
                     ? "bg-emerald-800 text-emerald-200"

@@ -61,6 +61,12 @@ import ViewJobOpening from './reusableComponent/Job Opening/ViewJobOpening';
 import RecruiterUpdateJobOpening from './recruiter/RecruiterUpdateJobOpening';
 import ViewUser from './reusableComponent/User/ViewUser';
 import ViewerUser from './viewer/ViewerUser';
+import RecruiterMeetingScheduling from './recruiter/RecruiterMeetingScheduling';
+import ViewerJobApplication from './viewer/ViewerJobApplication';
+import ViewJobApplication from './reusableComponent/Job Application/ViewJobApplication';
+import TechnicalInterview from './reusableComponent/Technical Interview/TechnicalInterview';
+import ViewerTechnicalInterview from './viewer/ViewerTechnicalInterview';
+import ViewTechnicalInterview from './reusableComponent/Technical Interview/ViewTechnicalInterview';
 
 function App() {
   return (
@@ -72,13 +78,13 @@ function App() {
             <Route path='/admin-add-user' element={<AdminAddUser />} />
             <Route path='/admin-add-user-excel' element={<AdminAddUserExcel />}/>
             <Route path ='/admin-add-user-resume' element={<AdminAddUserResume />} />
-            <Route path='/admin-user-update/8723A287-BBB3-46C9-BD23-08DDAE2FEC35' element={<AdminUserUpdate />} />
+            <Route path='/admin-user-update' element={<AdminUserUpdate />} />
             <Route path='/admin-jobopening' element={<AdminJobOpening />} />
             <Route path='/admin-add-jobopening' element={<AdminAddJobOpening />} />
             <Route path='/admin-update-jobopening' element={<AdminUpdateJobOpening />} />
             <Route path='/admin-jobapplication' element={<AdminJobApplication />} />
             <Route path='/admin-add-jobapplication' element={<AdminAddJobApplication />} />
-            <Route path='/admin-update/jobapplication/9834B398-CCC4-57D0-CE34-19EEBF3GFD46' element={<AdminUpdateJobApplication />} />
+            <Route path='/admin-update-jobapplication' element={<AdminUpdateJobApplication />} />
             <Route path='/admin-techinterview' element={<AdminTechInterview />} />
             <Route path='/admin-add-techinterview' element={<AdminAddTechInterview />} />
             <Route path='/admin-update-techinterview' element={<AdminUpdateTechInterview />} />
@@ -118,6 +124,7 @@ function App() {
             <Route path='/recruiter-jobopening' element={<RecruiterJobOpening />} />
             <Route path='/recruiter-add-jobopening' element={<RecruiterAddJobOpening />} />
             <Route path='/recruiter-update-jobopening'element={<RecruiterUpdateJobOpening />} />
+            <Route path='/recruiter-meeting-scheduling' element={<RecruiterMeetingScheduling />} />
             <Route path='/reviewer-dashboard' element={<ReviewerDashboard />} />
             <Route path='/interviewer-feedback' element={<InterviewerFeedback />} />
             <Route path='/interview-meeting-details' element={<InterviewerMeetingDetails />} />
@@ -127,6 +134,10 @@ function App() {
             <Route path='/view-jobopening' element={<ViewJobOpening />} />
             <Route path='/view-user' element={<ViewUser />} />
             <Route path='/viewer-user' element={<ViewerUser />} />
+            <Route path="/viewer-jobapplication" element={<ViewerJobApplication />} />
+            <Route path='/view-jobapplication' element={<ViewJobApplication />} />
+            <Route path='/viewer-techinterview' element={<ViewerTechnicalInterview />} />
+            <Route path='/view-techinterview' element={<ViewTechnicalInterview />} />
         </Routes>
     </Router>
     </>

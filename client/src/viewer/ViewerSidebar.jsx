@@ -1,13 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-    ChevronDown,
-    ChevronRight,
-    Menu,
-    X,
-    Users,
-    Briefcase,
-} from "lucide-react";
+import {ChevronDown, ChevronRight, Menu, X, Users, Briefcase, FileUser, Speech,} from "lucide-react";
 
 const ViewerSidebar = ({ isCollapsed, setIsCollapsed }) => {
 
@@ -26,6 +19,20 @@ const ViewerSidebar = ({ isCollapsed, setIsCollapsed }) => {
             icon: <Briefcase size={20} />,
             children: [
                 { name: "Job Opening", path: "/viewer-jobopening" },
+            ],
+        },
+        {
+            title: "Job Application",
+            icon: <FileUser size={20} />,
+            children: [
+                { name: "Job Application", path: "/viewer-jobapplication" },
+            ],
+        },
+        {
+            title: "Technical Interview",
+            icon: <Speech size={20} />,
+            children: [
+                { name: "Technical Interview", path: "/viewer-techinterview" },
             ],
         },
     ];

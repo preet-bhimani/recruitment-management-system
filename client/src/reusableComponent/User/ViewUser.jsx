@@ -111,13 +111,13 @@ const ViewUser = () => {
               </h1>
               <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-neutral-400">
                 <span className="flex items-center gap-1">
-                  <Mail size={14} /> {getValue(userData.email)}
+                  <Mail size={14} className="text-purple-400"/> {getValue(userData.email)}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Phone size={14} /> {getValue(userData.phoneNumber)}
+                  <Phone size={14} className="text-purple-400"/> {getValue(userData.phoneNumber)}
                 </span>
                 <span className="flex items-center gap-1">
-                  <MapPin size={14} /> {getValue(userData.city)}
+                  <MapPin size={14} className="text-purple-400"/> {getValue(userData.city)}
                 </span>
               </div>
               <div className="mt-3 h-0.5 w-24 rounded-full bg-gradient-to-r from-purple-500 to-indigo-400" />

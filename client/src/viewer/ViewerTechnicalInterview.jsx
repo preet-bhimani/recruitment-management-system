@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import Footer from "../components/Footer";
-import JobOpening from "../reusableComponent/Job Opening/JobOpening"
 import ViewerSidebar from "./ViewerSidebar";
+import TechnicalInterview from "../reusableComponent/Technical Interview/TechnicalInterview";
 
-const ViewerJobOpening = () => {
+const ViewerTechnicalInterview = () => {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -19,9 +19,9 @@ const ViewerJobOpening = () => {
             {/* Main Content */}
             <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
                 <div className="text-center mt-8 mb-8">
-                    <h1 className="text-4xl font-bold text-center text-white mb-4">Job Opening</h1>
+                    <h1 className="text-4xl font-bold text-center text-white mb-4">Technical Interview</h1>
                 </div>
-                <JobOpening role="viewer" />
+                <TechnicalInterview role="viewer" />
             </main>
         </div>
         {/* Footer */}
@@ -29,4 +29,4 @@ const ViewerJobOpening = () => {
     </div>;
 };
 
-export default ViewerJobOpening;
+export default ViewerTechnicalInterview;
