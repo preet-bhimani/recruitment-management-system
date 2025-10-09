@@ -22,7 +22,7 @@ const ViewUser = () => {
     role: "Admin",
     isActive: "Active",
     photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-    resume: "https://www.pancardapp.com/blog/wp-content/uploads/2019/04/sample-pan-card.jpg", // if present, will show download button
+    resume: "https://www.pancardapp.com/blog/wp-content/uploads/2019/04/sample-pan-card.jpg",
     reference: "Friends",
     skills: "ASP.NET React JavaScript Java Git",
     bachelorDegree: "Bachelor of Computer Applications",
@@ -66,15 +66,6 @@ const ViewUser = () => {
     return String(val);
   };
 
-  // When There is no Image Show Name Insted of
-  const initials = (() => {
-    const name = userData.fullName;
-    if (!name || !name.trim()) return "-";
-    const parts = name.trim().split(/\s+/);
-    const i = parts.slice(0, 2).map((p) => p[0] || "").join("").toUpperCase();
-    return i || "-";
-  })();
-
   return (
     <div className="min-h-screen bg-neutral-950 text-white p-4 md:p-6 flex justify-center">
 
@@ -100,7 +91,7 @@ const ViewUser = () => {
                   alt={getValue(userData.fullName)}
                   className="w-full h-full object-cover"/>
               ) : (
-                <span>{initials}</span>
+                <span>{userData.fullName.slice(0, 2).toUpperCase()}</span>
               )}
             </div>
 

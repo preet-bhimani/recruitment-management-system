@@ -71,11 +71,18 @@ const ViewTechnicalInterview = () => {
 
                         {/* Photo and Other Details */}
                         <div className="flex items-start gap-4 min-w-0">
-                            <img
-                                src={safe(interview.photo)}
-                                alt={safe(interview.fullName)}
-                                className="w-14 h-14 md:w-18 md:h-18 rounded-md object-cover border border-neutral-700 flex-shrink-0" />
 
+                            {/* Photo */}
+                            <div className="w-14 h-14 rounded-md bg-gradient-to-br from-purple-600 to-indigo-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0 overflow-hidden">
+                                {interview.photo ? (
+                                    <img
+                                        src={interview.photo}
+                                        alt={safe(interview.fullName)}
+                                        className="w-full h-full object-cover" />
+                                ) : (
+                                    <span>{interview.fullName.slice(0, 2).toUpperCase()}</span>
+                                )}
+                            </div>
                             <div className="min-w-0">
                                 <h1 className="text-xl md:text-2xl font-extrabold leading-tight text-white truncate">
                                     {safe(interview.fullName)}

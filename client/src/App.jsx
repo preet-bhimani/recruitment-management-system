@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AdminUser from "./admin/User/AdminUser";
@@ -64,9 +63,14 @@ import ViewerUser from './viewer/ViewerUser';
 import RecruiterMeetingScheduling from './recruiter/RecruiterMeetingScheduling';
 import ViewerJobApplication from './viewer/ViewerJobApplication';
 import ViewJobApplication from './reusableComponent/Job Application/ViewJobApplication';
-import TechnicalInterview from './reusableComponent/Technical Interview/TechnicalInterview';
 import ViewerTechnicalInterview from './viewer/ViewerTechnicalInterview';
 import ViewTechnicalInterview from './reusableComponent/Technical Interview/ViewTechnicalInterview';
+import ViewerHRInterview from './viewer/ViewerHRInterview';
+import ViewHRInterview from './reusableComponent/Hr Interview/ViewHRInterview';
+import ViewerSelection from './viewer/ViewerSelection';
+import ViewSelection from './reusableComponent/Selection/ViewSelection';
+import ViewerDocumentList from './viewer/ViewerDocumentList';
+import ViewDocumentList from './reusableComponent/Document List/ViewDocumentList';
 
 function App() {
   return (
@@ -138,6 +142,12 @@ function App() {
             <Route path='/view-jobapplication' element={<ViewJobApplication />} />
             <Route path='/viewer-techinterview' element={<ViewerTechnicalInterview />} />
             <Route path='/view-techinterview' element={<ViewTechnicalInterview />} />
+            <Route path='/viewer-hrinterview' element={<ViewerHRInterview />} />
+            <Route path='/view-hrinterview' element={<ViewHRInterview />} />
+            <Route path='/viewer-selection' element={<ViewerSelection />} />
+            <Route path='/view-selection' element={<ViewSelection />} />
+            <Route path='/viewer-documentlist' element={<ViewerDocumentList />} />
+            <Route path='/view-documentlist' element={<ViewDocumentList />} />
         </Routes>
     </Router>
     </>

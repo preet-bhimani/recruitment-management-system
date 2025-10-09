@@ -107,8 +107,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
         )}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2 rounded-lg hover:bg-neutral-800 transition ml-auto"
-        >
+          className="p-2 rounded-lg hover:bg-neutral-800 transition ml-auto">
           {isCollapsed ? <Menu size={18} /> : <X size={18} />}
         </button>
       </div>
@@ -119,8 +118,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
           <li key={index}>
             <button
               onClick={() => toggleItem(index)}
-              className="w-full flex items-center p-2 rounded-lg hover:bg-neutral-800 transition"
-            >
+              className="w-full flex items-center p-2 rounded-lg hover:bg-neutral-800 transition">
               <span className="mr-2">{item.icon}</span>
               {!isCollapsed && <span className="flex-1 text-left">{item.title}</span>}
               {!isCollapsed &&
@@ -137,8 +135,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
                   <li key={i}>
                     <Link
                       to={child.path}
-                      className="block p-2 rounded hover:text-neutral-100 hover:bg-neutral-800 transition"
-                    >
+                      className="block p-2 rounded hover:text-neutral-100 hover:bg-neutral-800 transition">
                       {child.name}
                     </Link>
                   </li>

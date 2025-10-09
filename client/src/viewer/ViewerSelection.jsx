@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import Footer from "../components/Footer";
 import ViewerSidebar from "./ViewerSidebar";
-import TechnicalInterview from "../reusableComponent/Technical Interview/TechnicalInterview";
+import Selection from "../reusableComponent/Selection/Selection";
 
-const ViewerTechnicalInterview = () => {
+const ViewerSelection = () => {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -19,9 +19,9 @@ const ViewerTechnicalInterview = () => {
             {/* Main Content */}
             <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
                 <div className="text-center mt-8 mb-8">
-                    <h1 className="text-4xl font-bold text-center text-white mb-4">Technical Interview</h1>
+                    <h1 className="text-4xl font-bold text-center text-white mb-4">Selection</h1>
                 </div>
-                <TechnicalInterview role="viewer" />
+                <Selection role="viewer" />
             </main>
         </div>
         {/* Footer */}
@@ -29,4 +29,4 @@ const ViewerTechnicalInterview = () => {
     </div>;
 };
 
-export default ViewerTechnicalInterview;
+export default ViewerSelection;

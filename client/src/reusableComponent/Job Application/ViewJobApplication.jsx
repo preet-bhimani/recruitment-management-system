@@ -53,17 +53,27 @@ const ViewJobApplication = () => {
       <div className="w-full max-w-4xl relative">
         <div className="w-full bg-neutral-900 border border-neutral-800 rounded-lg p-5 md:p-8 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-            
+
             {/* Candidate Photo and Name */}
             <div className="flex items-start gap-4 min-w-0">
-              <img
-                src={safe(jobApp.photo)}
-                alt={safe(jobApp.candidateName)}
-                className="w-14 h-14 md:w-18 md:h-18 w-18 rounded-md object-cover border border-neutral-700 flex-shrink-0" />
+
+              {/* Photo */}
+              <div className="w-14 h-14 rounded-md bg-gradient-to-br from-purple-600 to-indigo-500 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0 overflow-hidden">
+                {jobApp.photo ? (
+                  <img
+                    src={jobApp.photo}
+                    alt={safe(jobApp.fullName)}
+                    className="w-full h-full object-cover" />
+                ) : (
+                  <span>{jobApp.fullName.slice(0, 2).toUpperCase()}</span>
+                )}
+              </div>
+
               <div className="min-w-0">
                 <h1 className="text-xl md:text-2xl font-extrabold leading-tight text-white truncate">
                   {safe(jobApp.candidateName)}
                 </h1>
+
                 <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-neutral-400">
                   <span className="flex items-center gap-1 ">
                     <Mail size={14} className="text-purple-400" /> {safe(jobApp.email)}
@@ -74,6 +84,7 @@ const ViewJobApplication = () => {
                   </span>
                   Exam Date: {safe(jobApp.examDate)}
                 </div>
+
                 <div className="mt-3 h-0.5 w-20 rounded-full bg-gradient-to-r from-purple-500 to-indigo-400" />
               </div>
             </div>

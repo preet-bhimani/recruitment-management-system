@@ -128,7 +128,7 @@ const TechnicalInterview = ({ role = "admin" }) => {
                 min="0"
                 value={filters.noOfRoundMin}
                 onChange={(e) => setFilters((f) => ({ ...f, noOfRoundMin: e.target.value }))}
-                className="w-full bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm"/>
+                className="w-full bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm" />
             </div>
 
             {/* IsClear */}
@@ -233,7 +233,7 @@ const TechnicalInterview = ({ role = "admin" }) => {
           <div
             key={tech.tiId}
             className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-            
+
             {/* Interview Details */}
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <img src={tech.photo} alt={tech.fullName} className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
@@ -258,7 +258,7 @@ const TechnicalInterview = ({ role = "admin" }) => {
                     {tech.isClear}
                   </span>
                 </p>
-                
+
                 {/* Status */}
                 <p className="truncate">
                   <span className="font-medium text-purple-300">Status:</span>{" "}
