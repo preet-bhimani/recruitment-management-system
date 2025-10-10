@@ -18,17 +18,18 @@ const AdminUpdateDocuments = () => {
     })
 
     return <div className="flex flex-col h-screen bg-neutral-950 text-neutral-100">
-        {/* Navbar fixed at top */}
+        {/* Navbar */}
         <Navbar />
 
-        {/* Main wrapper */}
         <div className="flex flex-1 overflow-hidden">
             {/* Sidebar */}
             <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
-            {/* Page Content */}
+            {/* Main Layout */}
             <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
-                <h1 className="text-2xl font-bold mb-6 text-blue-400">Update Document List</h1>
+                <div className="text-center mb-8">
+                    <h1 className="text-4xl font-bold text-white mb-4">Update Documents</h1>
+                </div>
 
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
                     {/* Document List Id */}
@@ -51,8 +52,8 @@ const AdminUpdateDocuments = () => {
                         <input
                             type="file"
                             className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                           file:h-8.5 file:px-3 file:rounded file:border-0 
-                                         file:bg-neutral-600 file:text-white hover:file:bg-sky-800 cursor-pointer"/>
+                                       file:h-8.5 file:px-3 file:rounded file:border-0 
+                                     file:bg-neutral-600 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
                     </div>
 
                     {/* PAN Card */}
@@ -63,8 +64,8 @@ const AdminUpdateDocuments = () => {
                         <input
                             type="file"
                             className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                           file:h-8.5 file:px-3 file:rounded file:border-0 
-                                         file:bg-neutral-600 file:text-white hover:file:bg-sky-800 cursor-pointer"/>
+                                       file:h-8.5 file:px-3 file:rounded file:border-0 
+                                     file:bg-neutral-600 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
                     </div>
 
                     {/* Bank Name */}
@@ -114,8 +115,8 @@ const AdminUpdateDocuments = () => {
                         <input
                             type="file"
                             className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                           file:h-8.5 file:px-3 file:rounded file:border-0 
-                                         file:bg-neutral-600 file:text-white hover:file:bg-sky-800 cursor-pointer"/>
+                                       file:h-8.5 file:px-3 file:rounded file:border-0 
+                                     file:bg-neutral-600 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
                     </div>
 
                     {/* Status */}
@@ -131,7 +132,7 @@ const AdminUpdateDocuments = () => {
                     <div className="md:col-span-2">
                         <button
                             type="button"
-                            className="w-full bg-blue-600 hover:bg-blue-500 p-2 rounded font-medium">
+                            className="w-full bg-purple-700 hover:bg-purple-600 p-2 rounded font-medium">
                             Upload Documents
                         </button>
                     </div>

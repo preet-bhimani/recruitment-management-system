@@ -24,11 +24,14 @@ const AdminUpdateCampusDrive = () => {
 
             {/* Main Content Area */}
             <main className="flex-1 bg-neutral-950 text-white p-3 sm:p-6 overflow-y-auto">
-                <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-blue-400">Update Campus Drive</h1>
+                <div className="text-center mb-8">
+                    <h1 className="text-4xl font-bold text-white mb-4">Update Campus Drive</h1>
+                </div>
 
                 {/* User Update Form */}
                 <div className="max-w-6xl mx-auto">
                     <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg">
+
                         {/* Campus Drive ID */}
                         <div className="md:col-span-2">
                             <label className="block mb-1 text-sm font-medium text-neutral-300">
@@ -81,7 +84,7 @@ const AdminUpdateCampusDrive = () => {
                         <div className="md:col-span-2">
                             <button
                                 type="button"
-                                className="w-full bg-blue-600 hover:bg-blue-500 p-2 rounded font-medium">
+                                className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
                                 + Update Campus Drive
                             </button>
                         </div>

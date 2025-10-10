@@ -104,14 +104,6 @@ const Selection = ({ role = "admin" }) => {
 
     return <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
         <div className="flex flex-wrap items-center justify-end gap-3 mb-4">
-            {role === "admin" && (
-                <button
-                    className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm"
-                    onClick={() => navigate("/admin-add-selection")}>
-                    + Add Selection
-                </button>
-            )}
-
             <button
                 className="flex items-center gap-2 px-3 py-1 bg-blue-700 hover:bg-blue-600 rounded text-sm"
                 onClick={() => setShowFilters((s) => !s)}>

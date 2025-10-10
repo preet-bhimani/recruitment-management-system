@@ -21,17 +21,19 @@ const AdminUpdateSelection = () => {
     })
 
     return <div className="flex flex-col h-screen bg-neutral-950 text-neutral-100">
-        {/* Navbar fixed at top */}
+        {/* Navbar */}
         <Navbar />
 
-        {/* Main wrapper */}
         <div className="flex flex-1 overflow-hidden">
+
             {/* Sidebar */}
             <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
-            {/* Page Content */}
+            {/* Main Layout */}
             <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
-                <h1 className="text-2xl font-bold mb-6 text-blue-400">Update Selection Or Offer Letter</h1>
+                <div className="text-center mb-8">
+                    <h1 className="text-4xl font-bold text-white mb-4">Update Selection</h1>
+                </div>
 
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
                     {/* Selection Id */}
@@ -45,7 +47,7 @@ const AdminUpdateSelection = () => {
                             disabled
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-300 cursor-not-allowed" />
                     </div>
-                    
+
                     {/* Full Name */}
                     <div>
                         <label className="block mb-1 text-sm font-medium">
@@ -119,8 +121,7 @@ const AdminUpdateSelection = () => {
                         <input
                             type="date"
                             defaultValue={sentMail.startdate}
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                           focus:outline-none focus:ring-2 focus:ring-sky-600"/>
+                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200" />
                     </div>
 
                     {/* End Date */}
@@ -131,8 +132,7 @@ const AdminUpdateSelection = () => {
                         <input
                             type="date"
                             defaultValue={sentMail.enddate}
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                           focus:outline-none focus:ring-2 focus:ring-sky-600"/>
+                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200" />
                     </div>
 
                     {/* Bond Time */}
@@ -180,15 +180,15 @@ const AdminUpdateSelection = () => {
                         <input
                             type="file"
                             className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                           file:h-8.5 file:px-3 file:rounded file:border-0 
-                                         file:bg-neutral-600 file:text-white hover:file:bg-sky-800 cursor-pointer"/>
+                                       file:h-8.5 file:px-3 file:rounded file:border-0 
+                                     file:bg-neutral-600 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
                     </div>
 
                     {/* Submit */}
                     <div className="md:col-span-2">
                         <button
                             type="button"
-                            className="w-full bg-blue-600 hover:bg-blue-500 p-2 rounded font-medium">
+                            className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
                             Update Selection Or Sent Mail
                         </button>
                     </div>

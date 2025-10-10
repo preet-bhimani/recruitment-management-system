@@ -30,9 +30,12 @@ const AdminUpdateEmployee = () => {
 
             {/* Page Content */}
             <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
-                <h1 className="text-2xl font-bold mb-6 text-blue-400">Update Employee</h1>
+                <div className="text-center mb-8">
+                    <h1 className="text-4xl font-bold text-white mb-4">Update Employee</h1>
+                </div>
 
                 <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
+                    
                     {/* Employee ID */}
                     <div className="md:col-span-2">
                         <label className="block mb-1 text-sm font-medium text-neutral-300">
@@ -108,8 +111,7 @@ const AdminUpdateEmployee = () => {
                         <input
                             type="date"
                             defaultValue={employeeData.joiningDate}
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                    focus:outline-none focus:ring-2 focus:ring-sky-600"/>
+                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200"/>
                     </div>
 
                     {/* Probation Time */}
@@ -152,7 +154,7 @@ const AdminUpdateEmployee = () => {
                     <div className="md:col-span-2">
                         <button
                             type="button"
-                            className="w-full bg-blue-600 hover:bg-blue-500 p-2 rounded font-medium">
+                            className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
                             Update Employee
                         </button>
                     </div>

@@ -71,6 +71,10 @@ import ViewerSelection from './viewer/ViewerSelection';
 import ViewSelection from './reusableComponent/Selection/ViewSelection';
 import ViewerDocumentList from './viewer/ViewerDocumentList';
 import ViewDocumentList from './reusableComponent/Document List/ViewDocumentList';
+import ViewerCampusDrive from './viewer/ViewerCampusDrive';
+import ViewCampusDrive from './reusableComponent/Campus Drive/ViewCampusDrive';
+import ViewerEmployee from './viewer/ViewerEmployee';
+import ViewEmployee from './reusableComponent/Employee/ViewEmployee';
 
 function App() {
   return (
@@ -148,6 +152,10 @@ function App() {
             <Route path='/view-selection' element={<ViewSelection />} />
             <Route path='/viewer-documentlist' element={<ViewerDocumentList />} />
             <Route path='/view-documentlist' element={<ViewDocumentList />} />
+            <Route path='/viewer-campusdrive' element={<ViewerCampusDrive />} />
+            <Route path='/view-campusdrive' element={<ViewCampusDrive />} />
+            <Route path='/viewer-employee' element={<ViewerEmployee />} />
+            <Route path='/view-employee' element={<ViewEmployee />} />
         </Routes>
     </Router>
     </>

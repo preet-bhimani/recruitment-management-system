@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, ChevronRight, Menu, X, Users, Briefcase, FileUser, Speech, HatGlasses, BadgeCheck, DockIcon, } from "lucide-react";
+import { ChevronDown, ChevronRight, Menu, X, Users, Briefcase, FileUser, Speech, HatGlasses, BadgeCheck, DockIcon, University, IdCardLanyard, } from "lucide-react";
 
 const ViewerSidebar = ({ isCollapsed, setIsCollapsed }) => {
 
@@ -54,6 +54,20 @@ const ViewerSidebar = ({ isCollapsed, setIsCollapsed }) => {
             icon: <DockIcon size={20} />,
             children: [
                 { name: "Document List", path: "/viewer-documentlist" },
+            ],
+        },
+        {
+            title: "Campus Drive",
+            icon: <University size={20} />,
+            children: [
+                { name: "Campus Drive", path: "/viewer-campusdrive" },
+            ],
+        },
+        {
+            title: "Employee",
+            icon: <IdCardLanyard size={20} />,
+            children: [
+                { name: "Employee", path: "/viewer-employee" },
             ],
         },
     ];

@@ -110,7 +110,7 @@ const AdminUpdateTechInterview = () => {
                             {/* Left Column */}
                             <div className="space-y-4">
 
-                                <h3 className="text-lg font-medium text-amber-200 border-b border-neutral-600 pb-2">Meeting Information</h3>
+                                <h3 className="text-lg font-medium text-purple-500 border-b border-neutral-600 pb-2">Meeting Information</h3>
 
                                 {/* Meeting Subject */}
                                 <div>
@@ -185,7 +185,7 @@ const AdminUpdateTechInterview = () => {
 
                             {/* Right Column */}
                             <div className="space-y-4">
-                                <h3 className="text-lg font-medium text-amber-200 border-b border-neutral-600 pb-2">Schedule & Interviewer</h3>
+                                <h3 className="text-lg font-medium text-purple-500 border-b border-neutral-600 pb-2">Schedule & Interviewer</h3>
 
                                 {/* Date */}
                                 <div>
@@ -275,7 +275,6 @@ const AdminUpdateTechInterview = () => {
                             <button
                                 type="button"
                                 className="px-6 py-2 bg-purple-700 hover:bg-purple-600 rounded font-medium transition text-white flex items-center gap-2">
-
                                 + Update {selectedType === 'technical' ? 'Technical' : 'HR'} Interview
                             </button>
                         </div>

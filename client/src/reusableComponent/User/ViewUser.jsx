@@ -38,7 +38,7 @@ const ViewUser = () => {
   });
 
   // When There is missing Data Show - Instead of
-  const getValue = (val) => {
+  const safe = (val) => {
     if (val === null || val === undefined) return "-";
     if (typeof val === "string" && val.trim() === "") return "-";
     return String(val);
@@ -52,7 +52,7 @@ const ViewUser = () => {
       const iso = new Date(v).toISOString().split("T")[0];
       return iso.replace(/-/g, "/");
     } catch {
-      return getValue(v);
+      return safe(v);
     }
   })();
 
@@ -88,7 +88,7 @@ const ViewUser = () => {
               {userData.photo ? (
                 <img
                   src={userData.photo}
-                  alt={getValue(userData.fullName)}
+                  alt={safe(userData.fullName)}
                   className="w-full h-full object-cover"/>
               ) : (
                 <span>{userData.fullName.slice(0, 2).toUpperCase()}</span>
@@ -98,17 +98,17 @@ const ViewUser = () => {
             {/* Name and Other Info */}
             <div className="min-w-0">
               <h1 className="text-xl md:text-3xl font-extrabold leading-tight text-white truncate">
-                {getValue(userData.fullName)}
+                {safe(userData.fullName)}
               </h1>
               <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-neutral-400">
                 <span className="flex items-center gap-1">
-                  <Mail size={14} className="text-purple-400"/> {getValue(userData.email)}
+                  <Mail size={14} className="text-purple-400"/> {safe(userData.email)}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Phone size={14} className="text-purple-400"/> {getValue(userData.phoneNumber)}
+                  <Phone size={14} className="text-purple-400"/> {safe(userData.phoneNumber)}
                 </span>
                 <span className="flex items-center gap-1">
-                  <MapPin size={14} className="text-purple-400"/> {getValue(userData.city)}
+                  <MapPin size={14} className="text-purple-400"/> {safe(userData.city)}
                 </span>
               </div>
               <div className="mt-3 h-0.5 w-24 rounded-full bg-gradient-to-r from-purple-500 to-indigo-400" />
@@ -116,8 +116,8 @@ const ViewUser = () => {
           </div>
 
           <div className="w-full md:w-auto flex justify-center md:justify-end">
-            <div className={`px-3 py-1 rounded-full text-xs font-medium ${getValue(userData.isActive) === "Active" ? "bg-green-600" : "bg-red-600"}`}>
-              {getValue(userData.isActive)}
+            <div className={`px-3 py-1 rounded-full text-xs font-medium ${safe(userData.isActive) === "Active" ? "bg-green-600" : "bg-red-600"}`}>
+              {safe(userData.isActive)}
             </div>
           </div>
         </div>
@@ -128,7 +128,7 @@ const ViewUser = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs md:text-sm text-neutral-400">
           <div>
             <div className="text-purple-400 font-medium">User ID</div>
-            <div className="text-neutral-200 break-all">{getValue(userData.userId)}</div>
+            <div className="text-neutral-200 break-all">{safe(userData.userId)}</div>
           </div>
 
           <div>
@@ -140,7 +140,7 @@ const ViewUser = () => {
 
           <div>
             <div className="text-purple-400 font-medium">Role</div>
-            <div className="text-neutral-200">{getValue(userData.role)}</div>
+            <div className="text-neutral-200">{safe(userData.role)}</div>
           </div>
         </div>
 
@@ -150,17 +150,17 @@ const ViewUser = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs md:text-sm text-neutral-400">
           <div>
             <div className="text-purple-400 font-medium">Reference</div>
-            <div className="text-neutral-200">{getValue(userData.reference)}</div>
+            <div className="text-neutral-200">{safe(userData.reference)}</div>
           </div>
 
           <div>
             <div className="text-purple-400 font-medium">Years of Experience</div>
-            <div className="text-neutral-200">{getValue(userData.yearsOfExperience)}</div>
+            <div className="text-neutral-200">{safe(userData.yearsOfExperience)}</div>
           </div>
 
           <div>
             <div className="text-purple-400 font-medium">CDID</div>
-            <div className="text-neutral-200">{getValue(userData.cdid)}</div>
+            <div className="text-neutral-200">{safe(userData.cdid)}</div>
           </div>
         </div>
 
@@ -170,12 +170,12 @@ const ViewUser = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs md:text-sm text-neutral-400">
           <div>
             <div className="text-purple-400 font-medium">Previous Company</div>
-            <div className="text-neutral-200">{getValue(userData.previousCompanyName)}</div>
+            <div className="text-neutral-200">{safe(userData.previousCompanyName)}</div>
           </div>
 
           <div>
             <div className="text-purple-400 font-medium">Previous Title</div>
-            <div className="text-neutral-200">{getValue(userData.previousCompanyTitle)}</div>
+            <div className="text-neutral-200">{safe(userData.previousCompanyTitle)}</div>
           </div>
         </div>
 
@@ -190,7 +190,7 @@ const ViewUser = () => {
                 <span
                   key={i}
                   className="px-2 py-1 bg-neutral-800 border border-neutral-700 rounded text-xs text-neutral-200">
-                  {getValue(skill)}
+                  {safe(skill)}
                 </span>
               ))}
             </div>
@@ -205,18 +205,18 @@ const ViewUser = () => {
         <div className="space-y-4">
           <div>
             <div className="text-sm font-semibold text-purple-400 mb-2">Bachelor’s Degree</div>
-            <div className="text-neutral-200">{getValue(userData.bachelorDegree)}</div>
+            <div className="text-neutral-200">{safe(userData.bachelorDegree)}</div>
             <div className="text-neutral-400 text-xs">
-              {getValue(userData.bachelorUniversity)} • {formatPercent(userData.bachelorPercentage)}
+              {safe(userData.bachelorUniversity)} • {formatPercent(userData.bachelorPercentage)}
               {userData.bachelorPercentage ? "%" : ""}
             </div>
           </div>
 
           <div>
             <div className="text-sm font-semibold text-purple-400 mb-2">Master’s Degree</div>
-            <div className="text-neutral-200">{getValue(userData.masterDegree)}</div>
+            <div className="text-neutral-200">{safe(userData.masterDegree)}</div>
             <div className="text-neutral-400 text-xs">
-              {getValue(userData.masterUniversity)} • {formatPercent(userData.masterPercentage)}
+              {safe(userData.masterUniversity)} • {formatPercent(userData.masterPercentage)}
               {userData.masterPercentage ? "%" : ""}
             </div>
           </div>
