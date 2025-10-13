@@ -26,7 +26,7 @@ const AdminUserUpdate = () => {
     masterUniversity: "RK University",
     masterPercentage: "90.0",
     yearsOfExperience: "0",
-    previousCompanyName: "",
+    previousCompanyName: "",  
     previousCompanyTitle: "",
     cdid: ""
   });
