@@ -2,6 +2,33 @@ import React, { useState } from "react";
 
 const AddUser = ({ role = "admin" }) => {
 
+    // Skills Logic
+    const allSkills = [
+        "JavaScript", "Java", "Python", "C#", "React", "Node.js",
+        "Angular", "Machine Learning", "HTML", "CSS", "SQL", "MongoDB",
+        "ASP.NET Core", "ASP.NET MVC", "Figma", "SCADA", "Accounting",
+        "Tally", "MS Office"
+    ];
+
+    const [inputValue, setInputValue] = useState("");
+    const [selectedSkills, setSelectedSkills] = useState([]);
+
+    const filteredSkills = allSkills
+        .filter(
+            (skill) =>
+                skill.toLowerCase().includes(inputValue.toLowerCase()) &&
+                !selectedSkills.includes(skill));
+
+    const addSkill = (skill) => {
+        setSelectedSkills([...selectedSkills, skill]);
+        setInputValue("");
+    };
+
+    const removeSkill = (skill) => {
+        setSelectedSkills(selectedSkills.filter((s) => s !== skill));
+    };
+
+
     return <>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
             {/* Full Name */}
@@ -66,7 +93,7 @@ const AddUser = ({ role = "admin" }) => {
                 </label>
                 <input
                     type="date"
-                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-sky-600"/>
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200 focus:outline-none focus:ring-2 focus:ring-sky-600" />
             </div>
 
             {/* Skills */}
@@ -74,8 +101,39 @@ const AddUser = ({ role = "admin" }) => {
                 <label className="block mb-1 text-sm font-medium">Skills</label>
                 <input
                     type="text"
-                    placeholder="React, Java"
+                    placeholder="Type to search skills"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
                     className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+
+                {/* Suggestions for Skills */}
+                {inputValue && filteredSkills.length > 0 && (
+                    <ul className="bg-neutral-800 border border-neutral-700 rounded mt-1 max-h-40 overflow-y-auto">
+                        {filteredSkills.slice(0, 4).map((skill) => (
+                            <li
+                                key={skill}
+                                onClick={() => addSkill(skill)}
+                                className="p-2 hover:bg-purple-700 cursor-pointer"
+                            >
+                                {skill}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+
+                {/* Selected Skills */}
+                <div className="mt-2 flex flex-wrap gap-2">
+                    {selectedSkills.map((skill) => (
+                        <span
+                            key={skill}
+                            className="bg-purple-600 text-white px-3 py-1 rounded-full flex items-center gap-1">
+                            {skill}
+                            <button type="button" onClick={() => removeSkill(skill)}>
+                                &times;
+                            </button>
+                        </span>
+                    ))}
+                </div>
             </div>
 
             {/* Photo */}
@@ -88,7 +146,7 @@ const AddUser = ({ role = "admin" }) => {
                     accept="image/*"
                     className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
                     file:h-8.5 file:px-3 file:rounded file:border-0 
-                  file:bg-neutral-600 file:text-white hover:file:bg-sky-800 cursor-pointer"/>
+                  file:bg-neutral-600 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
             </div>
 
             {/* Resume */}
@@ -100,7 +158,7 @@ const AddUser = ({ role = "admin" }) => {
                     type="file"
                     className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
                     file:h-8.5 file:px-3 file:rounded file:border-0 
-                  file:bg-neutral-600 file:text-white hover:file:bg-sky-800 cursor-pointer"/>
+                  file:bg-neutral-600 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
             </div>
 
             {/* Bachelor Details */}
@@ -190,10 +248,10 @@ const AddUser = ({ role = "admin" }) => {
                     name="reference"
                     className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100">
                     <option value="" disabled>Select Reference</option>
-                    <option value="Campus Drive">Campus Drive</option>
+                    <option value="Campus drive">Campus drive</option>
                     <option value="Walk in drive">Walk in drive</option>
-                    <option value="Job Platform">Job Platform</option>
-                    <option value="Family friend">Family/Friends</option>
+                    <option value="Job platform">Job platform</option>
+                    <option value="Family friends">Family/Friends</option>
                     <option value="Internet">Internet</option>
                 </select>
             </div>
