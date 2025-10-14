@@ -6,14 +6,15 @@ import {
   Menu,
   X,
   User,
-  BriefcaseBusiness ,
+  BriefcaseBusiness,
   FileUser,
   HatGlasses,
   Speech,
   BadgeCheck,
   DockIcon,
   University,
-  IdCardLanyard ,
+  IdCardLanyard,
+  GraduationCap,
 } from "lucide-react";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
@@ -54,7 +55,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     },
     {
       title: "HR Interview",
-      icon: <HatGlasses  size={20} />,
+      icon: <HatGlasses size={20} />,
       children: [
         { name: "Admin HR Interview", path: "/admin-hrinterview" },
         { name: "Add HR Interview ", path: "/admin-add-hrinterview" },
@@ -63,16 +64,12 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     {
       title: "Selection",
       icon: <BadgeCheck size={20} />,
-      children: [
-        { name: "Admin Selection", path: "/admin-selection" },
-      ],
+      children: [{ name: "Admin Selection", path: "/admin-selection" }],
     },
     {
       title: "Document List",
       icon: <DockIcon size={20} />,
-      children: [
-        { name: "Admin Document List", path: "/admin-document" },
-      ],
+      children: [{ name: "Admin Document List", path: "/admin-document" }],
     },
     {
       title: "Campus Drive",
@@ -90,6 +87,14 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
         { name: "Add Employee ", path: "/admin-add-employee" },
       ],
     },
+    {
+      title: "Skill",
+      icon: <GraduationCap  size={20} />,
+      children: [
+        { name: "Admin Skill", path: "/admin-skill" },
+        { name: "Add Skill ", path: "/admin-add-skill" },
+      ],
+    },
   ];
 
   const toggleItem = (index) => {
@@ -99,8 +104,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   return (
     <div
       className={`h-[calc(100vh-56px)] bg-neutral-900 text-neutral-200 border-r border-neutral-700 transform transition-all duration-300
-      ${isCollapsed ? "w-16" : "w-64"}`}>
-      {/* Header */}
+      ${isCollapsed ? "w-16" : "w-64"} overflow-y-auto`}>
+      {/* Main Layout */}
       <div className="p-4 border-b border-neutral-700 flex justify-between items-center">
         {!isCollapsed && (
           <h2 className="text-xl font-bold tracking-wide">Admin Panel</h2>
@@ -120,7 +125,9 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
               onClick={() => toggleItem(index)}
               className="w-full flex items-center p-2 rounded-lg hover:bg-neutral-800 transition">
               <span className="mr-2">{item.icon}</span>
-              {!isCollapsed && <span className="flex-1 text-left">{item.title}</span>}
+              {!isCollapsed && (
+                <span className="flex-1 text-left">{item.title}</span>
+              )}
               {!isCollapsed &&
                 (openItem === index ? (
                   <ChevronDown size={16} />

@@ -6,7 +6,6 @@ const AdminAddCampusDrive = () => {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
 
-
     return <div className="flex flex-col h-screen">
         {/* Navbar */}
         <Navbar />

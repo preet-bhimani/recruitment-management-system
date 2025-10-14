@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\models\\dto\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\models\\dto\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\models\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\models\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,19 +18,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "User.cs",
-              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\User.cs",
-              "RelativeDocumentMoniker": "server\\Models\\User.cs",
-              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\User.cs",
-              "RelativeToolTip": "server\\Models\\User.cs",
-              "ViewState": "AgIAAAIAAAAAAAAAAAAxwAQAAAAIAAAAAAAAAA==",
+              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "server\\Models\\Entities\\User.cs",
+              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Entities\\User.cs",
+              "RelativeToolTip": "server\\Models\\Entities\\User.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAA1wA8AAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-13T15:47:55.807Z",
+              "WhenOpened": "2025-10-14T18:20:22.602Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UserDto.cs",
+              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Dto\\UserDto.cs",
+              "RelativeDocumentMoniker": "server\\Models\\Dto\\UserDto.cs",
+              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Dto\\UserDto.cs",
+              "RelativeToolTip": "server\\Models\\Dto\\UserDto.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAxwBMAAAA4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-14T18:20:17.226Z",
               "EditorCaption": ""
             }
           ]

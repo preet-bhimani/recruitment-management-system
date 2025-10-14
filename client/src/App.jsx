@@ -75,6 +75,10 @@ import ViewerCampusDrive from './viewer/ViewerCampusDrive';
 import ViewCampusDrive from './reusableComponent/Campus Drive/ViewCampusDrive';
 import ViewerEmployee from './viewer/ViewerEmployee';
 import ViewEmployee from './reusableComponent/Employee/ViewEmployee';
+import AdminSkill from './admin/Skill/AdminSkill';
+import AdminAddSkill from './admin/Skill/AdminAddSkill';
+import AdminUpdateSkill from './admin/Skill/AdminUpdateSkill';
+import ViewerSkill from './viewer/ViewerSkill';
 
 function App() {
   return (
@@ -112,6 +116,9 @@ function App() {
             <Route path='/admin-employee' element={<AdminEmployee />} />
             <Route path='/admin-add-employee' element={<AdminAddEmployee />} />
             <Route path='/admin-update-employee' element={<AdminUpdateEmployee />} />
+            <Route path='/admin-skill' element={<AdminSkill />} />
+            <Route path='/admin-add-skill' element={<AdminAddSkill />} />
+            <Route path='/admin-update-skill' element={<AdminUpdateSkill />} />
             <Route path='/' element={<CandidateDashboard />} />
             <Route path='/register' element={<Register />} />
             <Route path='/login' element={<Login />} />
@@ -156,6 +163,7 @@ function App() {
             <Route path='/view-campusdrive' element={<ViewCampusDrive />} />
             <Route path='/viewer-employee' element={<ViewerEmployee />} />
             <Route path='/view-employee' element={<ViewEmployee />} />
+            <Route path='/viewer-skill' element={<ViewerSkill />} />
         </Routes>
     </Router>
     </>

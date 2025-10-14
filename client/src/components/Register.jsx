@@ -30,7 +30,7 @@ const Register = () => {
             <input
               type="text"
               placeholder="Enter Full Name"
-              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
           </div>
 
           {/* Email */}
@@ -39,7 +39,7 @@ const Register = () => {
             <input
               type="email"
               placeholder="Enter Email"
-              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
           </div>
 
           {/* Password */}
@@ -48,7 +48,7 @@ const Register = () => {
             <input
               type="password"
               placeholder="Enter Password"
-              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
           </div>
 
           {/* Phone Number */}
@@ -57,7 +57,7 @@ const Register = () => {
             <input
               type="tel"
               placeholder="Enter Phone Number"
-              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
           </div>
 
           {/* City */}
@@ -66,7 +66,7 @@ const Register = () => {
             <input
               type="text"
               placeholder="Enter City"
-              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
           </div>
 
           {/* DOB */}
@@ -74,7 +74,7 @@ const Register = () => {
             <label className="block text-sm font-medium text-neutral-300 mb-2">Date of Birth <span className="text-rose-500">*</span></label>
             <input
               type="date"
-              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
           </div>
 
           {/* Reference */}
@@ -85,11 +85,11 @@ const Register = () => {
               onChange={(e) => setReference(e.target.value)}
               className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
               <option value="" disabled>Select Reference</option>
-              <option value="Campus Drive">Campus Drive</option>
-              <option value="Job Platform">Job Platform</option>
+              <option value="Campus drive">Campus drive</option>
+              <option value="Walk in drive">Walk in drive</option>
+              <option value="Job platform">Job platform</option>
+              <option value="Family friends">Family/Friends</option>
               <option value="Internet">Internet</option>
-              <option value="Family">Family</option>
-              <option value="Friend">Friend</option>
             </select>
           </div>
 
@@ -100,10 +100,9 @@ const Register = () => {
               <input
                 type="text"
                 placeholder="Enter Campus Drive ID"
-                className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+                className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
             </div>
           )}
-
 
           {/* Profile Picture */}
           <div>
@@ -111,7 +110,7 @@ const Register = () => {
             <input
               type="file"
               accept="image/*"
-              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-purple-700 file:text-white hover:file:bg-purple-800"/>
+              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-purple-700 file:text-white hover:file:bg-purple-800" />
           </div>
 
           {/* Submit */}
