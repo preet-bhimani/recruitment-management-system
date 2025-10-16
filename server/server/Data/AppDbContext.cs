@@ -23,6 +23,10 @@ namespace server.Data
             modelBuilder.Entity<Skill>()
                 .HasIndex(u => u.SkillName)
                 .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u =>u.Email)
+                .IsUnique();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace server.Models.Entities
         public required string Email { get; set; }
 
         [Required, StringLength(512)]
-        public required string Password { get; set; }
+        public string Password { get; set; }
 
         [Required]
         [RegularExpression(@"^\+[1-9]\d{7,14}$", ErrorMessage = "Phone must be start with + sing country code.")]
@@ -36,7 +36,7 @@ namespace server.Models.Entities
         [Required, StringLength(200)]
         public required string Reference { get; set; }
 
-        [Required, StringLength(500)]
+        [StringLength(500)]
         public string? Resume { get; set; }
 
         [StringLength(150)]

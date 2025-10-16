@@ -5,41 +5,33 @@
     "version": "1.0"
   },
   "paths": {
-    "/WeatherForecast": {
-      "get": {
+    "/api/Auth/register": {
+      "post": {
         "tags": [
-          "WeatherForecast"
+          "Auth"
         ],
-        "operationId": "GetWeatherForecast",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WeatherForecast"
-                  }
-                }
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserDto"
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -47,23 +39,126 @@
   },
   "components": {
     "schemas": {
-      "WeatherForecast": {
+      "UserDto": {
+        "required": [
+          "city",
+          "country",
+          "dob",
+          "email",
+          "fullName",
+          "password",
+          "phoneNumber",
+          "photo",
+          "reference"
+        ],
         "type": "object",
         "properties": {
-          "date": {
+          "fullName": {
+            "maxLength": 150,
+            "minLength": 2,
+            "type": "string"
+          },
+          "email": {
+            "maxLength": 256,
+            "minLength": 0,
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "maxLength": 512,
+            "minLength": 0,
+            "type": "string"
+          },
+          "phoneNumber": {
+            "maxLength": 32,
+            "minLength": 0,
+            "pattern": "^\\+[1-9]\\d{7,14}$",
+            "type": "string"
+          },
+          "city": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "country": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "dob": {
             "type": "string",
             "format": "date"
           },
-          "temperatureC": {
-            "type": "integer",
-            "format": "int32"
+          "photo": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
           },
-          "temperatureF": {
+          "reference": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "resume": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "bachelorDegree": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "bachelorUniversity": {
+            "maxLength": 250,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "bachelorPercentage": {
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "masterDegree": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "masterUniversity": {
+            "maxLength": 250,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "masterPercentage": {
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number",
+            "format": "float",
+            "nullable": true
+          },
+          "yearsOfExperience": {
+            "maximum": 60,
+            "minimum": 0,
             "type": "integer",
             "format": "int32",
-            "readOnly": true
+            "nullable": true
           },
-          "summary": {
+          "preCompanyName": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "preCompanyTitle": {
+            "maxLength": 150,
+            "minLength": 0,
             "type": "string",
             "nullable": true
           }

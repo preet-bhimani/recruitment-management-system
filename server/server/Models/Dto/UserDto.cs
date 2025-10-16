@@ -15,9 +15,9 @@ namespace server.Models.Dto
         public string Password { get; set; }
 
         [Required]
-        [RegularExpression(@"^\+[1-9]\d{7,14}$", ErrorMessage = "Phone must be start with + sing country code.")]
+        [RegularExpression(@"^\+[1-9]\d{7,14}$", ErrorMessage = "Phone must start with + and country code.")]
         [StringLength(32)]
-        public required string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
 
         [Required, StringLength(100)]
         public string City { get; set; }
@@ -25,15 +25,17 @@ namespace server.Models.Dto
         [Required, StringLength(100)]
         public string Country { get; set; }
 
-        [Required, DataType(DataType.Date)]
-        public DateOnly DOB { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime DOB { get; set; }
 
-        [Required, StringLength(500)]
-        public string Photo { get; set; }
+        [StringLength(500)]
+        public string? Photo { get; set; }
 
         [Required, StringLength(200)]
         public string Reference { get; set; }
 
+        // Resume optional in DTO
         [StringLength(500)]
         public string? Resume { get; set; }
 
