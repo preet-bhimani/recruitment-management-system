@@ -73,6 +73,10 @@ namespace server.Models.Entities
 
         public bool IsActive { get; set; } = true;
 
+        public string? RefreshToken { get; set; }
+
+        public DateTime? RefreshTokenExpiryTime { get; set; }
+
         public ICollection<Skill> Skills { get; set; } = new List<Skill>();
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

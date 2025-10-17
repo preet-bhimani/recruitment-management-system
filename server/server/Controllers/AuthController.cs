@@ -11,6 +11,7 @@ using server.Models.Dto;
 using server.Models.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace server.Controllers
@@ -24,7 +25,6 @@ namespace server.Controllers
         private readonly IConfiguration config;
         private const long MaxFileBytes = 5 * 1024 * 1024; 
         private static readonly string[] AllowedExt = new[] { ".jpg", ".jpeg", ".png" };
-
 
         public AuthController(AppDbContext dbContext, IConfiguration configuration)
         {
@@ -43,7 +43,14 @@ namespace server.Controllers
             // Check if email already exist or not
             var email = (userDto.Email ?? string.Empty).Trim().ToLowerInvariant();
             if (await dbContext.Users.AnyAsync(u => u.Email.ToLower() == email))
-                return Conflict(new { message = "Email already registered." });
+                return Conflict("Email already registered.");
+
+            // If reference is Camous drive then allow CDID
+            if (userDto.Reference == "Campus drive")
+            {
+                if (!userDto.CDID.HasValue)
+                    return BadRequest("CDID is required.");
+            }
 
             string? storedFileName = null;
 
@@ -51,7 +58,7 @@ namespace server.Controllers
             if (photo != null && photo.Length > 0)
             {
                 if (photo.Length > MaxFileBytes)
-                    return BadRequest(new { message = "File too large. Max 5 MB." });
+                    return BadRequest("File too large. Max 5 MB.");
 
                 // Set file name and extension
                 var original = Path.GetFileName(photo.FileName);
@@ -59,7 +66,7 @@ namespace server.Controllers
 
                 // Only below extension
                 if (!AllowedExt.Contains(ext))
-                    return BadRequest(new { message = "Only jpg/jpeg/png allowed." });
+                    return BadRequest("Only jpg/jpeg/png allowed.");
 
                 // Save to Uploads/User_Upload_Photos folder wit unique name
                 var uploads = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Photos");
@@ -94,6 +101,10 @@ namespace server.Controllers
             var hasher = new PasswordHasher<User>();
             user.Password = hasher.HashPassword(user, userDto.Password);
 
+            // Assign CDID
+            if (userDto.CDID.HasValue)
+                user.CDID = userDto.CDID.Value;
+
             // Add User to Database
             dbContext.Users.Add(user);
             try
@@ -102,7 +113,7 @@ namespace server.Controllers
             }
             catch (DbUpdateException)
             {
-                return Conflict(new { message = "Email already registered." });
+                return Conflict("Email already registered.");
             }
 
             return Ok(new { userId = user.UserId, email = user.Email, message = "Registered Sucessfully" });
@@ -111,7 +122,6 @@ namespace server.Controllers
 
 
         [HttpPost("login")]
-
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             // Get email
@@ -133,6 +143,7 @@ namespace server.Controllers
             }
 
             string token = CreateToken(user);
+            string refreshToken = await GenerateRefreshTokenAsync(user);
 
             // Send message and token
             return Ok(new
@@ -141,7 +152,9 @@ namespace server.Controllers
                 fullName = user.FullName,
                 email = user.Email,
                 message = "Login sucessful",
+                role = user.Role ?? "Candidate",
                 token = token,
+                refreshToken = refreshToken,
             });
         }
 
@@ -151,7 +164,8 @@ namespace server.Controllers
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Role, user.Role ?? "Candidate"),
             };
 
             // Create JWT token
@@ -176,6 +190,48 @@ namespace server.Controllers
         public IActionResult AuthenticatedOnlyEndpoint()
         {
             return Ok("You are welcomed");
+        }
+
+
+        // Generate refresh token
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new Byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
+
+        private async Task<string> GenerateRefreshTokenAsync (User user)
+        {
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            await dbContext.SaveChangesAsync();
+            return refreshToken;
+        }
+
+        //Send refresh token
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenRequestDto refreshTokenRequest)
+        {
+            var user = await dbContext.Users.FindAsync(refreshTokenRequest.UserId);
+            if(user == null || user.RefreshToken != refreshTokenRequest.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                return Unauthorized("Invalid or token expired");
+            }
+
+            var newAccessToken = CreateToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            await dbContext.SaveChangesAsync();
+
+            return Ok(new
+            {
+                token = newAccessToken,
+                refreshToken = newRefreshToken,
+            });
         }
     }
 }
