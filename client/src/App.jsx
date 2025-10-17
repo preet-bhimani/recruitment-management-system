@@ -79,93 +79,96 @@ import AdminSkill from './admin/Skill/AdminSkill';
 import AdminAddSkill from './admin/Skill/AdminAddSkill';
 import AdminUpdateSkill from './admin/Skill/AdminUpdateSkill';
 import ViewerSkill from './viewer/ViewerSkill';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
     <>
+      <ToastContainer position="top-right" autoClose={2000} theme="colored"/>
+
       <Router>
         <Routes>
-            <Route path='/admin' element={<AdminDashboard />} />
-            <Route path='/admin-user' element={<AdminUser />} />
-            <Route path='/admin-add-user' element={<AdminAddUser />} />
-            <Route path='/admin-add-user-excel' element={<AdminAddUserExcel />}/>
-            <Route path ='/admin-add-user-resume' element={<AdminAddUserResume />} />
-            <Route path='/admin-user-update' element={<AdminUserUpdate />} />
-            <Route path='/admin-jobopening' element={<AdminJobOpening />} />
-            <Route path='/admin-add-jobopening' element={<AdminAddJobOpening />} />
-            <Route path='/admin-update-jobopening' element={<AdminUpdateJobOpening />} />
-            <Route path='/admin-jobapplication' element={<AdminJobApplication />} />
-            <Route path='/admin-add-jobapplication' element={<AdminAddJobApplication />} />
-            <Route path='/admin-update-jobapplication' element={<AdminUpdateJobApplication />} />
-            <Route path='/admin-techinterview' element={<AdminTechInterview />} />
-            <Route path='/admin-add-techinterview' element={<AdminAddTechInterview />} />
-            <Route path='/admin-update-techinterview' element={<AdminUpdateTechInterview />} />
-            <Route path='/admin-hrinterview' element={<AdminHRInterview />} />
-            <Route path='admin-add-hrinterview' element={<AdminAddHRInterview />} />
-            <Route path='/admin-update-hrinterview' element={<AdminUpdateHRInterview />} />
-            <Route path='/admin-add-meeting' element={<AdminMeetingSchedual />} />
-            <Route path='/admin-selection' element={<AdminSelection />} />
-            <Route path='/admin-sentmail-selection' element={<AdminSentMailSelection />} />
-            <Route path='/admin-update-selection' element={<AdminUpdateSelection />} /> 
-            <Route path='/admin-document' element={<AdminDocuments />} />
-            <Route path='/admin-add-document' element={<AdminAddDocuments />} />
-            <Route path='/admin-update-document' element={<AdminUpdateDocuments />} />
-            <Route path='/admin-campusdrive' element={<AdminCampusDrive />} />
-            <Route path='/admin-add-campusdrive' element={<AdminAddCampusDrive />} />
-            <Route path='/admin-update-campusdrive' element={<AdminUpdateCampusDrive />} />
-            <Route path='/admin-employee' element={<AdminEmployee />} />
-            <Route path='/admin-add-employee' element={<AdminAddEmployee />} />
-            <Route path='/admin-update-employee' element={<AdminUpdateEmployee />} />
-            <Route path='/admin-skill' element={<AdminSkill />} />
-            <Route path='/admin-add-skill' element={<AdminAddSkill />} />
-            <Route path='/admin-update-skill' element={<AdminUpdateSkill />} />
-            <Route path='/' element={<CandidateDashboard />} />
-            <Route path='/register' element={<Register />} />
-            <Route path='/login' element={<Login />} />
-            <Route path='/job-description' element={<JobDescription />} />
-            <Route path='/resume' element={<Resume />} />
-            <Route path='/update-profile' element={<UpdateProfile />} />
-            <Route path='/update-password-mail' element={<UpdatePasswordMail />} />
-            <Route path='/update-password-otp' element={<UpdatePasswordOTP />} />
-            <Route path='/update-password' element={<UpdatePassword />} />
-            <Route path='/notifications' element={<Notifications />} />
-            <Route path='/myjobs' element={<MyJobs />} />
-            <Route path='/upload-documents' element={<UploadDocuments />} />
-            <Route path='/recruiter-dashboard' element={<RecruiterDashboard />} />
-            <Route path='/recruiter-candidate' element={<RecruiterCandidate />} />
-            <Route path='/recruiter-add-candidate' element={<RecruiterAddUser />} />
-            <Route path='/recruiter-add-candidate-excel' element={<RecruiterAddUserExcel />} />
-            <Route path='/recruiter-add-candidate-resume' element={<RecruiterAddUserResume />} />
-            <Route path='/recruiter-jobopening' element={<RecruiterJobOpening />} />
-            <Route path='/recruiter-add-jobopening' element={<RecruiterAddJobOpening />} />
-            <Route path='/recruiter-update-jobopening'element={<RecruiterUpdateJobOpening />} />
-            <Route path='/recruiter-meeting-scheduling' element={<RecruiterMeetingScheduling />} />
-            <Route path='/reviewer-dashboard' element={<ReviewerDashboard />} />
-            <Route path='/interviewer-feedback' element={<InterviewerFeedback />} />
-            <Route path='/interview-meeting-details' element={<InterviewerMeetingDetails />} />
-            <Route path='/hr-feedback' element={<HRFeedback />} />
-            <Route path='/hr-documents-check/:candidateId' element={<HRDocumentsCheck />} />
-            <Route path='/viewer-jobopening' element={<ViewerJobOpening />} />
-            <Route path='/view-jobopening' element={<ViewJobOpening />} />
-            <Route path='/view-user' element={<ViewUser />} />
-            <Route path='/viewer-user' element={<ViewerUser />} />
-            <Route path="/viewer-jobapplication" element={<ViewerJobApplication />} />
-            <Route path='/view-jobapplication' element={<ViewJobApplication />} />
-            <Route path='/viewer-techinterview' element={<ViewerTechnicalInterview />} />
-            <Route path='/view-techinterview' element={<ViewTechnicalInterview />} />
-            <Route path='/viewer-hrinterview' element={<ViewerHRInterview />} />
-            <Route path='/view-hrinterview' element={<ViewHRInterview />} />
-            <Route path='/viewer-selection' element={<ViewerSelection />} />
-            <Route path='/view-selection' element={<ViewSelection />} />
-            <Route path='/viewer-documentlist' element={<ViewerDocumentList />} />
-            <Route path='/view-documentlist' element={<ViewDocumentList />} />
-            <Route path='/viewer-campusdrive' element={<ViewerCampusDrive />} />
-            <Route path='/view-campusdrive' element={<ViewCampusDrive />} />
-            <Route path='/viewer-employee' element={<ViewerEmployee />} />
-            <Route path='/view-employee' element={<ViewEmployee />} />
-            <Route path='/viewer-skill' element={<ViewerSkill />} />
+          <Route path='/admin' element={<AdminDashboard />} />
+          <Route path='/admin-user' element={<AdminUser />} />
+          <Route path='/admin-add-user' element={<AdminAddUser />} />
+          <Route path='/admin-add-user-excel' element={<AdminAddUserExcel />} />
+          <Route path='/admin-add-user-resume' element={<AdminAddUserResume />} />
+          <Route path='/admin-user-update' element={<AdminUserUpdate />} />
+          <Route path='/admin-jobopening' element={<AdminJobOpening />} />
+          <Route path='/admin-add-jobopening' element={<AdminAddJobOpening />} />
+          <Route path='/admin-update-jobopening' element={<AdminUpdateJobOpening />} />
+          <Route path='/admin-jobapplication' element={<AdminJobApplication />} />
+          <Route path='/admin-add-jobapplication' element={<AdminAddJobApplication />} />
+          <Route path='/admin-update-jobapplication' element={<AdminUpdateJobApplication />} />
+          <Route path='/admin-techinterview' element={<AdminTechInterview />} />
+          <Route path='/admin-add-techinterview' element={<AdminAddTechInterview />} />
+          <Route path='/admin-update-techinterview' element={<AdminUpdateTechInterview />} />
+          <Route path='/admin-hrinterview' element={<AdminHRInterview />} />
+          <Route path='admin-add-hrinterview' element={<AdminAddHRInterview />} />
+          <Route path='/admin-update-hrinterview' element={<AdminUpdateHRInterview />} />
+          <Route path='/admin-add-meeting' element={<AdminMeetingSchedual />} />
+          <Route path='/admin-selection' element={<AdminSelection />} />
+          <Route path='/admin-sentmail-selection' element={<AdminSentMailSelection />} />
+          <Route path='/admin-update-selection' element={<AdminUpdateSelection />} />
+          <Route path='/admin-document' element={<AdminDocuments />} />
+          <Route path='/admin-add-document' element={<AdminAddDocuments />} />
+          <Route path='/admin-update-document' element={<AdminUpdateDocuments />} />
+          <Route path='/admin-campusdrive' element={<AdminCampusDrive />} />
+          <Route path='/admin-add-campusdrive' element={<AdminAddCampusDrive />} />
+          <Route path='/admin-update-campusdrive' element={<AdminUpdateCampusDrive />} />
+          <Route path='/admin-employee' element={<AdminEmployee />} />
+          <Route path='/admin-add-employee' element={<AdminAddEmployee />} />
+          <Route path='/admin-update-employee' element={<AdminUpdateEmployee />} />
+          <Route path='/admin-skill' element={<AdminSkill />} />
+          <Route path='/admin-add-skill' element={<AdminAddSkill />} />
+          <Route path='/admin-update-skill' element={<AdminUpdateSkill />} />
+          <Route path='/' element={<CandidateDashboard />} />
+          <Route path='/register' element={<Register />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/job-description' element={<JobDescription />} />
+          <Route path='/resume' element={<Resume />} />
+          <Route path='/update-profile' element={<UpdateProfile />} />
+          <Route path='/update-password-mail' element={<UpdatePasswordMail />} />
+          <Route path='/update-password-otp' element={<UpdatePasswordOTP />} />
+          <Route path='/update-password' element={<UpdatePassword />} />
+          <Route path='/notifications' element={<Notifications />} />
+          <Route path='/myjobs' element={<MyJobs />} />
+          <Route path='/upload-documents' element={<UploadDocuments />} />
+          <Route path='/recruiter-dashboard' element={<RecruiterDashboard />} />
+          <Route path='/recruiter-candidate' element={<RecruiterCandidate />} />
+          <Route path='/recruiter-add-candidate' element={<RecruiterAddUser />} />
+          <Route path='/recruiter-add-candidate-excel' element={<RecruiterAddUserExcel />} />
+          <Route path='/recruiter-add-candidate-resume' element={<RecruiterAddUserResume />} />
+          <Route path='/recruiter-jobopening' element={<RecruiterJobOpening />} />
+          <Route path='/recruiter-add-jobopening' element={<RecruiterAddJobOpening />} />
+          <Route path='/recruiter-update-jobopening' element={<RecruiterUpdateJobOpening />} />
+          <Route path='/recruiter-meeting-scheduling' element={<RecruiterMeetingScheduling />} />
+          <Route path='/reviewer-dashboard' element={<ReviewerDashboard />} />
+          <Route path='/interviewer-feedback' element={<InterviewerFeedback />} />
+          <Route path='/interview-meeting-details' element={<InterviewerMeetingDetails />} />
+          <Route path='/hr-feedback' element={<HRFeedback />} />
+          <Route path='/hr-documents-check/:candidateId' element={<HRDocumentsCheck />} />
+          <Route path='/viewer-jobopening' element={<ViewerJobOpening />} />
+          <Route path='/view-jobopening' element={<ViewJobOpening />} />
+          <Route path='/view-user' element={<ViewUser />} />
+          <Route path='/viewer-user' element={<ViewerUser />} />
+          <Route path="/viewer-jobapplication" element={<ViewerJobApplication />} />
+          <Route path='/view-jobapplication' element={<ViewJobApplication />} />
+          <Route path='/viewer-techinterview' element={<ViewerTechnicalInterview />} />
+          <Route path='/view-techinterview' element={<ViewTechnicalInterview />} />
+          <Route path='/viewer-hrinterview' element={<ViewerHRInterview />} />
+          <Route path='/view-hrinterview' element={<ViewHRInterview />} />
+          <Route path='/viewer-selection' element={<ViewerSelection />} />
+          <Route path='/view-selection' element={<ViewSelection />} />
+          <Route path='/viewer-documentlist' element={<ViewerDocumentList />} />
+          <Route path='/view-documentlist' element={<ViewDocumentList />} />
+          <Route path='/viewer-campusdrive' element={<ViewerCampusDrive />} />
+          <Route path='/view-campusdrive' element={<ViewCampusDrive />} />
+          <Route path='/viewer-employee' element={<ViewerEmployee />} />
+          <Route path='/view-employee' element={<ViewEmployee />} />
+          <Route path='/viewer-skill' element={<ViewerSkill />} />
         </Routes>
-    </Router>
+      </Router>
     </>
   )
 }

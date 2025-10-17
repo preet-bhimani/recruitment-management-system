@@ -1,9 +1,200 @@
 import React, { useState } from "react";
-import { User } from "lucide-react";
+import { User, Eye, EyeOff } from "lucide-react";
+import axios from 'axios';
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
 
-  const [reference, setReference] = useState("");
+  // All Form Data Fileds
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    city: "",
+    country: "",
+    dob: "",
+    reference: "",
+    cdid: "",
+    photo: null
+  });
+
+  // Error Messages for Each Fileds
+  const [errors, setErrors] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    city: "",
+    country: "",
+    dob: "",
+    reference: "",
+    cdid: "",
+    photo: ""
+  });
+
+  const navigate = useNavigate();
+
+  // Password Visibility Toggle
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Photo Submit Validation
+  const handlePhotoChange = (e) => {
+
+    const file = e.target.files[0];
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    const maxSize = 5 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      setErrors({ ...errors, photo: "Only jpg, jpeg, png files are allowed" });
+      setFormData({ ...formData, photo: null });
+      return;
+    }
+
+    if (file.size > maxSize) {
+      setErrors({ ...errors, photo: "File size cannot exceed 5 MB" });
+      setFormData({ ...formData, photo: null });
+      return;
+    }
+
+    setErrors({ ...errors, photo: "" });
+    setFormData({ ...formData, photo: file });
+  };
+
+  // Submit Form
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let hasError = false;
+    const newErrors = { ...errors };
+
+    // Full Name Validation
+    if (!formData.fullName) {
+      newErrors.fullName = "Please enter your name";
+      hasError = true;
+    }
+    else {
+      newErrors.fullName = "";
+    }
+
+    // Email Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email) {
+      newErrors.email = "Please enter email address";
+      hasError = true;
+    }
+    else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+      hasError = true;
+    }
+    else {
+      newErrors.email = "";
+    }
+
+    // Passsword Validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    if (!formData.password) {
+      newErrors.password = "Please enter your password";
+      hasError = true;
+    }
+    else if (!passwordRegex.test(formData.password)) {
+      newErrors.password = "Password must be 8+ chars, include one lowercase, uppercase, number, and symbol";
+      hasError = true;
+    }
+    else {
+      newErrors.password = "";
+    }
+
+    //Phone Validation
+    const phoneRegex = /^\+[1-9]\d{7,14}$/;
+    if (!formData.phoneNumber) {
+      newErrors.phoneNumber = "Please enter phone number";
+      hasError = true;
+    }
+    else if (!phoneRegex.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Phone must start with + and country code";
+      hasError = true;
+    }
+    else {
+      newErrors.phoneNumber = "";
+    }
+
+    // City Validation
+    if (!formData.city) {
+      newErrors.city = "Please enter city";
+      hasError = true;
+    }
+    else {
+      newErrors.city = "";
+    }
+
+    // Country Validation
+    if (!formData.country) {
+      newErrors.country = "Please enter country";
+      hasError = true;
+    }
+    else {
+      newErrors.country = "";
+    }
+
+    // DOB Validation
+    if (!formData.dob) {
+      newErrors.dob = "Please enter Date of Birth";
+      hasError = true;
+    }
+    else {
+      newErrors.dob = "";
+    }
+
+    // Reference Validation
+    if (!formData.reference) {
+      newErrors.reference = "Please enter reference";
+      hasError = true;
+    }
+    else {
+      newErrors.reference = "";
+    }
+
+    // CDID Validation
+    if (formData.reference === "Campus drive" && !formData.cdid) {
+      newErrors.cdid = "Please enter Campus Drive ID";
+      hasError = true;
+    }
+    else {
+      newErrors.cdid = "";
+    }
+
+    // Set Erroer If Any
+    setErrors(newErrors);
+
+    // If Error Occurs then Stop Submit
+    if (hasError) return;
+
+    // Create New Form Data and Append all Fields
+    const submitData = new FormData();
+    submitData.append("fullName", formData.fullName);
+    submitData.append("email", formData.email.trim());
+    submitData.append("password", formData.password);
+    submitData.append("phoneNumber", formData.phoneNumber);
+    submitData.append("city", formData.city);
+    submitData.append("country", formData.country);
+    submitData.append("dob", formData.dob);
+    submitData.append("reference", formData.reference);
+    if (formData.reference === "Campus drive") submitData.append("cdid", formData.cdid);
+    if (formData.photo) submitData.append("photo", formData.photo);
+
+    try {
+      const res = await axios.post(`https://localhost:7119/api/Auth/register`, submitData);
+
+      // Show Success Message and Jump to Login Page
+      toast.success(res.data.message || "Registration successful!");
+      navigate('/login');
+    }
+    catch (err) {
+      toast.error(err.response?.data || "Registration failed!");
+    }
+  }
 
   return (
     <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
@@ -22,7 +213,7 @@ const Register = () => {
         </div>
 
         {/* Form Details */}
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
 
           {/* Full Name */}
           <div>
@@ -30,7 +221,10 @@ const Register = () => {
             <input
               type="text"
               placeholder="Enter Full Name"
+              value={formData.fullName}
+              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
               className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            {errors.fullName && (<p className="text-rose-500 text-sm mt-1">{errors.fullName}</p>)}
           </div>
 
           {/* Email */}
@@ -39,16 +233,35 @@ const Register = () => {
             <input
               type="email"
               placeholder="Enter Email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            {errors.email && (<p className="text-rose-500 text-sm mt-1">{errors.email}</p>)}
           </div>
 
           {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">Password <span className="text-rose-500">*</span></label>
-            <input
-              type="password"
-              placeholder="Enter Password"
-              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-neutral-300 mb-1">Password <span className="text-rose-500">*</span></label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter Password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                className="w-full px-4 py-3 pr-12 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label="Toggle password visibility"
+                className="absolute inset-y-0 right-3 flex items-center justify-center text-neutral-400 hover:text-white">
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+            {errors.password && (<p className="text-rose-500 text-sm mt-1">{errors.password}</p>)}
           </div>
 
           {/* Phone Number */}
@@ -57,7 +270,10 @@ const Register = () => {
             <input
               type="tel"
               placeholder="Enter Phone Number"
+              value={formData.phoneNumber}
+              onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
               className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            {errors.phoneNumber && (<p className="text-rose-500 text-sm mt-1">{errors.phoneNumber}</p>)}
           </div>
 
           {/* City */}
@@ -66,7 +282,22 @@ const Register = () => {
             <input
               type="text"
               placeholder="Enter City"
+              value={formData.city}
+              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
               className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            {errors.city && (<p className="text-rose-500 text-sm mt-1">{errors.city}</p>)}
+          </div>
+
+          {/* Country */}
+          <div>
+            <label className="block text-sm font-medium text-neutral-300 mb-2">Country <span className="text-rose-500">*</span></label>
+            <input
+              type="text"
+              placeholder="Enter Country"
+              value={formData.country}
+              onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+              className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            {errors.country && (<p className="text-rose-500 text-sm mt-1">{errors.country}</p>)}
           </div>
 
           {/* DOB */}
@@ -74,15 +305,18 @@ const Register = () => {
             <label className="block text-sm font-medium text-neutral-300 mb-2">Date of Birth <span className="text-rose-500">*</span></label>
             <input
               type="date"
+              value={formData.dob}
+              onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
               className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            {errors.dob && (<p className="text-rose-500 text-sm mt-1">{errors.dob}</p>)}
           </div>
 
           {/* Reference */}
           <div>
             <label className="block text-sm font-medium text-neutral-300 mb-2">Reference <span className="text-rose-500">*</span></label>
             <select
-              value={reference}
-              onChange={(e) => setReference(e.target.value)}
+              value={formData.reference}
+              onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
               className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
               <option value="" disabled>Select Reference</option>
               <option value="Campus drive">Campus drive</option>
@@ -91,16 +325,20 @@ const Register = () => {
               <option value="Family friends">Family/Friends</option>
               <option value="Internet">Internet</option>
             </select>
+            {errors.reference && (<p className="text-rose-500 text-sm mt-1">{errors.reference}</p>)}
           </div>
 
           {/* CDID */}
-          {reference === "Campus Drive" && (
+          {formData.reference === "Campus drive" && (
             <div>
               <label className="block text-sm font-medium text-neutral-300 mb-2">Campus Drive ID <span className="text-rose-500">*</span></label>
               <input
                 type="text"
                 placeholder="Enter Campus Drive ID"
+                value={formData.cdid}
+                onChange={(e) => setFormData({ ...formData, cdid: e.target.value })}
                 className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+              {errors.cdid && (<p className="text-rose-500 text-sm mt-1">{errors.cdid}</p>)}
             </div>
           )}
 
@@ -109,8 +347,10 @@ const Register = () => {
             <label className="block text-sm font-medium text-neutral-300 mb-2">Photo <span className="text-rose-500">*</span></label>
             <input
               type="file"
-              accept="image/*"
+              accept=".jpg,.jpeg,.png"
+              onChange={handlePhotoChange}
               className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-purple-700 file:text-white hover:file:bg-purple-800" />
+            {errors.photo && (<p className="text-rose-500 text-sm mt-1">{errors.photo}</p>)}
           </div>
 
           {/* Submit */}

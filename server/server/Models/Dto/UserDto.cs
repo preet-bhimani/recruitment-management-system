@@ -65,5 +65,7 @@ namespace server.Models.Dto
 
         [StringLength(150)]
         public string? PreCompanyTitle { get; set; }
+
+        public int? CDID { get; set; }
     }
 }
