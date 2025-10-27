@@ -121,7 +121,7 @@ function App() {
           <Route path='/admin-update-employee' element={<AdminUpdateEmployee />} />
           <Route path='/admin-skill' element={<AdminSkill />} />
           <Route path='/admin-add-skill' element={<AdminAddSkill />} />
-          <Route path='/admin-update-skill' element={<AdminUpdateSkill />} />
+          <Route path='/admin-update-skill/:id' element={<AdminUpdateSkill />} />
           <Route path='/' element={<CandidateDashboard />} />
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<Login />} />
