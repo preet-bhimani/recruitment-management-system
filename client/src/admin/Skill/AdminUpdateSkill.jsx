@@ -1,15 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import Navbar from "../Navbar";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const AdminUpdateSkill = () => {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
 
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [skillData, setSkillData] = useState({
-            skillId: "9CF256C4-7ECA-4469-8CCE-08DD70ACE5C1",
-            skillName: "Java",
-        })
+        skillId: "",
+        skillName: "",
+    });
+
+    // Update Skill Logic
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+
+        if (!skillData.skillName.trim()) {
+            toast.error("Skill name cannot be empty");
+            return;
+        }
+        try {
+            const res = await axios.put(`https://localhost:7119/api/Skill/${skillData.skillId}`,
+                { skillName: skillData.skillName });
+            toast.success("Skill updated successfully");
+            navigate("/admin-skill");
+        }
+        catch (err) { toast.error(err.response?.data || "Something went wrong"); }
+    };
+
+    // Fetch Skills
+    useEffect(() => {
+        const fetchSkill = async () => {
+            try {
+                const res = await axios.get(`https://localhost:7119/api/Skill/${id}`);
+                setSkillData(res.data);
+            } catch (err) { toast.error("Failed to fetch skill data"); }
+        };
+        fetchSkill();
+    }, [id]);
 
     return <div className="flex flex-col h-screen">
         {/* Navbar */}
@@ -26,7 +59,7 @@ const AdminUpdateSkill = () => {
                     <h1 className="text-4xl font-bold text-white mb-4">Update Skill</h1>
                 </div>
 
-                <form className="grid grid-cols-1 md:grid-cols-1 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
+                <form className="grid grid-cols-1 md:grid-cols-1 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg" onSubmit={handleUpdate}>
 
                     {/* Skill ID */}
                     <div className="md:col-span-2">
@@ -47,7 +80,8 @@ const AdminUpdateSkill = () => {
                         </label>
                         <input
                             type="text"
-                            defaultValue={skillData.skillName}
+                            value={skillData.skillName}
+                            onChange={(e) => setSkillData({ ...skillData, skillName: e.target.value })}
                             placeholder="Enter Skill Name"
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
                     </div>
@@ -55,7 +89,7 @@ const AdminUpdateSkill = () => {
                     {/* Submit */}
                     <div className="md:col-span-2">
                         <button
-                            type="button"
+                            type="submit"
                             className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
                             Update Skill
                         </button>
