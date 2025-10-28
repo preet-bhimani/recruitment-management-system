@@ -46,6 +46,7 @@ namespace server.Models.Entities
         public string? BachelorUniversity { get; set; }
 
         [Range(0, 100)]
+        [RegularExpression(@"^\d{1,3}(\.\d{1,2})?$", ErrorMessage = "Percentage must be a number up to 2 decimal places.")]
         public float? BachelorPercentage { get; set; }
 
         [StringLength(150)]
@@ -55,6 +56,7 @@ namespace server.Models.Entities
         public string? MasterUniversity { get; set; }
 
         [Range(0, 100)]
+        [RegularExpression(@"^\d{1,3}(\.\d{1,2})?$", ErrorMessage = "Percentage must be a number up to 2 decimal places.")]
         public float? MasterPercentage { get; set; }
 
         [Range(0, 60)]

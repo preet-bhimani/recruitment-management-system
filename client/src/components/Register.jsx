@@ -165,6 +165,12 @@ const Register = () => {
       newErrors.cdid = "";
     }
 
+    // Photo Validation
+    if (!formData.photo) {
+      newErrors.photo = "Please upload photo";
+      hasError = true;
+    }
+
     // Set Erroer If Any
     setErrors(newErrors);
 
@@ -182,7 +188,7 @@ const Register = () => {
     submitData.append("dob", formData.dob);
     submitData.append("reference", formData.reference);
     if (formData.reference === "Campus drive") submitData.append("cdid", formData.cdid);
-    if (formData.photo) submitData.append("photo", formData.photo);
+    submitData.append("photo", formData.photo);
 
     try {
       const res = await axios.post(`https://localhost:7119/api/Auth/register`, submitData);
@@ -248,7 +254,7 @@ const Register = () => {
                 placeholder="Enter Password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-4 py-3 pr-12 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500"/>
+                className="w-full px-4 py-3 pr-12 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
