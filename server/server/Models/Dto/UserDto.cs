@@ -46,6 +46,7 @@ namespace server.Models.Dto
         public string? BachelorUniversity { get; set; }
 
         [Range(0, 100)]
+        [RegularExpression(@"^\d{1,3}(\.\d{1,2})?$", ErrorMessage = "Percentage must be a number up to 2 decimal places.")]
         public float? BachelorPercentage { get; set; }
 
         [StringLength(150)]
@@ -55,6 +56,7 @@ namespace server.Models.Dto
         public string? MasterUniversity { get; set; }
 
         [Range(0, 100)]
+        [RegularExpression(@"^\d{1,3}(\.\d{1,2})?$", ErrorMessage = "Percentage must be a number up to 2 decimal places.")]
         public float? MasterPercentage { get; set; }
 
         [Range(0, 60)]
@@ -67,5 +69,7 @@ namespace server.Models.Dto
         public string? PreCompanyTitle { get; set; }
 
         public int? CDID { get; set; }
+        public string? Role { get; set; } = "Candidate"; 
+        public List<string>? Skills { get; set; } = new List<string>();
     }
 }

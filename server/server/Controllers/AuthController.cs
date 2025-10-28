@@ -45,7 +45,7 @@ namespace server.Controllers
             if (await dbContext.Users.AnyAsync(u => u.Email.ToLower() == email))
                 return Conflict("Email already registered.");
 
-            // If reference is Camous drive then allow CDID
+            // If reference is Campus drive then allow CDID
             if (userDto.Reference == "Campus drive")
             {
                 if (!userDto.CDID.HasValue)
@@ -54,7 +54,10 @@ namespace server.Controllers
 
             string? storedFileName = null;
 
-            // File upload loigc
+            if (photo == null || photo.Length == 0)
+                return BadRequest("Photo is required.");
+
+            // File upload logic
             if (photo != null && photo.Length > 0)
             {
                 if (photo.Length > MaxFileBytes)

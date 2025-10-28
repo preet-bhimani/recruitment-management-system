@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Uploads\" />
+    <Folder Include="Uploads\User_Upload_Resumes\" />
     <Folder Include="Uploads\User_Upload_Photos\" />
   </ItemGroup>
 
