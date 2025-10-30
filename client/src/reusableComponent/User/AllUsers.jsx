@@ -2,50 +2,25 @@ import React, { useMemo, useState, useEffect } from "react";
 import { Eye, Edit, Trash2, Filter } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CommonPagination, { paginate } from "../CommonPagination";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const AllUsers = ({ role = "admin" }) => {
 
-    const users = [
-        {
-            userId: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
-            fullName: "Preet Bhimani",
-            email: "preet@gmail.com",
-            phone: "9377382731",
-            city: "Rajkot",
-            dob: "2003-05-13",
-            role: "Admin",
-            isActive: "Active",
-            yearsOfExperience: 4,
-            photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-        },
-        {
-            userId: "9CF256C4-7ECA-4469-8CCE-08DD70ACE5C1",
-            fullName: "Umang Paneri",
-            email: "umang@gmail.com",
-            phone: "9273899119",
-            city: "Vadodara",
-            dob: "2003-12-21",
-            role: "Candidate",
-            isActive: "Active",
-            yearsOfExperience: 2,
-            photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-        },
-        {
-            userId: "4091FDD1-2D1F-44F5-00BB-08DDB922600D",
-            fullName: "Visva Antala",
-            email: "visva@gmail.com",
-            phone: "9102938270",
-            city: "Surat",
-            dob: "2003-03-15",
-            role: "HR",
-            isActive: "Active",
-            yearsOfExperience: 5,
-            photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-        },
-    ];
-
+    const [users, setUsers] = useState([]);
     const navigate = useNavigate();
-    
+
+    // Fetch Users
+    const fetchUsers = async () => {
+        try {
+            const res = await axios.get("https://localhost:7119/api/User");
+            setUsers(res.data || []);
+        }
+        catch (err) {
+            toast.error("failed to load users")
+        }
+    }
+
     // Filters
     const [showFilters, setShowFilters] = useState(false);
     const [filters, setFilters] = useState({
@@ -83,11 +58,25 @@ const AllUsers = ({ role = "admin" }) => {
         pageSize,
     ]);
 
+    // Delete User or Just Deactivate User
+    const handleDelete = async (userId) => {
+        const ok = window.confirm("Are you sure you want to deactivate this user?");
+        if (!ok) return;
+
+        try {
+            await axios.delete(`https://localhost:7119/api/User/delete/${userId}`);
+            fetchUsers();
+            toast.success(res.data.message || "User deactivated successfully");
+        } catch (err) {
+            toast.error(err.response?.data || "Delete failed");
+        }
+    };
+
     // Reset Page Filter on Change
     useEffect(() => {
+        fetchUsers();
         setCurrentPage(1);
     }, [filters]);
-
 
     return <>
         <div className="flex-1 p-4 overflow-y-auto">
@@ -199,17 +188,17 @@ const AllUsers = ({ role = "admin" }) => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-1 flex-1">
                                 <p><span className="font-medium text-purple-300">UserID:</span> {user.userId || "-"}</p>
                                 <p><span className="font-medium text-purple-300">Name:</span> {user.fullName || "-"}</p>
-                                <p><span className="font-medium text-purple-300">Email:</span> {user.email || "-"}</p>
-                                <p><span className="font-medium text-purple-300">Phone:</span> {user.phone || "-"}</p>
+                                <p><span className="font-medium text-purple-300 ">Email:</span> <span className="break-all">{user.email || "-"}</span></p>
+                                <p><span className="font-medium text-purple-300">Phone:</span> {user.phoneNumber || "-"}</p>
                                 <p><span className="font-medium text-purple-300">City:</span> {user.city || "-"}</p>
                                 <p><span className="font-medium text-purple-300">DOB:</span> {user.dob || "-"}</p>
                                 <p><span className="font-medium text-purple-300">Role:</span> {user.role || "-"}</p>
                                 <p><span className="font-medium text-purple-300">Status:</span>{" "}
-                                    <span
-                                        className={`px-2 py-0.5 rounded text-xs ${user.isActive === "Active"
-                                            ? "bg-emerald-800 text-emerald-200"
-                                            : "bg-rose-800 text-rose-200"}`}>
-                                        {user.isActive || "-"}
+                                    <span className={`px-2 py-0.5 rounded text-xs ${user.isActive
+                                        ? "bg-emerald-800 text-emerald-200"
+                                        : "bg-rose-800 text-rose-200"
+                                        }`}>
+                                        {user.isActive ? "Active" : "Deactive"}
                                     </span>
                                 </p>
                             </div>
@@ -227,12 +216,16 @@ const AllUsers = ({ role = "admin" }) => {
                                 <>
                                     <button
                                         className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                        onClick={() => navigate("/admin-user-update")}>
+                                        onClick={() => navigate(`/admin-user-update/${user.userId}`)}>
                                         <Edit size={14} /> Update
                                     </button>
-                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
-                                        <Trash2 size={14} /> Delete
-                                    </button>
+
+                                    {user.isActive && (
+                                        <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                            onClick={() => handleDelete(user.userId)}>
+                                            <Trash2 size={14} /> Delete
+                                        </button>
+                                    )}
                                 </>
                             )}
                         </div>

@@ -28,7 +28,7 @@ const AddUser = ({ role = "admin" }) => {
         photo: null,
         role: role && role.trim() !== "" ? role : "Candidate",
         selectedSkillIds: [],
-        status: "Active",
+        isActive: "Active",
     });
 
     // Error Messages for Each Fields
@@ -126,7 +126,12 @@ const AddUser = ({ role = "admin" }) => {
                 !selectedSkills.includes(skill));
 
     const addSkill = (skill) => {
-        setSelectedSkills((prev) => [...prev, skill]);
+        setSelectedSkills((prev) => {
+            if (!prev.some((s) => s.skillId === skill.skillId)) {
+                return [...prev, { skillId: skill.skillId, skillName: skill.skillName }];
+            }
+            return prev;
+        });
         setInputValue("");
     };
 
@@ -280,9 +285,9 @@ const AddUser = ({ role = "admin" }) => {
         submitData.append("Reference", formData.reference);
         submitData.append("Role", "Candidate");
         submitData.append("photo", formData.photo);
-        submitData.append("Status", formData.status || "Active");
+        submitData.append("IsActive", formData.isActive || "Active");
 
-        if (formData.reference === "Campus drive" && formData.cdid)
+        if (formData.reference === "Campus Drive" && formData.cdid)
             submitData.append("CDID", formData.cdid);
 
         // Optional Fiedls
@@ -307,8 +312,11 @@ const AddUser = ({ role = "admin" }) => {
         if (formData.resume)
             submitData.append("resume", formData.resume);
 
-        if (selectedSkills.length > 0)
-            selectedSkills.forEach((skill) => submitData.append("Skills", skill.skillId));
+        if (selectedSkills.length > 0) {
+            selectedSkills.forEach(skill => {
+                submitData.append("SkillIds", skill.skillId);
+            });
+        }
 
         try {
             const res = await axios.post(
@@ -624,6 +632,7 @@ const AddUser = ({ role = "admin" }) => {
                     value={formData.cdid}
                     onChange={(e) => setFormData({ ...formData, cdid: e.target.value })}
                     className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                {errors.cdid && <p className="text-red-500 text-xs">{errors.cdid}</p>}
             </div>
 
             {role === 'admin' && (
@@ -651,8 +660,8 @@ const AddUser = ({ role = "admin" }) => {
                     <div>
                         <label className="block mb-1 text-sm font-medium">Status</label>
                         <select
-                            value={formData.status}
-                            onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                            value={formData.isActive}
+                            onChange={(e) => setFormData({ ...formData, isActive: e.target.value })}
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700">
                             <option value="Active">Active</option>
                             <option value="Inactive">Inactive</option>
