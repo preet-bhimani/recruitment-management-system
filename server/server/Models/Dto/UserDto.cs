@@ -35,7 +35,6 @@ namespace server.Models.Dto
         [Required, StringLength(200)]
         public string Reference { get; set; }
 
-        // Resume optional in DTO
         [StringLength(500)]
         public string? Resume { get; set; }
 
@@ -69,7 +68,9 @@ namespace server.Models.Dto
         public string? PreCompanyTitle { get; set; }
 
         public int? CDID { get; set; }
-        public string? Role { get; set; } = "Candidate"; 
-        public List<string>? Skills { get; set; } = new List<string>();
+        public string? Role { get; set; } = "Candidate";
+        public List<Guid>? SkillIds { get; set; }
+
+        public bool IsActive { get; set; } = true;
     }
 }

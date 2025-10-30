@@ -93,7 +93,7 @@ function App() {
           <Route path='/admin-add-user' element={<AdminAddUser />} />
           <Route path='/admin-add-user-excel' element={<AdminAddUserExcel />} />
           <Route path='/admin-add-user-resume' element={<AdminAddUserResume />} />
-          <Route path='/admin-user-update' element={<AdminUserUpdate />} />
+          <Route path='/admin-user-update/:id' element={<AdminUserUpdate />} />
           <Route path='/admin-jobopening' element={<AdminJobOpening />} />
           <Route path='/admin-add-jobopening' element={<AdminAddJobOpening />} />
           <Route path='/admin-update-jobopening' element={<AdminUpdateJobOpening />} />

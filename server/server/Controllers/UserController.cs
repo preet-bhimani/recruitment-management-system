@@ -13,7 +13,7 @@ namespace server.Controllers
     public class UserController : ControllerBase
     {
         private readonly AppDbContext dbContext;
-        private const long MaxFileBytes = 5 * 1024 * 1024; // 5 MB
+        private const long MaxFileBytes = 5 * 1024 * 1024;
         private static readonly string[] AllowedExt = [".jpg", ".jpeg", ".png"];
         public UserController(AppDbContext dbContext)
         {
@@ -73,7 +73,7 @@ namespace server.Controllers
             if (resume != null && resume.Length > 0)
             {
                 // Max size is 10MB and allowed extension
-                const long MaxResumeBytes = 10 * 1024 * 1024; 
+                const long MaxResumeBytes = 10 * 1024 * 1024;
                 string[] AllowedResumeExt = [".pdf", ".doc", ".docx"];
 
                 if (resume.Length > MaxResumeBytes)
@@ -129,26 +129,17 @@ namespace server.Controllers
             var hasher = new PasswordHasher<User>();
             user.Password = hasher.HashPassword(user, userDto.Password);
 
-            // Assign skills if provided
-            if (userDto.Skills != null && userDto.Skills.Any())
+            // Assign existing skills only
+            if (userDto.SkillIds != null && userDto.SkillIds.Any())
             {
-                foreach (var skillName in userDto.Skills)
-                {
-                    var existingSkill = await dbContext.Skills
-                        .FirstOrDefaultAsync(s => s.SkillName.ToLower() == skillName.ToLower());
+                var validSkills = await dbContext.Skills
+                    .Where(s => userDto.SkillIds.Contains(s.SkillId))
+                    .ToListAsync();
 
-                    if (existingSkill != null)
-                    {
-                        user.Skills.Add(existingSkill);
-                    }
-                    else
-                    {
-                        // Create new skill if not exist
-                        var newSkill = new Skill { SkillName = skillName };
-                        dbContext.Skills.Add(newSkill);
-                        user.Skills.Add(newSkill);
-                    }
-                }
+                if (validSkills.Count != userDto.SkillIds.Count)
+                    return BadRequest("Pleas select skills from dropdown.");
+
+                user.Skills = validSkills;
             }
 
             // Add user to database
@@ -167,6 +158,241 @@ namespace server.Controllers
                 userId = user.UserId,
                 email = user.Email,
                 message = "User created successfully"
+            });
+        }
+
+        // Fetch all users
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await dbContext.Users.ToListAsync();
+
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+
+            foreach (var u in users)
+            {
+                if (!string.IsNullOrEmpty(u.Photo))
+                {
+                    u.Photo = baseUrl + u.Photo;
+                }
+            }
+
+            return Ok(users);
+        }
+
+        // Get user based on Id
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetUserById(Guid id)
+        {
+            var user = await dbContext.Users
+                .Include(u => u.Skills)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (user == null)
+                return NotFound("User not found");
+
+            var photoBaseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+            if (!string.IsNullOrEmpty(user.Photo))
+                user.Photo = photoBaseUrl + user.Photo;
+
+            var resumeBaseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Resumes/";
+            if (!string.IsNullOrEmpty(user.Resume))
+                user.Resume = resumeBaseUrl + user.Resume;
+
+            return Ok(new
+            {
+                user.UserId,
+                user.FullName,
+                user.Email,
+                user.PhoneNumber,
+                user.City,
+                user.Country,
+                user.DOB,
+                user.Photo,
+                user.Reference,
+                user.Resume,
+                user.BachelorDegree,
+                user.BachelorUniversity,
+                user.BachelorPercentage,
+                user.MasterDegree,
+                user.MasterUniversity,
+                user.MasterPercentage,
+                user.YearsOfExperience,
+                user.PreCompanyName,
+                user.PreCompanyTitle,
+                user.CDID,
+                user.Role,
+                user.IsActive,
+                user.CreatedAt,
+                skills = user.Skills.Select(s => new { skillId = s.SkillId, skillName = s.SkillName }).ToList()
+            });
+        }
+
+
+        // Update user
+        [HttpPut("update/{id:guid}")]
+        public async Task<IActionResult> UpdateUser(Guid id, [FromForm] UserDto userDto, [FromForm] IFormFile? photo, [FromForm] IFormFile? resume)
+        {
+            var user = await dbContext.Users
+                .Include(u => u.Skills)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (user == null)
+                return NotFound("User not found.");
+
+            // Prevent to change email
+            if (!string.Equals(user.Email.Trim(), (userDto.Email ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
+                return BadRequest("Email cannot be changed.");
+
+            // Handle photo upload
+            if (photo != null && photo.Length > 0)
+            {
+                if (photo.Length > MaxFileBytes)
+                    return BadRequest("File too large. Max 5 MB allowed.");
+
+                var ext = Path.GetExtension(photo.FileName).ToLowerInvariant();
+                if (!AllowedExt.Contains(ext))
+                    return BadRequest("Only JPG, JPEG, and PNG allowed.");
+
+                // Delete old photo if exists
+                if (!string.IsNullOrEmpty(user.Photo))
+                {
+                    var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Photos", user.Photo);
+                    if (System.IO.File.Exists(oldPath))
+                        System.IO.File.Delete(oldPath);
+                }
+
+                // Save new photo
+                var uploads = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Photos");
+                Directory.CreateDirectory(uploads);
+
+                var newPhotoName = $"{Guid.NewGuid():N}-{Path.GetFileName(photo.FileName)}";
+                var newPhotoPath = Path.Combine(uploads, newPhotoName);
+
+                using (var fs = new FileStream(newPhotoPath, FileMode.Create))
+                {
+                    await photo.CopyToAsync(fs);
+                }
+
+                user.Photo = newPhotoName;
+            }
+
+            // Handle resume upload
+            if (resume != null && resume.Length > 0)
+            {
+                const long MaxResumeBytes = 10 * 1024 * 1024;
+                string[] AllowedResumeExt = [".pdf", ".doc", ".docx"];
+
+                if (resume.Length > MaxResumeBytes)
+                    return BadRequest("Resume too large. Max 10 MB allowed.");
+
+                var ext = Path.GetExtension(resume.FileName).ToLowerInvariant();
+                if (!AllowedResumeExt.Contains(ext))
+                    return BadRequest("Only PDF, DOC, and DOCX allowed.");
+
+                // Delete old resume if exists
+                if (!string.IsNullOrEmpty(user.Resume))
+                {
+                    var oldResumePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Resumes", user.Resume);
+                    if (System.IO.File.Exists(oldResumePath))
+                        System.IO.File.Delete(oldResumePath);
+                }
+
+                // Save new resume
+                var resumeUploads = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Resumes");
+                Directory.CreateDirectory(resumeUploads);
+
+                var newResumeName = $"{Guid.NewGuid():N}-{Path.GetFileName(resume.FileName)}";
+                var newResumePath = Path.Combine(resumeUploads, newResumeName);
+
+                using (var fs = new FileStream(newResumePath, FileMode.Create))
+                {
+                    await resume.CopyToAsync(fs);
+                }
+
+                user.Resume = newResumeName;
+            }
+
+            // Update all other simple fields
+            user.FullName = userDto.FullName;
+            user.PhoneNumber = userDto.PhoneNumber;
+            user.City = userDto.City;
+            user.Country = userDto.Country;
+            user.DOB = DateOnly.FromDateTime(userDto.DOB);
+            user.Reference = userDto.Reference;
+            user.BachelorDegree = userDto.BachelorDegree;
+            user.BachelorUniversity = userDto.BachelorUniversity;
+            user.BachelorPercentage = userDto.BachelorPercentage;
+            user.MasterDegree = userDto.MasterDegree;
+            user.MasterUniversity = userDto.MasterUniversity;
+            user.MasterPercentage = userDto.MasterPercentage;
+            user.YearsOfExperience = userDto.YearsOfExperience;
+            user.PreCompanyName = userDto.PreCompanyName;
+            user.PreCompanyTitle = userDto.PreCompanyTitle;
+            user.Role = userDto.Role;
+            user.IsActive = userDto.IsActive;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            // Update existing skills only
+            if (userDto.SkillIds != null)
+            {
+                var validSkills = await dbContext.Skills
+                    .Where(s => userDto.SkillIds.Contains(s.SkillId))
+                    .ToListAsync();
+
+                if (validSkills.Count != userDto.SkillIds.Count)
+                    return BadRequest("Please select skills from dropdown.");
+
+                user.Skills.Clear();
+                foreach (var skill in validSkills)
+                    user.Skills.Add(skill);
+            }
+
+            // Update password if a new one is provided
+            if (!string.IsNullOrWhiteSpace(userDto.Password))
+            {
+                var hasher = new PasswordHasher<User>();
+                user.Password = hasher.HashPassword(user, userDto.Password);
+            }
+
+            // Save Changes
+            await dbContext.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "User updated successfully.",
+                userId = user.UserId
+            });
+        }
+
+        // Delete or just deactive user
+        [HttpDelete("delete/{id:guid}")]
+        public async Task<IActionResult> DeleteById(Guid id)
+        {
+            var user = await dbContext.Users.FindAsync(id);
+            if (user == null)
+                return NotFound("User not found.");
+
+            // Check if user is already in deactive state or not
+            if (!user.IsActive)
+            {
+                return Ok(new
+                {
+                    message = "User already inactive.",
+                    userId = user.UserId
+                });
+            }
+
+            // Change IsActive to false for deactive user
+            user.IsActive = false;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await dbContext.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "User deactivated successfully.",
+                userId = user.UserId
             });
         }
     }

@@ -40,7 +40,6 @@ const Skill = ({ role = "admin" }) => {
         fetchSkills();
     }, []);
 
-
     // Filter field
     const [showFilters, setShowFilters] = useState(false);
     const [filters, setFilters] = useState({
