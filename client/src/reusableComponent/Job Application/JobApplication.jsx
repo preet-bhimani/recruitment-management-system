@@ -293,7 +293,7 @@ const JobApplication = ({ role = "admin" }) => {
                                             className="flex items-center justify-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-sm w-full sm:w-auto"
                                             onClick={() => navigate('/admin-update-jobapplication')}>
                                             <Edit size={12} /> Update
-                                            </button>
+                                        </button>
 
                                             <button className="flex items-center justify-center gap-1 px-3 py-1 bg-rose-800 hover:bg-rose-700 rounded text-sm w-full sm:w-auto">
                                                 <Trash2 size={12} /> Delete

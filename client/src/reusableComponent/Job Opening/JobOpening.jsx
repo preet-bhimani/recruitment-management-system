@@ -1,37 +1,67 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Eye, Edit, Trash2, Filter } from "lucide-react";
+import { Eye, Edit, Trash2, Filter, Download } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const JobOpening = ({ role = "admin" }) => {
-  const jobs = [
-    {
-      joId: "8723B287-CCC3-46D9-CE23-08EEBF2GFD35",
-      title: "Jr. Software Engineer",
-      noOfOpening: 4,
-      requiredSkills: "Asp.Net ReactJS",
-      location: "Ahmedabad",
-      experience: "1",
-      status: "Open"
-    },
-    {
-      joId: "8723C287-DDD3-46E9-BF23-08FFCE2HGE35",
-      title: "Sr. AI Engineer",
-      noOfOpening: 2,
-      requiredSkills: "Pyhton Sklearn GenAI PyTorch",
-      location: "Ahmedabad",
-      experience: "7",
-      status: "Open"
-    },
-  ];
+
+  const [jobs, setJobs] = useState([]);
+
+  // Fetch Job Opening Data
+  const fetchJobOpening = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7119/api/JobOpening`)
+      setJobs(res.data || []);
+    }
+    catch (err) {
+      toast.error("Failed to load job opening data!")
+    }
+  }
+
+  // Filters
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    title: "",
+    location: "",
+    experience: "",
+    jobType: "",
+    status: "",
+    noOfOpening: "",
+  });
+
+  const titleOptions = useMemo(() => Array.from(new Set(jobs.map(j => j.title))).filter(Boolean).sort(), [jobs]);
+  const locationOptions = useMemo(() => Array.from(new Set(jobs.map(j => j.location))).filter(Boolean).sort(), [jobs]);
+
+  const statusOptions = ["Open", "Close", "Hold"];
+  const jobTypeOptions = ["Full time job", "Internship"];
+  const experienceOptions = ["0", "1+", "2+", "3+", "5+", "7+", "10+"];
+  const openingOptions = ["3+", "5+", "10+", "25+", "50+"];
+
+  // Filters Logic
+  const filteredJobs = useMemo(() => {
+    const expMin = filters.experience ? parseInt(String(filters.experience).replace("+", ""), 10) : null;
+    const openMin = filters.noOfOpening ? parseInt(String(filters.noOfOpening).replace("+", ""), 10) : null;
+
+    return jobs.filter((j) => {
+      const byTitle = filters.title ? j.title === filters.title : true;
+      const byLocation = filters.location ? j.location === filters.location : true;
+      const byExperience = expMin !== null && !Number.isNaN(expMin) ? Number(j.experience) >= expMin : true;
+      const byJobType = filters.jobType ? j.jobType === filters.jobType : true;
+      const byStatus = filters.status ? j.status === filters.status : true;
+      const byNoOfOpening = openMin !== null && !Number.isNaN(openMin) ? Number(j.noOfOpening) >= openMin : true;
+      return byTitle && byLocation && byExperience && byJobType && byStatus && byNoOfOpening;
+    });
+  }, [jobs, filters]);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
-  const totalItems = jobs.length;
+  const totalItems = filteredJobs.length;
   const pageItems = useMemo(
-    () => paginate(jobs, currentPage, pageSize),
-    [jobs, currentPage, pageSize]
+    () => paginate(filteredJobs, currentPage, pageSize),
+    [filteredJobs, currentPage, pageSize]
   );
 
   const navigate = useNavigate();
@@ -45,10 +75,28 @@ const JobOpening = ({ role = "admin" }) => {
     navigate(to);
   };
 
-  const handleUpdate = () => {
-    const to = r === "recruiter" ? "/recruiter-update-jobopening" : "/admin-update-jobopening";
+  const handleUpdate = (id) => {
+    const to = r === "recruiter" ? `/recruiter-update-jobopening/${id}` : `/admin-update-jobopening/${id}`;
     navigate(to);
   };
+
+  // Delete or Closed Job Opening Logic
+  const handleDelete = async (joId) => {
+    const confirmDelete = window.confirm("Are you sure you want to closed the job opening ?");
+    if (!confirmDelete) return;
+    try {
+      await axios.delete(`https://localhost:7119/api/JobOpening/delete/${joId}`);
+      toast.success("Job opening closed Successfully!");
+      await fetchJobOpening();
+    }
+    catch (err) {
+      toast.error(err.response?.data || "Failed to closed job opening")
+    }
+  }
+
+  useEffect(() => {
+    fetchJobOpening();
+  }, []);
 
   return <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 max-w-7xl mx.auto w-full min-w-0">
 
@@ -61,10 +109,99 @@ const JobOpening = ({ role = "admin" }) => {
           + Add Job Opening
         </button>
       )}
-      <button className="flex items-center justify-center gap-1 px-3 py-1 bg-blue-700 hover:bg-blue-600 rounded text-sm w-full sm:w-auto">
+      <button
+        className="flex items-center justify-center gap-1 px-3 py-1 bg-blue-700 hover:bg-blue-600 rounded text-sm w-full sm:w-auto"
+        onClick={() => setShowFilters((prev) => !prev)}>
         <Filter size={14} /> Filters
       </button>
     </div>
+
+    {/* Filter UI */}
+    {showFilters && (
+      <div className="mb-4 bg-neutral-900 border border-neutral-700 rounded-md p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+
+          {/* Title */}
+          <select
+            value={filters.title}
+            onChange={(e) => setFilters((f) => ({ ...f, title: e.target.value }))}
+            className="bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm">
+            <option value="">All titles</option>
+            {titleOptions.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+
+          {/* Location */}
+          <select
+            value={filters.location}
+            onChange={(e) => setFilters((f) => ({ ...f, location: e.target.value }))}
+            className="bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm">
+            <option value="">All locations</option>
+            {locationOptions.map((loc) => (
+              <option key={loc} value={loc}>{loc}</option>
+            ))}
+          </select>
+
+          {/* Experience */}
+          <select
+            value={filters.experience}
+            onChange={(e) => setFilters((f) => ({ ...f, experience: e.target.value }))}
+            className="bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm">
+            <option value="">Any experience</option>
+            {experienceOptions.map((opt) => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+
+          {/* Job Type */}
+          <select
+            value={filters.jobType}
+            onChange={(e) => setFilters((f) => ({ ...f, jobType: e.target.value }))}
+            className="bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm">
+            <option value="">All types</option>
+            {jobTypeOptions.map((jt) => (
+              <option key={jt} value={jt}>{jt}</option>
+            ))}
+          </select>
+
+          {/* Status */}
+          <select
+            value={filters.status}
+            onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}
+            className="bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm">
+            <option value="">All status</option>
+            {statusOptions.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+
+          {/* No. of Openings */}
+          <select
+            value={filters.noOfOpening}
+            onChange={(e) => setFilters((f) => ({ ...f, noOfOpening: e.target.value }))}
+            className="bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm">
+            <option value="">Any openings</option>
+            {openingOptions.map((opt) => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mt-3 flex gap-2 justify-end">
+          <button
+            className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 rounded text-sm"
+            onClick={() => setFilters({
+              title: "", location: "", experience: "", jobType: "", status: "", noOfOpening: ""
+            })}>
+            Clear
+          </button>
+          <button className="flex items-center gap-2 px-3 py-1 bg-purple-700 hover:bg-purple-600 rounded text-sm">
+            <Download size={14} /> Download
+          </button>
+        </div>
+      </div>
+    )}
 
     {/* Card View Data */}
     <div className="space-y-2">
@@ -77,7 +214,6 @@ const JobOpening = ({ role = "admin" }) => {
               <p className="break-all"><span className="font-medium text-purple-300">JoId:</span> {job.joId}</p>
               <p className="break-words"><span className="font-medium text-purple-300">Title:</span> {job.title}</p>
               <p className="break-words"><span className="font-medium text-purple-300">No of Openings:</span> {job.noOfOpening}</p>
-              <p className="break-words"><span className="font-medium text-purple-300">Required Skills:</span> {job.requiredSkills}</p>
               <p className="break-words"><span className="font-medium text-purple-300">Location:</span> {job.location}</p>
               <p className="break-words"><span className="font-medium text-purple-300">Experience:</span> {job.experience}</p>
               <p className="break-words">
@@ -105,12 +241,15 @@ const JobOpening = ({ role = "admin" }) => {
               <>
                 <button
                   className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs w-full sm:w-auto"
-                  onClick={handleUpdate}>
+                  onClick={() => handleUpdate(job.joId)}>
                   <Edit size={14} /> Update
                 </button>
-                <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs w-full sm:w-auto">
-                  <Trash2 size={14} /> Delete
-                </button>
+                {job.status !== "Closed" && (
+                  <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs w-full sm:w-auto"
+                    onClick={() => handleDelete(job.joId)}>
+                    <Trash2 size={14} /> Delete
+                  </button>
+                )}
               </>
             )}
           </div>
