@@ -96,7 +96,7 @@ function App() {
           <Route path='/admin-user-update/:id' element={<AdminUserUpdate />} />
           <Route path='/admin-jobopening' element={<AdminJobOpening />} />
           <Route path='/admin-add-jobopening' element={<AdminAddJobOpening />} />
-          <Route path='/admin-update-jobopening' element={<AdminUpdateJobOpening />} />
+          <Route path='/admin-update-jobopening/:id' element={<AdminUpdateJobOpening />} />
           <Route path='/admin-jobapplication' element={<AdminJobApplication />} />
           <Route path='/admin-add-jobapplication' element={<AdminAddJobApplication />} />
           <Route path='/admin-update-jobapplication' element={<AdminUpdateJobApplication />} />
@@ -141,7 +141,7 @@ function App() {
           <Route path='/recruiter-add-candidate-resume' element={<RecruiterAddUserResume />} />
           <Route path='/recruiter-jobopening' element={<RecruiterJobOpening />} />
           <Route path='/recruiter-add-jobopening' element={<RecruiterAddJobOpening />} />
-          <Route path='/recruiter-update-jobopening' element={<RecruiterUpdateJobOpening />} />
+          <Route path='/recruiter-update-jobopening/:id' element={<RecruiterUpdateJobOpening />} />
           <Route path='/recruiter-meeting-scheduling' element={<RecruiterMeetingScheduling />} />
           <Route path='/reviewer-dashboard' element={<ReviewerDashboard />} />
           <Route path='/interviewer-feedback' element={<InterviewerFeedback />} />

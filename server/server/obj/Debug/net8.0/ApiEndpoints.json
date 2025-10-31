@@ -198,6 +198,85 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "server.Controllers.JobOpeningController",
+    "Method": "AddJobOpening",
+    "RelativePath": "api/JobOpening",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "jobDto",
+        "Type": "server.Models.Dto.JobOpeningDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.JobOpeningController",
+    "Method": "GetAllJobOpening",
+    "RelativePath": "api/JobOpening",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.JobOpeningController",
+    "Method": "GetJobOpeningById",
+    "RelativePath": "api/JobOpening/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.JobOpeningController",
+    "Method": "DeleteJobOpening",
+    "RelativePath": "api/JobOpening/delete/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.JobOpeningController",
+    "Method": "UpdateJobOpening",
+    "RelativePath": "api/JobOpening/update/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "jobDto",
+        "Type": "server.Models.Dto.JobOpeningDto",
+        "IsRequired": true
+      },
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "server.Controllers.SkillController",
     "Method": "AddSkill",
     "RelativePath": "api/Skill",

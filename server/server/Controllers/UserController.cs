@@ -376,7 +376,7 @@ namespace server.Controllers
             // Check if user is already in deactive state or not
             if (!user.IsActive)
             {
-                return Ok(new
+                return Conflict(new
                 {
                     message = "User already inactive.",
                     userId = user.UserId

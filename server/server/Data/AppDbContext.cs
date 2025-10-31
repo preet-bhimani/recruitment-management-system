@@ -11,7 +11,7 @@ namespace server.Data
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Skill> Skills { get; set; }
-
+        public DbSet<JobOpening> JobOpenings { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
