@@ -5,13 +5,15 @@ namespace server.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) 
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            
+
         }
         public DbSet<User> Users { get; set; }
         public DbSet<Skill> Skills { get; set; }
         public DbSet<JobOpening> JobOpenings { get; set; }
+        public DbSet<CampusDrive> CampusDrives { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -25,8 +27,18 @@ namespace server.Data
                 .IsUnique();
 
             modelBuilder.Entity<User>()
-                .HasIndex(u =>u.Email)
+                .HasIndex(u => u.Email)
                 .IsUnique();
+
+            modelBuilder.Entity<CampusDrive>()
+                .HasOne(cd => cd.JobOpening)
+                .WithMany(jo => jo.CampusDrives)
+                .HasForeignKey(cd => cd.JOId);
+
+            modelBuilder.Entity<CampusDrive>()
+                .HasMany(cd => cd.Users)
+                .WithOne(u => u.CampusDrive)
+                .HasForeignKey(u => u.CDID);
         }
     }
 }

@@ -2,25 +2,25 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Eye, Edit, Trash2, Filter, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CommonPagination, { paginate } from "../CommonPagination";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const CampusDrive = ({ role = "admin" }) => {
 
     const navigate = useNavigate();
 
-    const campusdrive = [
-        {
-            cdId: "9834B398-CCC4-57D0-CE34-19EEBF3GFD46",
-            title: "Jr. Software Engineer",
-            universityName: "RK University",
-            DriveDate: "2025-07-16",
-        },
-        {
-            cdId: "9834C398-DDD4-57E0-BF34-19FFCE3HGE46",
-            title: "Data Scientist",
-            universityName: "MS University",
-            DriveDate: "2025-04-20",
-        },
-    ];
+    const [campus, setCampus] = useState([]);
+
+    // Fetch Campus Drive
+    const fetchCampusDrive = async () => {
+        try {
+            const res = await axios.get(`https://localhost:7119/api/CampusDrive`)
+            setCampus(res.data || []);
+        }
+        catch (err) {
+            toast.error("Failed to load campus drive data!")
+        }
+    }
 
     // Filters
     const [showFilters, setShowFilters] = useState(false);
@@ -32,30 +32,46 @@ const CampusDrive = ({ role = "admin" }) => {
     });
 
     // Filter for Job Titles and Universities
-    const jobTitles = useMemo(() => Array.from(new Set(campusdrive.map((c) => c.title))).sort(), [campusdrive]);
-    const universities = useMemo(
-        () => Array.from(new Set(campusdrive.map((c) => c.universityName).filter(Boolean))).sort(),
-        [campusdrive]
-    );
+    const jobTitles = useMemo(() => Array.from(new Set(campus.map((c) => c.jobTitle))).sort(), [campus]);
+
+    const universities = useMemo(() => Array.from(new Set(campus.map((c) => c.universityName).filter(Boolean))).sort(), [campus]);
 
     // Fliter Logic
     const filtered = useMemo(() => {
-        return campusdrive.filter((c) => {
+        return campus.filter((c) => {
             if (filters.jobTitle && c.title !== filters.jobTitle) return false;
             if (filters.universityName && c.universityName !== filters.universityName) return false;
             if (filters.dateFrom) {
                 const from = new Date(filters.dateFrom);
-                const d = new Date(c.DriveDate);
+                const d = new Date(c.driveDate);
                 if (d < from) return false;
             }
             if (filters.dateTo) {
                 const to = new Date(filters.dateTo);
-                const d = new Date(c.DriveDate);
+                const d = new Date(c.driveDate);
                 if (d > to) return false;
             }
             return true;
         });
-    }, [campusdrive, filters]);
+    }, [campus, filters]);
+
+    // Handle Delete
+    const handleDelete = async (id) => {
+        const confirmDelete = window.confirm("Are you sure you want to inactive campus drive ?");
+        if (!confirmDelete) return;
+        try {
+            await axios.delete(`https://localhost:7119/api/CampusDrive/delete/${id}`);
+            toast.success('Campus Drive Inactive Successfully!');
+            await fetchCampusDrive();
+        }
+        catch (err) {
+            toast.error(err.response.data || 'Failed to inactive campus drive!')
+        }
+    }
+
+    useEffect(() => {
+        fetchCampusDrive();
+    }, [])
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -159,10 +175,16 @@ const CampusDrive = ({ role = "admin" }) => {
                     className="bg-neutral-900 border border-neutral-700 rounded-md p-4 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 flex-1 min-w-0 text-neutral-300">
-                            <p className="break-all"><span className="font-medium text-purple-300">CD Id:</span>{" "} {cd.cdId}</p>
-                            <p className="break-words"><span className="font-medium text-purple-300">University Name:</span>{" "} {cd.universityName}</p>
-                            <p className="break-words"><span className="font-medium text-purple-300">Title:</span> {cd.title}</p>
-                            <p className="break-words"><span className="font-medium text-purple-300">Drive Date:</span> {cd.DriveDate}</p>
+                            <p className="break-all"><span className="font-medium text-purple-300">CD ID:</span> {cd.cdid}</p>
+                            <p className="break-words"><span className="font-medium text-purple-300">University Name:</span> {cd.universityName}</p>
+                            <p className="break-words"><span className="font-medium text-purple-300">Title:</span> {cd.jobTitle}</p>
+                            <p className="break-words"><span className="font-medium text-purple-300">Drive Date:</span> {cd.driveDate}</p>
+                            <p>
+                                <span className="font-medium text-purple-300">Status:</span>{" "}
+                                <span className={`px-2 py-0.5 rounded text-xs ${cd.isActive ? "bg-emerald-800 text-emerald-200" : "bg-rose-800 text-rose-200"}`}>
+                                    {cd.isActive ? "Active" : "Inactive"}
+                                </span>
+                            </p>
                         </div>
                     </div>
 
@@ -178,14 +200,16 @@ const CampusDrive = ({ role = "admin" }) => {
                             <>
                                 <button
                                     className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                    onClick={() => navigate('/admin-update-campusdrive/')}>
+                                    onClick={() => navigate(`/admin-update-campusdrive/${cd.cdid}`)}>
                                     <Edit size={14} /> Update
                                 </button>
-
-                                <button
-                                    className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
-                                    <Trash2 size={14} /> Delete
-                                </button>
+                                {cd.isActive && (
+                                    <button
+                                        className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                        onClick={() => handleDelete(cd.cdid)}>
+                                        <Trash2 size={14} /> Delete
+                                    </button>
+                                )}
                             </>
                         )}
                     </div>

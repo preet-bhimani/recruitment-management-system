@@ -35,6 +35,8 @@ namespace server.Models.Entities
         [Required]
         public required int Experience { get; set; }
 
+        public ICollection<CampusDrive> CampusDrives { get; set; }
+
         [Required]
         public string Status { get; set; } = "Open";
 

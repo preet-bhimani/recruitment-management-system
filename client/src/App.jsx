@@ -115,7 +115,7 @@ function App() {
           <Route path='/admin-update-document' element={<AdminUpdateDocuments />} />
           <Route path='/admin-campusdrive' element={<AdminCampusDrive />} />
           <Route path='/admin-add-campusdrive' element={<AdminAddCampusDrive />} />
-          <Route path='/admin-update-campusdrive' element={<AdminUpdateCampusDrive />} />
+          <Route path='/admin-update-campusdrive/:id' element={<AdminUpdateCampusDrive />} />
           <Route path='/admin-employee' element={<AdminEmployee />} />
           <Route path='/admin-add-employee' element={<AdminAddEmployee />} />
           <Route path='/admin-update-employee' element={<AdminUpdateEmployee />} />

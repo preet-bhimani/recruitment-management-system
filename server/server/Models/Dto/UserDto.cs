@@ -67,7 +67,7 @@ namespace server.Models.Dto
         [StringLength(150)]
         public string? PreCompanyTitle { get; set; }
 
-        public int? CDID { get; set; }
+        public Guid? CDID { get; set; }
         public string? Role { get; set; } = "Candidate";
         public List<Guid>? SkillIds { get; set; }
 

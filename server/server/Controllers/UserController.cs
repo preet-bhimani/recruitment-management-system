@@ -244,6 +244,10 @@ namespace server.Controllers
             if (!string.Equals(user.Email.Trim(), (userDto.Email ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
                 return BadRequest("Email cannot be changed.");
 
+            // If reference is Campus drive then allow CDID
+            if (userDto.Reference == "Campus drive" && !userDto.CDID.HasValue)
+                return BadRequest("CDID is required for Campus drive reference.");
+
             // Handle photo upload
             if (photo != null && photo.Length > 0)
             {
@@ -330,6 +334,7 @@ namespace server.Controllers
             user.PreCompanyName = userDto.PreCompanyName;
             user.PreCompanyTitle = userDto.PreCompanyTitle;
             user.Role = userDto.Role;
+            user.CDID = userDto.CDID;
             user.IsActive = userDto.IsActive;
             user.UpdatedAt = DateTime.UtcNow;
 

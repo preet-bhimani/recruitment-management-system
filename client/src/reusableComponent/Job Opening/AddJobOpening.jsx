@@ -128,7 +128,7 @@ const AddJobOpening = () => {
             const res = await axios.post(`https://localhost:7119/api/JobOpening`, formData)
             toast.success(res.data.message || "Job opening added successfully!");
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to add job opening!");
+            toast.error(error.response?.message || "Failed to add job opening!");
         }
     }
 
