@@ -13,6 +13,7 @@ namespace server.Data
         public DbSet<Skill> Skills { get; set; }
         public DbSet<JobOpening> JobOpenings { get; set; }
         public DbSet<CampusDrive> CampusDrives { get; set; }
+        public DbSet<JobApplication> JobApplications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,6 +40,22 @@ namespace server.Data
                 .HasMany(cd => cd.Users)
                 .WithOne(u => u.CampusDrive)
                 .HasForeignKey(u => u.CDID);
+
+            modelBuilder.Entity<JobApplication>()
+                .HasOne(j => j.User)
+                .WithMany() 
+                .HasForeignKey(j => j.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<JobApplication>()
+                .HasOne(j => j.JobOpening)
+                .WithMany()
+                .HasForeignKey(j => j.JOId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<JobApplication>()
+                .HasIndex(j => new { j.UserId, j.JOId })
+                .IsUnique();
         }
     }
 }

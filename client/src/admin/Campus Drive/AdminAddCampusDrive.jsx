@@ -55,14 +55,12 @@ const AdminAddCampusDrive = () => {
 
         setErrors(newErrors);
         if (hasError) return;
-
+        
         // Endpoint Logic
         try {
             const res = await axios.post(`https://localhost:7119/api/CampusDrive`, formData)
-
             toast.success(res.data.message || "Campus Drive added successfully!");
         } catch (err) {
-            console.log("error", err);
             toast.error(err.response.message || "Failed to add campus drive.");
         }
     };

@@ -1,49 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MapPin, Clock, Briefcase, GraduationCap, Star, Building2, CheckCircle } from "lucide-react";
 import CommonNavbar from "../components/CommonNavbar";
 import Footer from "../components/Footer";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const JobDescription = () => {
-  const jobData = {
-    joid: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
-    title: "Sr. Software Engineer",
-    location: "Mumbai",
-    experience: "7+ years",
-    jobType: "Full Time",
-    qualification: "B.Tech CE/IT, M.Tech CE/IT, MCA",
-    requiredSkills: [
-      "SDK / API productization.",
-      "Azure cloud services & infrastructure automation",
-      "C/C++",
-      "API security & cryptography best practices",
-      "SQL"
-    ],
-    preferredSkills: [
-      "Post-Quantum Cryptography (PQC)",
-      "Awareness of compliance frameworks (SOC2, ISO 27001)",
-      "HSMs, secure enclaves, or developer adoption pipelines",
-    ],
-    rolesResponsibilities: [
-      "Package and distribute SDKs across multiple languages (Python, C#, C/C++).",
-      "Deploy SDK services in Azure cloud (VMs, AKS, Key Vault, App Services).",
-      "Ensure secure APIs (TLS, OAuth2, JWT, PKI) and strong networking",
-      "Implement software licensing & monetization models (subscription/usage-based)",
-      "Enable client adoption with CI/CD pipelines, templates, and best practices",
-    ],
-    aboutCompany: "Roima has a crystal-clear vision. Our mission is to help our clients to achieve sustainable results through cutting-edge supply chain software and services. Our clients can expect noteworthy benefits like increased profitability, resilience, and long-term growth."
-  };
 
+  const [jobData, setJobData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  const aboutCompany = "xxxyyyzzz has a crystal-clear vision. Our mission is to help our clients to achieve sustainable results through cutting-edge supply chain software and services. Our clients can expect noteworthy benefits like increased profitability, resilience, and long-term growth.";
+  const { id } = useParams();
+  const fetchJob = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7119/api/JobOpening/${id}`);
+      const data = res.data;
+      setJobData({
+        ...data,
+        requiredSkills: data.requiredSkills ? data.requiredSkills.split(",") : [],
+        preferredSkills: data.preferredSkills ? data.preferredSkills.split(",") : [],
+        description: data.description
+          ? data.description.split(/\n+/).map(line => line.trim()).filter(Boolean)
+          : [],
+      });
+    } catch (err) {
+      toast.error("Error to fetch job details!");
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchJob();
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-950 text-white">
+        Loading job details...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950">
       {/* Navbar */}
-      <CommonNavbar isLoggedIn={true} role="Candidates"/>
+      <CommonNavbar isLoggedIn={true} role="Candidates" />
 
       {/* Main Layout */}
       <main className="flex-1 py-8 px-4">
         <div className="max-w-4xl mx-auto">
-
           <div className="bg-neutral-900 rounded-lg p-8 mb-8">
             <h1 className="text-4xl font-bold text-white mb-4">{jobData.title}</h1>
 
@@ -122,7 +131,7 @@ const JobDescription = () => {
                 Roles & Responsibilities
               </h2>
               <ul className="space-y-3">
-                {jobData.rolesResponsibilities.map((responsibility, index) => (
+                {jobData.description.map((responsibility, index) => (
                   <li key={index} className="flex items-start gap-3 text-neutral-300">
                     <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
                     <span>{responsibility}</span>
@@ -131,13 +140,23 @@ const JobDescription = () => {
               </ul>
             </div>
 
-            {/* About Roima */}
+            {/* Comment */}
+            <div className="bg-neutral-900 rounded-lg p-6">
+              <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                <CheckCircle className="w-6 h-6 text-cyan-400" />
+                Comment
+              </h2>
+              <p className="text-neutral-300">{jobData?.comment || "No comments available."}</p>
+            </div>
+
+
+            {/* About xxxyyyzzz */}
             <div className="bg-neutral-900 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                 <Building2 className="w-6 h-6 text-indigo-400" />
-                About Roima
+                About xxxyyyzzz
               </h2>
-              <p className="text-neutral-300 leading-relaxed">{jobData.aboutCompany}</p>
+              <p className="text-neutral-300 leading-relaxed">{aboutCompany}</p>
             </div>
 
             {/* Apply Button */}

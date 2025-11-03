@@ -99,7 +99,7 @@ function App() {
           <Route path='/admin-update-jobopening/:id' element={<AdminUpdateJobOpening />} />
           <Route path='/admin-jobapplication' element={<AdminJobApplication />} />
           <Route path='/admin-add-jobapplication' element={<AdminAddJobApplication />} />
-          <Route path='/admin-update-jobapplication' element={<AdminUpdateJobApplication />} />
+          <Route path='/admin-update-jobapplication/:id' element={<AdminUpdateJobApplication />} />
           <Route path='/admin-techinterview' element={<AdminTechInterview />} />
           <Route path='/admin-add-techinterview' element={<AdminAddTechInterview />} />
           <Route path='/admin-update-techinterview' element={<AdminUpdateTechInterview />} />
@@ -125,7 +125,7 @@ function App() {
           <Route path='/' element={<CandidateDashboard />} />
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<Login />} />
-          <Route path='/job-description' element={<JobDescription />} />
+          <Route path='/job-description/:id' element={<JobDescription />} />
           <Route path='/resume' element={<Resume />} />
           <Route path='/update-profile' element={<UpdateProfile />} />
           <Route path='/update-password-mail' element={<UpdatePasswordMail />} />

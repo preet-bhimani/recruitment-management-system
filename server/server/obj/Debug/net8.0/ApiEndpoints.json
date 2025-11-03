@@ -277,6 +277,69 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "server.Controllers.JobApplicationController",
+    "Method": "AddJobApplication",
+    "RelativePath": "api/JobApplication",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "jaDto",
+        "Type": "server.Models.Dto.JobApplicationDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.JobApplicationController",
+    "Method": "GetAllJobApplications",
+    "RelativePath": "api/JobApplication",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.JobApplicationController",
+    "Method": "GetJobApplicationById",
+    "RelativePath": "api/JobApplication/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.JobApplicationController",
+    "Method": "UpdateJobApplication",
+    "RelativePath": "api/JobApplication/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "jaDto",
+        "Type": "server.Models.Dto.JobApplicationDto",
+        "IsRequired": true
+      },
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "server.Controllers.JobOpeningController",
     "Method": "AddJobOpening",
     "RelativePath": "api/JobOpening",
@@ -332,6 +395,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.JobOpeningController",
+    "Method": "GetJobOpeningStatusOpen",
+    "RelativePath": "api/JobOpening/jobopen",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

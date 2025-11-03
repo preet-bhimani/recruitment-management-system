@@ -184,7 +184,7 @@ const AllUsers = ({ role = "admin" }) => {
                             <img
                                 src={user.photo}
                                 alt={user.fullName}
-                                className="w-10 h-10 rounded-full border border-neutral-600" />
+                                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover flex-shrink-0" />
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-1 flex-1">
                                 <p><span className="font-medium text-purple-300">UserID:</span> {user.userId || "-"}</p>
                                 <p><span className="font-medium text-purple-300">Name:</span> {user.fullName || "-"}</p>

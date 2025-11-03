@@ -1,78 +1,66 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import Footer from "../components/Footer";
 import { MapPin, Briefcase, Plus } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const CandidateDashboard = () => {
 
+  const [jobs, setJobs] = useState([]);
+
+  const fetchJobs = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7119/api/JobOpening/jobopen`)
+      setJobs(res.data || []);
+    }
+    catch (err) {
+      toast.error("Error to fectch jobs!")
+    }
+  }
+
   const [filters, setFilters] = useState({
     city: "",
-    experience: ""
+    experience: "",
+    jobType: "",
   });
 
-  const location = [
-    "Location",
-    "Säterinkatu 6",
-    "Pori",
-    "Seinäjoki",
-    "Tampere",
-    "Turku",
-    "Aalborg",
-    "Aarhus",
-    "Holte",
-    "Göteborg",
-    "Linköping",
-    "Västerås",
-    "Ahmedabad",
-    "Mumbai",
-    "Bloomingdale, IL (Chicago)"
-  ];
+  // Static Options
+  const uniqueLocations = ["Location", ...Array.from(new Set(jobs.map(job => job.location).filter(Boolean)))];
 
-  const experienceLevels = [
-    "Experience",
-    "0",
-    "1+",
-    "2+",
-    "3+"
-  ];
+  const jobTypeOptions = ["Full time job", "Internship"];
+  const experienceLevels = ["Experience", "0", "1+", "2+", "3+", "5+", "7+", "10+"];
 
-  const jobs = [
-    {
-      joId: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
-      title: "Sr. Software Engineer",
-      city: "Ahmedabad",
-      jobType: "Full time",
-      experience: "7+ years"
-    },
-    {
-      joId: "9CF256C4-7ECA-4469-8CCE-08DD70ACE5C1",
-      title: "Jr. AI Developer",
-      city: "Ahmedabad",
-      jobType: "Full time",
-      experience: "2+ years"
-    },
-    {
-      joId: "4091FDD1-2D1F-44F5-00BB-08DDB922600D",
-      title: "Data Scientist",
-      city: "Tampere",
-      jobType: "Full time",
-      experience: "1+ years"
-    },
-    {
-      joId: "8723C287-DDD3-46E9-BF23-08FFCE2HGE35",
-      title: "Sr. HR Manager",
-      city: "Göteborg",
-      jobType: "Full time",
-      experience: "4+ years"
-    }
-  ];
+  // Filters Logic
+  const filteredJobs = useMemo(() => {
+    const expMin = filters.experience && filters.experience !== "Experience"
+      ? parseInt(String(filters.experience).replace("+", ""), 10)
+      : null;
+
+    return jobs.filter((job) => {
+      const byLocation =
+        filters.city && filters.city !== "Location" ? job.location === filters.city : true;
+
+      const byExperience =
+        expMin !== null && !Number.isNaN(expMin) ? Number(job.experience) >= expMin : true;
+
+      const byJobType =
+        filters.jobType ? job.jobType === filters.jobType : true;
+
+      return byLocation && byExperience && byJobType;
+    });
+  }, [jobs, filters]);
+
+  useEffect(() => {
+    fetchJobs();
+  }, [])
 
   const navigate = useNavigate();
 
   return <div className="min-h-screen flex flex-col bg-neutral-950">
     {/* Navbar */}
-    <CommonNavbar isLoggedIn hasSelectedApplication role="Candidates"/>
+    <CommonNavbar isLoggedIn hasSelectedApplication role="Candidates" />
 
     {/* Main Layout */}
     <main className="flex-1 py-8 px-4">
@@ -92,8 +80,8 @@ const CandidateDashboard = () => {
               <select
                 value={filters.city}
                 onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                {location.map(city => (
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white">
+                {uniqueLocations.map(city => (
                   <option key={city} value={city}>{city}</option>
                 ))}
               </select>
@@ -105,47 +93,53 @@ const CandidateDashboard = () => {
               <select
                 value={filters.experience}
                 onChange={(e) => setFilters({ ...filters, experience: e.target.value })}
-                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white">
                 {experienceLevels.map(exp => (
                   <option key={exp} value={exp}>{exp}</option>
                 ))}
               </select>
             </div>
 
-            {/* Apply Filters */}
-            <div className="flex items-end">
-              <button className="w-full px-6 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-medium transition">
-                Apply Filters
-              </button>
+            {/* Job Type Filter */}
+            <div>
+              <label className="block text-sm font-medium text-neutral-300 mb-2">Job Type</label>
+              <select
+                value={filters.jobType}
+                onChange={(e) => setFilters({ ...filters, jobType: e.target.value })}
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white">
+                <option value="">Job Type</option>
+                {jobTypeOptions.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {jobs.map(job => (
+          {filteredJobs.map(job => (
             <div key={job.id} className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-neutral-600 transition">
 
               {/* Job Details */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <h2 className="text-2xl font-bold text-white mb-2">{job.title}</h2>
-
                   <div className="flex items-center gap-4 text-neutral-400">
                     <div className="flex items-center gap-1">
                       <MapPin className="w-4 h-4" />
-                      <span className="text-sm">{job.city}</span>
+                      <span className="text-sm">{job.location}</span>
                     </div>
                     <span className="text-sm">{job.jobType}</span>
                     <div className="flex items-center gap-1">
                       <Briefcase className="w-4 h-4" />
-                      <span className="text-sm">Experience: {job.experience}</span>
+                      <span className="text-sm">Experience: {job.experience}+ years</span>
                     </div>
                   </div>
                 </div>
 
                 {/* View Job Button */}
                 <button
-                  onClick={() => navigate('/job-description')}
+                  onClick={() => navigate(`/job-description/${job.joId}`)}
                   className="flex items-center gap-2 px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-medium transition ml-4">
                   <Plus className="w-4 h-4" />
                   View Job

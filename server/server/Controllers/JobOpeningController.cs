@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Models.Dto;
 using server.Models.Entities;
@@ -66,6 +67,20 @@ namespace server.Controllers
             if (job == null)
             {
                 return NotFound("Job Opening not found");
+            }
+
+            return Ok(job);
+        }
+
+        // Fetch Job Opening only which status is open
+        [HttpGet("jobopen")]
+        public async Task<IActionResult> GetJobOpeningStatusOpen()
+        {
+            var job = await dbContext.JobOpenings.Where(j => j.Status == "Open").ToListAsync();
+
+            if(!job.Any())
+            {
+                return NotFound("No job opening found");
             }
 
             return Ok(job);

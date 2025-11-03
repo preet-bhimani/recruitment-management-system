@@ -39,7 +39,7 @@ const UpdateJobOpening = ({ id }) => {
     const fetchJobOpening = async () => {
         try {
             const res = await axios.get(`https://localhost:7119/api/JobOpening/${id}`)
-            setJobsData(res.data || {});
+            setJobsData(res.data || []);
         }
         catch (err) {
             toast.error("Failed to load job opening data!")
