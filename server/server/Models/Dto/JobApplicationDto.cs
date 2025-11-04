@@ -21,5 +21,6 @@ namespace server.Models.Dto
 
         [Required]
         public string OverallStatus { get; set; } = "Applied";
+        public string? HoldOverallStatus { get; set; }
     }
 }

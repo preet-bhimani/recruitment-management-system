@@ -7,20 +7,20 @@
       "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\controllers\\jobapplicationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\controllers\\campusdrivecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\controllers\\campusdrivecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\models\\dto\\jobapplicationdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\models\\dto\\jobapplicationdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\models\\entities\\jobapplication.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\models\\entities\\jobapplication.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\controllers\\campusdrivecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\controllers\\campusdrivecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\models\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,15 +38,15 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "UserController.cs",
-              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\UserController.cs",
-              "RelativeDocumentMoniker": "server\\Controllers\\UserController.cs",
-              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\UserController.cs",
-              "RelativeToolTip": "server\\Controllers\\UserController.cs",
-              "ViewState": "AgIAAJ8AAAAAAAAAAAAYwKsAAAAkAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "JobApplicationDto.cs",
+              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Dto\\JobApplicationDto.cs",
+              "RelativeDocumentMoniker": "server\\Models\\Dto\\JobApplicationDto.cs",
+              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Dto\\JobApplicationDto.cs",
+              "RelativeToolTip": "server\\Models\\Dto\\JobApplicationDto.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAUwBcAAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-03T15:47:00.757Z",
+              "WhenOpened": "2025-11-04T14:04:05.356Z",
               "EditorCaption": ""
             },
             {
@@ -55,16 +55,28 @@
               "Title": "JobApplicationController.cs",
               "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\JobApplicationController.cs",
               "RelativeDocumentMoniker": "server\\Controllers\\JobApplicationController.cs",
-              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\JobApplicationController.cs",
-              "RelativeToolTip": "server\\Controllers\\JobApplicationController.cs",
-              "ViewState": "AgIAAGQAAAAAAAAAAAAAwHYAAAANAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\JobApplicationController.cs*",
+              "RelativeToolTip": "server\\Controllers\\JobApplicationController.cs*",
+              "ViewState": "AgIAAOkAAAAAAAAAAAAAAEsBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-03T12:37:49.219Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "server\\Controllers\\UserController.cs",
+              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\UserController.cs",
+              "RelativeToolTip": "server\\Controllers\\UserController.cs",
+              "ViewState": "AgIAAJ8AAAAAAAAAAAAYwKsAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-03T15:47:00.757Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "CampusDriveController.cs",
               "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\CampusDriveController.cs",
               "RelativeDocumentMoniker": "server\\Controllers\\CampusDriveController.cs",
@@ -72,32 +84,19 @@
               "RelativeToolTip": "server\\Controllers\\CampusDriveController.cs",
               "ViewState": "AgIAAFcAAAAAAAAAAADwvzwAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-02T12:45:13.189Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-02T12:45:13.189Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "JobApplication.cs",
               "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Entities\\JobApplication.cs",
               "RelativeDocumentMoniker": "server\\Models\\Entities\\JobApplication.cs",
               "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Entities\\JobApplication.cs",
               "RelativeToolTip": "server\\Models\\Entities\\JobApplication.cs",
-              "ViewState": "AgIAABQAAAAAAAAAAAA1wCMAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAABIAAAAAAAAAAAAwwB0AAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-03T12:15:21.538Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "JobApplicationDto.cs",
-              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Dto\\JobApplicationDto.cs",
-              "RelativeDocumentMoniker": "server\\Models\\Dto\\JobApplicationDto.cs",
-              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Dto\\JobApplicationDto.cs",
-              "RelativeToolTip": "server\\Models\\Dto\\JobApplicationDto.cs",
-              "ViewState": "AgIAAAoAAAAAAAAAAAAQwAsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-03T12:19:20.331Z",
+              "WhenOpened": "2025-11-03T12:15:21.538Z",
               "EditorCaption": ""
             },
             {

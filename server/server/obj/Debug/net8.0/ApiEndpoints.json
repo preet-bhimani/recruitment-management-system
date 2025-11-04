@@ -321,7 +321,7 @@
   {
     "ContainingType": "server.Controllers.JobApplicationController",
     "Method": "UpdateJobApplication",
-    "RelativePath": "api/JobApplication/{id}",
+    "RelativePath": "api/JobApplication/update/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,

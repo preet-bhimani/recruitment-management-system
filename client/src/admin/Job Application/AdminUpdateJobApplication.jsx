@@ -68,12 +68,13 @@ const AdminUpdateJobApplication = () => {
 
         // Endpoint Logic
         try {
-            const res = await axios.put(`https://localhost:7119/api/JobApplication/${id}`, jobapp);
+            const res = await axios.put(`https://localhost:7119/api/JobApplication/update/${id}`, jobapp);
             toast.success(res.data.message || "Job application submitted successfully!");
             navigate(-1);
 
         } 
         catch (err) {
+            console.log(err)
             toast.error(err.response.data || "Failed to submit job application!");
         }
     }

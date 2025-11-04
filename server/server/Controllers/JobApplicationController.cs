@@ -110,8 +110,7 @@ namespace server.Controllers
             return Ok(jobapp);
         }
 
-        // Update Job Application
-        [HttpPut("{id:guid}")]
+        [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateJobApplication(JobApplicationDto jaDto, Guid id)
         {
             // Model Validation
@@ -121,59 +120,198 @@ namespace server.Controllers
             }
 
             var jobapp = await dbContext.JobApplications.FindAsync(id);
-
-            if (jobapp == null)
+            if( jobapp == null )
             {
                 return NotFound("Job application not found");
             }
 
-            // Rule 1: ExamResult updates only allowed if ExamDate is set
-            if (!string.IsNullOrEmpty(jaDto.ExamResult) && jaDto.ExamDate == null)
-                return BadRequest("Exam Date must be set before setting Exam Result");
+            // Fetch today date for comapre exam date
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
-            // Rule 2: When ExamDate is set automatically set both Status and OverallStatus to "Exam"
-            if (jaDto.ExamDate != null)
+            JobApplicationDto SendDto(JobApplication j) => new()
             {
-                jobapp.Status = "Exam";
-                jobapp.OverallStatus = "Exam";
+                UserId = j.UserId,
+                JOId = j.JOId,
+                ExamDate = j.ExamDate,
+                ExamResult = j.ExamResult,
+                Feedback = j.Feedback,
+                Status = j.Status,
+                OverallStatus = j.OverallStatus,
+                HoldOverallStatus = j.HoldOverallStatus
+            };
+
+            // Hold Logic
+            if(jaDto.Status == "Hold")
+            {
+                if(jobapp.Status == "Hold")
+                {
+                    return BadRequest("This is already in Hold");
+                }
+
+                // Remember Current stage and keep evrything as it is
+                jobapp.HoldOverallStatus = jobapp.OverallStatus;
+                jobapp.Status = "Hold";
+                jobapp.OverallStatus = "Hold";
+                jobapp.UpdatedAt = DateTime.UtcNow;
+
+                await dbContext.SaveChangesAsync();
+                return Ok(SendDto(jobapp));
             }
 
-            // Rule 3: When ExamResult is "Fail" both become "Rejected"
-            if (jaDto.ExamResult == "Fail")
+            // Convert hold to again previous overallstatus
+            if(jobapp.Status == "Hold" && jaDto.Status != "Hold")
             {
-                jobapp.Status = "Rejected";
-                jobapp.OverallStatus = "Rejected";
+                jobapp.OverallStatus = jobapp.HoldOverallStatus;
+                jobapp.HoldOverallStatus = null;
             }
 
-            // Rule 4: When ExamResult is "Pass" change Status = "Shortlisted", OverallStatus = "Technical Interview"
-            else if (jaDto.ExamResult == "Pass")
+            // Main logic for status
+            switch (jaDto.Status) 
             {
-                jobapp.Status = "Shortlisted";
-                jobapp.OverallStatus = "Technical Interview";
+                    case "Applied":
+                    {
+                        if(jaDto.ExamDate == null && !string.IsNullOrEmpty(jaDto.ExamResult))
+                        {
+                            return BadRequest("Exam result require exam first");
+                        }
+
+                        if(jaDto.ExamDate == null)
+                        {
+                            jobapp.Status = "Applied";
+                            jobapp.OverallStatus = "Applied";
+                            jobapp.ExamDate = null;
+                            jobapp.ExamResult = null;
+                        }
+                        else
+                        {
+                            jobapp.Status = "Exam";
+                            jobapp.OverallStatus = "Exam";
+                            jobapp.ExamDate = jaDto.ExamDate;
+                            jobapp.ExamResult = null;
+                        }
+                        break;
+                    }
+
+                    case "Exam":
+                    {
+                        if(jaDto.ExamDate == null)
+                        {
+                            return BadRequest("Exam date is require");
+                        }
+
+                        // Only allow result for exam date is in past or today
+                        if (!string.IsNullOrEmpty(jaDto.ExamResult) && jaDto.ExamDate.Value > today)
+                        {
+                            return BadRequest("Result only allowed on or after exam date.");
+                        }
+
+                        // If only set exam
+                        if(string.IsNullOrEmpty(jaDto.ExamResult))
+                        {
+                            jobapp.Status = "Exam";
+                            jobapp.OverallStatus = "Exam";
+                            jobapp.ExamDate = jaDto.ExamDate;
+                            jobapp.ExamResult = null;
+                        }
+                        else if (jaDto.ExamResult.Equals("Pass"))
+                        {
+                            jobapp.ExamDate = jaDto.ExamDate;
+                            jobapp.ExamResult = "Pass";
+                            jobapp.Status = "Shortlisted";
+                            jobapp.OverallStatus = "Technical Interview";
+                        }
+                        else if (jaDto.ExamResult.Equals("Fail"))
+                        {
+                            jobapp.ExamDate = jaDto.ExamDate;
+                            jobapp.ExamResult = "Fail";
+                            jobapp.Status = "Rejected";
+                            jobapp.OverallStatus = "Rejected";
+                        }
+                        else
+                        {
+                            return BadRequest("Invalid exam result.");
+                        }
+
+                        break;
+                    }
+
+                    case "Shortlisted":
+                    {
+                        // Get exam date and exam result if any have
+                        var effectiveExamDate = jaDto.ExamDate ?? jobapp.ExamDate;
+                        var effectiveExamResult = jaDto.ExamResult ?? jobapp.ExamResult;
+
+                        // Check if exam date is exist but exam result not found 
+                        if (effectiveExamDate is not null && string.IsNullOrEmpty(effectiveExamResult))
+                        {
+                            return BadRequest("Exam result required to shortlist.");
+                        }
+
+                        // Shortlist without exam
+                        jobapp.Status = "Shortlisted";
+                        jobapp.OverallStatus = "Technical Interview";
+
+                        // Check if exam date find but exam result must be pass
+                        if (jaDto.ExamDate is not null && !string.IsNullOrEmpty(jaDto.ExamResult))
+                        {
+                            // Check exam date must be after or on today and exam result must be pass
+                            if (jaDto.ExamDate.Value > today)
+                            {
+                                return BadRequest("Result only allowed on or after exam date.");
+                            }
+                            if (jaDto.ExamResult != "Pass")
+                            {
+                                return BadRequest("Exam must be Pass to shortlist.");
+                            }
+
+                            jobapp.ExamDate = jaDto.ExamDate;
+                            jobapp.ExamResult = "Pass";
+                        }
+
+                        break;
+                    }
+
+                    case "Rejected":
+                    {
+                        var effectiveExamDate = jaDto.ExamDate ?? jobapp.ExamDate;
+                        var effectiveExamResult = jaDto.ExamResult ?? jobapp.ExamResult;
+
+                        // Check if exam is scheduled but result is pending
+                        if (effectiveExamDate is not null && string.IsNullOrEmpty(effectiveExamResult))
+                        {
+                            return BadRequest("Exam result required to reject when exam exists.");
+                        }
+
+                        // Check if client sends date and result validate timing
+                        if (jaDto.ExamDate is not null && !string.IsNullOrEmpty(jaDto.ExamResult) && jaDto.ExamDate.Value > today)
+                        {
+                            return BadRequest("Result only allowed on or after exam date.");
+                        }
+                        // Accept direct reject
+                        jobapp.Status = "Rejected";
+                        jobapp.OverallStatus = "Rejected";
+
+                        // Check if both date and result is not null then result must be fail
+                        if (jaDto.ExamDate is not null && !string.IsNullOrEmpty(jaDto.ExamResult))
+                        {
+                            // Exam result must be fail for reject
+                            if (jaDto.ExamResult != "Fail")
+                            {
+                                return BadRequest("Exam result must be Fail for reject with exam.");
+                            }
+
+                            jobapp.ExamDate = jaDto.ExamDate;
+                            jobapp.ExamResult = "Fail";
+                        }
+
+                        break;
+                    }
             }
 
-            // Rule 5: When Status changes to "Shortlisted" it change OverallStatus = "Technical Interview"
-            if (jaDto.Status == "Shortlisted")
-                jobapp.OverallStatus = "Technical Interview";
-
-            // Rule 6: If either becomes "Rejected" then both change "Rejected"
-            if (jaDto.Status == "Rejected" || jaDto.OverallStatus == "Rejected")
-            {
-                jobapp.Status = "Rejected";
-                jobapp.OverallStatus = "Rejected";
-            }
-
-            jobapp.ExamDate = jaDto.ExamDate;
-            jobapp.ExamResult = jaDto.ExamResult;
-            jobapp.Feedback = jaDto.Feedback;
-            jobapp.Status = jaDto.Status ?? jobapp.Status;
-            jobapp.OverallStatus = jaDto.OverallStatus ?? jobapp.OverallStatus;
             jobapp.UpdatedAt = DateTime.UtcNow;
-
-            dbContext.JobApplications.Update(jobapp);
             await dbContext.SaveChangesAsync();
 
-            return Ok("Job application updated successfully");
+            return Ok(SendDto(jobapp));
         }
     }
 }
