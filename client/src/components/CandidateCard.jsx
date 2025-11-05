@@ -6,11 +6,14 @@ import { useNavigate } from 'react-router-dom';
 
 const CandidateCard = ({ candidate }) => {
   const {
-    getLatestRound, getRoundCount,
-    passRound, failRound,
+    updateCandidate,
     scheduleExam,
-    tempStatuses, updateTemp, saveTempChanges, updateCandidate
+    passRound,
+    failRound,
+    candidates,
+    updateStatusViaApi
   } = useCandidates();
+
 
   const {
     showExamCalendar, setShowExamCalendar,
@@ -30,6 +33,8 @@ const CandidateCard = ({ candidate }) => {
   const techRounds = useMemo(() => getRoundCount(candidate, 'tech'), [candidate, getRoundCount]);
   const hrRounds = useMemo(() => getRoundCount(candidate, 'hr'), [candidate, getRoundCount]);
 
+  const [pendingStatus, setPendingStatus] = useState(candidate.status);
+
   // Badge For BackGround Color
   const badge = (s) =>
   ({
@@ -42,14 +47,14 @@ const CandidateCard = ({ candidate }) => {
     Hold: 'bg-gray-600'
   }[s] || 'bg-yellow-600');
 
-  const effectiveOverall = () => tempStatuses?.[`${candidate.id}-overallStatus`] ?? candidate.overallStatus;
+  const effectiveOverall = () => tempStatuses?.[`${candidate.jaId}-overallStatus`] ?? candidate.overallStatus;
 
   // After Pass or Fail Flow
   const passFailFlowActive = () => {
     const m = showMessage || '';
     const r = showRating || '';
-    return (m && (m.endsWith(`-${candidate.id}`) && (m.startsWith('tech-') || m.startsWith('hr-')))) ||
-      (r && r.endsWith(`-${candidate.id}`) && (r.startsWith('tech-') || r.startsWith('hr-')));
+    return (m && (m.endsWith(`-${candidate.jaId}`) && (m.startsWith('tech-') || m.startsWith('hr-')))) ||
+      (r && r.endsWith(`-${candidate.jaId}`) && (r.startsWith('tech-') || r.startsWith('hr-')));
   };
 
   // show Meeting for Tech
@@ -88,82 +93,109 @@ const CandidateCard = ({ candidate }) => {
     return latestHr.IsClear === 'In Progress' && latestHr.Status === 'In Progress';
   };
 
-  // Overall Status Change Value
-  const handleOverallChange = (val) => {
-    updateTemp(candidate.id, 'overallStatus', val);
-  };
 
   // JobApplication Status Change Value
   const handleJobStatusChange = (val) => {
-    updateTemp(candidate.id, 'jobApplicationStatus', val);
+    updateTemp(candidate.jaId, 'jobApplicationStatus', val);
   };
 
   // Technical IsClear Change Value
   const handleTechIsClearChange = (val) => {
-    updateTemp(candidate.id, 'techIsClear', val);
+    updateTemp(candidate.jaId, 'techIsClear', val);
   };
 
   // Technical Status Change Value
   const handleTechStatusChange = (val) => {
-    updateTemp(candidate.id, 'techStatus', val);
+    updateTemp(candidate.jaId, 'techStatus', val);
   };
 
   // HR IsClear Change Value
   const handleHrIsClearChange = (val) => {
-    updateTemp(candidate.id, 'hrIsClear', val);
+    updateTemp(candidate.jaId, 'hrIsClear', val);
   };
 
   // HR Status Change Value
   const handleHrStatusChange = (val) => {
-    updateTemp(candidate.id, 'hrStatus', val);
+    updateTemp(candidate.jaId, 'hrStatus', val);
   };
 
-  const toggleExamCalendar = () => setShowExamCalendar(showExamCalendar === candidate.id ? null : candidate.id);
+  const toggleExamCalendar = () => setShowExamCalendar(showExamCalendar === candidate.jaId ? null : candidate.jaId);
 
   // Schdeule Exam Logic
-  const onScheduleExamInline = () => {
-    if (!selectedDate) return alert('Pick a date');
-    scheduleExam(candidate.id, selectedDate);
-    setSelectedDate('');
-    setShowExamCalendar(null);
+  const onScheduleExamInline = async () => {
+    if (!selectedDate) return alert("Pick a date");
+
+    try {
+      await updateStatusViaApi(candidate.jaId, {
+        status: "Exam",
+        examDate: selectedDate
+      });
+
+      setSelectedDate("");
+      setShowExamCalendar(null);
+    } catch (err) {
+      // toast already handled in context
+    }
   };
 
-  const openAppliedPass = () => { setMessage(getDefaultMessage('select')); setShowMessage(`applied-pass-${candidate.id}`); };
-  const openAppliedFail = () => { setMessage(getDefaultMessage('reject')); setShowMessage(`applied-fail-${candidate.id}`); };
-  const openExamPass = () => { setMessage(getDefaultMessage('pass')); setShowMessage(`exam-pass-${candidate.id}`); };
-  const openExamFail = () => { setMessage(getDefaultMessage('fail')); setShowMessage(`exam-fail-${candidate.id}`); };
-  const openPass = (type) => { setMessage(getDefaultMessage(type === 'tech' ? 'tech-clear' : 'hr-clear')); setShowMessage(type === 'tech' ? `tech-pass-${candidate.id}` : `hr-pass-${candidate.id}`); };
-  const openFail = (type) => { setMessage(getDefaultMessage(type === 'tech' ? 'tech-not-clear' : 'hr-not-clear')); setShowMessage(type === 'tech' ? `tech-fail-${candidate.id}` : `hr-fail-${candidate.id}`); };
+  // Open Exam Pass Modal
+  const openExamPass = () => {
+    setMessage(getDefaultMessage('pass'));
+    setShowMessage(`jobapp-status-exam-pass-${candidate.jaId}`);
+  };
+
+  // Open Exam Fail Modal
+  const openExamFail = () => {
+    setMessage(getDefaultMessage('fail'));
+    setShowMessage(`jobapp-status-exam-fail-${candidate.jaId}`);
+  };
+
+
+  const openPass = (type) => { setMessage(getDefaultMessage(type === 'tech' ? 'tech-clear' : 'hr-clear')); setShowMessage(type === 'tech' ? `tech-pass-${candidate.jaId}` : `hr-pass-${candidate.jaId}`); };
+  const openFail = (type) => { setMessage(getDefaultMessage(type === 'tech' ? 'tech-not-clear' : 'hr-not-clear')); setShowMessage(type === 'tech' ? `tech-fail-${candidate.jaId}` : `hr-fail-${candidate.jaId}`); };
+
+  // Open Shortlist Modal
+  const openShortlistModal = () => {
+    setMessage(getDefaultMessage('select'));
+    setShowMessage(`jobapp-status-shortlist-${candidate.jaId}`);
+  };
+
+  // Open Reject Modal
+  const openRejectModal = () => {
+    setMessage(getDefaultMessage('reject'));
+    setShowMessage(`jobapp-status-reject-${candidate.jaId}`);
+  };
+
 
   // Message Logic
   const onSendMessage = () => {
     if (!message.trim()) return alert('Write a message');
     const key = showMessage || '';
 
-    if (key === `applied-pass-${candidate.id}`) {
-      updateCandidate(candidate.id, c => ({ ...c, jobApplicationStatus: 'Shortlisted', overallStatus: 'Technical Interview' }));
+    if (key === `applied-pass-${candidate.jaId}`) {
+      updateStatusViaApi(candidate.jaId, c => ({ ...c, jobApplicationStatus: 'Shortlisted', overallStatus: 'Technical Interview' }));
       setShowMessage(null); setMessage('');
       return;
     }
-    if (key === `applied-fail-${candidate.id}`) {
-      updateCandidate(candidate.id, c => ({ ...c, jobApplicationStatus: 'Rejected', overallStatus: 'Rejected' }));
+    if (key === `applied-fail-${candidate.jaId}`) {
+      updateStatusViaApi(candidate.jaId, c => ({ ...c, jobApplicationStatus: 'Rejected', overallStatus: 'Rejected' }));
       setShowMessage(null); setMessage('');
       return;
     }
-    if (key === `exam-pass-${candidate.id}`) {
-      updateCandidate(candidate.id, c => ({ ...c, jobApplicationStatus: 'Shortlisted', overallStatus: 'Technical Interview' }));
+    if (key === `exam-pass-${candidate.jaId}`) {
+      updateStatusViaApi(candidate.jaId, c => ({ ...c, jobApplicationStatus: 'Shortlisted', overallStatus: 'Technical Interview' }));
       setShowMessage(null); setMessage('');
       return;
     }
-    if (key === `exam-fail-${candidate.id}`) {
-      updateCandidate(candidate.id, c => ({ ...c, jobApplicationStatus: 'Rejected', overallStatus: 'Rejected' }));
+    if (key === `exam-fail-${candidate.jaId}`) {
+      updateStatusViaApi(candidate.jaId, c => ({ ...c, jobApplicationStatus: 'Rejected', overallStatus: 'Rejected' }));
       setShowMessage(null); setMessage('');
       return;
     }
-    if (key === `tech-pass-${candidate.id}`) { setShowMessage(null); setShowRating(`tech-${candidate.id}`); return; }
-    if (key === `tech-fail-${candidate.id}`) { setShowMessage(null); setShowRating(`tech-fail-${candidate.id}`); return; }
-    if (key === `hr-pass-${candidate.id}`) { setShowMessage(null); setShowRating(`hr-${candidate.id}`); return; }
-    if (key === `hr-fail-${candidate.id}`) { setShowMessage(null); setShowRating(`hr-fail-${candidate.id}`); return; }
+    if (key === `tech-pass-${candidate.jaId}`) { setShowMessage(null); setShowRating(`tech-${candidate.jaId}`); return; }
+    if (key === `tech-fail-${candidate.jaId}`) { setShowMessage(null); setShowRating(`tech-fail-${candidate.jaId}`); return; }
+    if (key === `hr-pass-${candidate.jaId}`) { setShowMessage(null); setShowRating(`hr-${candidate.jaId}`); return; }
+    if (key === `hr-fail-${candidate.jaId}`) { setShowMessage(null); setShowRating(`hr-fail-${candidate.jaId}`); return; }
 
     setShowMessage(null);
   };
@@ -172,22 +204,22 @@ const CandidateCard = ({ candidate }) => {
   const onSubmitRating = () => {
     if (!rating) return alert('Pick 1-5');
     const r = showRating || '';
-    if (r === `tech-fail-${candidate.id}`) { failRound(candidate.id, 'tech', { rating, feedback: message }); setShowRating(null); setRating(0); setMessage(''); return; }
-    if (r === `tech-${candidate.id}`) { passRound(candidate.id, 'tech', { rating, feedback: message }); setShowRating(null); setRating(0); setMessage(''); return; }
-    if (r === `hr-fail-${candidate.id}`) { failRound(candidate.id, 'hr', { rating, feedback: message }); setShowRating(null); setRating(0); setMessage(''); return; }
-    if (r === `hr-${candidate.id}`) { passRound(candidate.id, 'hr', { rating, feedback: message }); setShowRating(null); setRating(0); setMessage(''); return; }
+    if (r === `tech-fail-${candidate.jaId}`) { failRound(candidate.jaId, 'tech', { rating, feedback: message }); setShowRating(null); setRating(0); setMessage(''); return; }
+    if (r === `tech-${candidate.jaId}`) { passRound(candidate.jaId, 'tech', { rating, feedback: message }); setShowRating(null); setRating(0); setMessage(''); return; }
+    if (r === `hr-fail-${candidate.jaId}`) { failRound(candidate.jaId, 'hr', { rating, feedback: message }); setShowRating(null); setRating(0); setMessage(''); return; }
+    if (r === `hr-${candidate.jaId}`) { passRound(candidate.jaId, 'hr', { rating, feedback: message }); setShowRating(null); setRating(0); setMessage(''); return; }
   };
 
   // This Help to Save Changes After Save Button Clicked
   const applyTempToCandidate = () => {
     // Collect Values
     const t = tempStatuses || {};
-    const keyOverall = `${candidate.id}-overallStatus`;
-    const keyJob = `${candidate.id}-jobApplicationStatus`;
-    const keyTechIsClear = `${candidate.id}-techIsClear`;
-    const keyTechStatus = `${candidate.id}-techStatus`;
-    const keyHrIsClear = `${candidate.id}-hrIsClear`;
-    const keyHrStatus = `${candidate.id}-hrStatus`;
+    const keyOverall = `${candidate.jaId}-overallStatus`;
+    const keyJob = `${candidate.jaId}-jobApplicationStatus`;
+    const keyTechIsClear = `${candidate.jaId}-techIsClear`;
+    const keyTechStatus = `${candidate.jaId}-techStatus`;
+    const keyHrIsClear = `${candidate.jaId}-hrIsClear`;
+    const keyHrStatus = `${candidate.jaId}-hrStatus`;
 
     const overallTemp = t[keyOverall];
     const jobTemp = t[keyJob];
@@ -196,7 +228,7 @@ const CandidateCard = ({ candidate }) => {
     const hrIsClearTemp = t[keyHrIsClear];
     const hrStatusTemp = t[keyHrStatus];
 
-    updateCandidate(candidate.id, c => {
+    updateCandidate(candidate.jaId, c => {
       let next = { ...c };
 
       // JobApplication Status Change
@@ -299,13 +331,40 @@ const CandidateCard = ({ candidate }) => {
       }
       return next;
     });
-    saveTempChanges(candidate.id);
+    saveTempChanges(candidate.jaId);
   };
 
-  const onSaveAll = () => applyTempToCandidate();
+  // Handle Save Job Application Status
+  const handleSaveStatus = () => {
+  switch (pendingStatus) {
+    case "Applied":
+      openAppliedPass();
+      break;
+
+    case "Exam":
+      setShowExamCalendar(candidate.jaId);
+      break;
+
+    case "Shortlisted":
+      setShowMessage(`jobapp-status-shortlist-${candidate.jaId}`);
+      break;
+
+    case "Rejected":
+      setShowMessage(`jobapp-status-reject-${candidate.jaId}`);
+      break;
+
+    case "Hold":
+      setShowMessage(`jobapp-status-hold-${candidate.jaId}`);
+      break;
+
+    default:
+      break;
+  }
+};
+
 
   const openMeeting = (type) => {
-    navigate('/recruiter-meeting-scheduling', { state: { candidateId: candidate.id, type } });
+    navigate('/recruiter-meeting-scheduling', { state: { candidateId: candidate.jaId, type } });
   };
 
   // Control Bar
@@ -319,13 +378,14 @@ const CandidateCard = ({ candidate }) => {
         {/* Show JobApplication Status DropDown */}
         {(effectiveOverall() === 'Applied' || effectiveOverall() === 'Exam') && (
           <select
-            value={tempStatuses[`${candidate.id}-jobApplicationStatus`] ?? candidate.jobApplicationStatus}
-            onChange={(e) => handleJobStatusChange(e.target.value)}
+            value={pendingStatus}
+            onChange={(e) => setPendingStatus(e.target.value)}
             className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white appearance-none focus:outline-none">
             <option value="Applied">Applied</option>
             <option value="Exam">Exam</option>
             <option value="Shortlisted">Shortlisted</option>
             <option value="Rejected">Rejected</option>
+            <option value="Hold">Hold</option>
           </select>
         )}
 
@@ -333,7 +393,7 @@ const CandidateCard = ({ candidate }) => {
         {effectiveOverall() === 'Technical Interview' && latestTech && (
           <>
             <select
-              value={tempStatuses[`${candidate.id}-techIsClear`] ?? (latestTech?.IsClear ?? 'In Progress')}
+              value={tempStatuses[`${candidate.jaId}-techIsClear`] ?? (latestTech?.IsClear ?? 'In Progress')}
               onChange={(e) => handleTechIsClearChange(e.target.value)}
               className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white appearance-none focus:outline-none">
               <option value="Pending">Pending</option>
@@ -343,7 +403,7 @@ const CandidateCard = ({ candidate }) => {
             </select>
 
             <select
-              value={tempStatuses[`${candidate.id}-techStatus`] ?? (latestTech?.Status ?? 'In Progress')}
+              value={tempStatuses[`${candidate.jaId}-techStatus`] ?? (latestTech?.Status ?? 'In Progress')}
               onChange={(e) => handleTechStatusChange(e.target.value)}
               className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white appearance-none focus:outline-none">
               <option value="In Progress">In Progress</option>
@@ -357,7 +417,7 @@ const CandidateCard = ({ candidate }) => {
         {effectiveOverall() === 'HR Interview' && latestHr && (
           <>
             <select
-              value={tempStatuses[`${candidate.id}-hrIsClear`] ?? (latestHr?.IsClear ?? 'In Progress')}
+              value={tempStatuses[`${candidate.jaId}-hrIsClear`] ?? (latestHr?.IsClear ?? 'In Progress')}
               onChange={(e) => handleHrIsClearChange(e.target.value)}
               className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white appearance-none focus:outline-none">
               <option value="Pending">Pending</option>
@@ -367,7 +427,7 @@ const CandidateCard = ({ candidate }) => {
             </select>
 
             <select
-              value={tempStatuses[`${candidate.id}-hrStatus`] ?? (latestHr?.Status ?? 'In Progress')}
+              value={tempStatuses[`${candidate.jaId}-hrStatus`] ?? (latestHr?.Status ?? 'In Progress')}
               onChange={(e) => handleHrStatusChange(e.target.value)}
               className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white appearance-none focus:outline-none">
               <option value="In Progress">In Progress</option>
@@ -377,32 +437,18 @@ const CandidateCard = ({ candidate }) => {
           </>
         )}
 
-        {/* OverallStatus DropDown */}
-        <select
-          value={tempStatuses[`${candidate.id}-overallStatus`] ?? candidate.overallStatus}
-          onChange={(e) => handleOverallChange(e.target.value)}
-          className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white appearance-none focus:outline-none">
-          <option value="Applied">Applied</option>
-          <option value="Exam">Exam</option>
-          <option value="Technical Interview">Technical Interview</option>
-          <option value="HR Interview">HR Interview</option>
-          <option value="Selected">Selected</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Hold">Hold</option>
-        </select>
-
         {/* Save Button Logic */}
-        {Object.keys(tempStatuses || {}).some(k => k.startsWith(`${candidate.id}-`)) && (
-          <button onClick={onSaveAll} className="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-xs text-white">✓ Save</button>
+        {pendingStatus !== candidate.status && (
+          <button onClick={hanleSaveStatus} className="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-xs text-white">✓ Save</button>
         )}
 
         {/* Selected or Rejected When Applied */}
         {effectiveOverall() === 'Applied' && (
           <>
-            <button onClick={openAppliedPass} className="px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-xs text-white" title="Shortlist">
+            <button onClick={openShortlistModal} className="px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-xs text-white" title="Shortlist">
               <CheckCircle size={14} />
             </button>
-            <button onClick={openAppliedFail} className="px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-xs text-white" title="Reject">
+            <button onClick={openRejectModal} className="px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-xs text-white" title="Reject">
               <XCircle size={14} />
             </button>
 
@@ -497,7 +543,7 @@ const CandidateCard = ({ candidate }) => {
       </div>
 
       {/* Exam Schedule UI */}
-      {showExamCalendar === candidate.id && (
+      {showExamCalendar === candidate.jaId && (
         <div className="bg-neutral-800 border border-neutral-600 rounded-lg p-3 mt-3 relative z-0">
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-white text-sm">Exam Date:</span>
@@ -514,14 +560,14 @@ const CandidateCard = ({ candidate }) => {
 
       {/* Message Box */}
       {(
-        showMessage === `applied-pass-${candidate.id}` ||
-        showMessage === `applied-fail-${candidate.id}` ||
-        showMessage === `exam-pass-${candidate.id}` ||
-        showMessage === `exam-fail-${candidate.id}` ||
-        showMessage === `tech-pass-${candidate.id}` ||
-        showMessage === `tech-fail-${candidate.id}` ||
-        showMessage === `hr-pass-${candidate.id}` ||
-        showMessage === `hr-fail-${candidate.id}`
+        showMessage === `applied-pass-${candidate.jaId}` ||
+        showMessage === `applied-fail-${candidate.jaId}` ||
+        showMessage === `exam-pass-${candidate.jaId}` ||
+        showMessage === `exam-fail-${candidate.jaId}` ||
+        showMessage === `tech-pass-${candidate.jaId}` ||
+        showMessage === `tech-fail-${candidate.jaId}` ||
+        showMessage === `hr-pass-${candidate.jaId}` ||
+        showMessage === `hr-fail-${candidate.jaId}`
       ) && (
           <div className="bg-neutral-800 border border-neutral-600 rounded-lg p-3 mt-3 relative z-0">
             <textarea value={message} onChange={(e) => setMessage(e.target.value)} className="w-full px-2 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm h-16 resize-none mb-2" />
@@ -534,10 +580,10 @@ const CandidateCard = ({ candidate }) => {
 
       {/* Inline rating box */}
       {(
-        showRating === `tech-${candidate.id}` ||
-        showRating === `hr-${candidate.id}` ||
-        showRating === `tech-fail-${candidate.id}` ||
-        showRating === `hr-fail-${candidate.id}`
+        showRating === `tech-${candidate.jaId}` ||
+        showRating === `hr-${candidate.jaId}` ||
+        showRating === `tech-fail-${candidate.jaId}` ||
+        showRating === `hr-fail-${candidate.jaId}`
       ) && (
           <div className="bg-neutral-800 border border-neutral-600 rounded-lg p-4 mt-3 relative z-0">
             <div className="mb-3">

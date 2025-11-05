@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { MapPin, Clock, Briefcase, GraduationCap, Star, Building2, CheckCircle } from "lucide-react";
 import CommonNavbar from "../components/CommonNavbar";
 import Footer from "../components/Footer";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useAuth } from "../contexts/AuthContext";
 
 const JobDescription = () => {
 
@@ -13,6 +14,7 @@ const JobDescription = () => {
 
   const aboutCompany = "xxxyyyzzz has a crystal-clear vision. Our mission is to help our clients to achieve sustainable results through cutting-edge supply chain software and services. Our clients can expect noteworthy benefits like increased profitability, resilience, and long-term growth.";
   const { id } = useParams();
+  const navigate = useNavigate();
   const fetchJob = async () => {
     try {
       const res = await axios.get(`https://localhost:7119/api/JobOpening/${id}`);
@@ -30,6 +32,29 @@ const JobDescription = () => {
     }
     finally {
       setLoading(false);
+    }
+  }
+
+  const { userId, role, token } = useAuth();
+  const applyForJob = async () => {
+    if (!userId) {
+      toast.error("Please login to apply for this job");
+      navigate("/login");
+      return;
+    }
+
+    if (role !== "Candidate") {
+      toast.error("Only candidates can apply for jobs");
+      return;
+    }
+
+    try {
+      const res = await axios.post(`https://localhost:7119/api/Candidate/apply`, { joId: id }, { headers: { Authorization: `Bearer ${token}` } })
+      toast.success('Applied Successfully!');
+      navigate(-1);
+    }
+    catch (err) {
+      toast.error(err.response.data || ("Failed to apply!"))
     }
   }
 
@@ -72,10 +97,25 @@ const JobDescription = () => {
             </div>
 
             {/* Apply Button */}
-            <button
-              className="px-8 py-3 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-semibold text-lg transition">
-              Apply for This Job
-            </button>
+            {!userId ? (
+              <button
+                className="px-12 py-4 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-semibold text-lg transition shadow-lg"
+                onClick={() => navigate("/login")}>
+                Login to Apply
+              </button>
+            ) : role !== "Candidate" ? (
+              <button
+                className="px-12 py-4 bg-gray-600 text-white rounded-lg font-semibold text-lg cursor-not-allowed opacity-50"
+                disabled>
+                Only Candidates Can Apply
+              </button>
+            ) : (
+              <button
+                className="px-12 py-4 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-semibold text-lg transition shadow-lg"
+                onClick={applyForJob}>
+                Apply for This Job
+              </button>
+            )}
           </div>
 
           {/* Job Details */}
@@ -161,10 +201,26 @@ const JobDescription = () => {
 
             {/* Apply Button */}
             <div className="text-center pt-6">
-              <button
-                className="px-12 py-4 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-semibold text-lg transition shadow-lg">
-                Apply for This Job
-              </button>
+              {/* Apply Button */}
+              {!userId ? (
+                <button
+                  className="px-12 py-4 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-semibold text-lg transition shadow-lg"
+                  onClick={() => navigate("/login")}>
+                  Login to Apply
+                </button>
+              ) : role !== "Candidate" ? (
+                <button
+                  className="px-12 py-4 bg-gray-600 text-white rounded-lg font-semibold text-lg cursor-not-allowed opacity-50"
+                  disabled>
+                  Only Candidates Can Apply
+                </button>
+              ) : (
+                <button
+                  className="px-12 py-4 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-semibold text-lg transition shadow-lg"
+                  onClick={applyForJob}>
+                  Apply for This Job
+                </button>
+              )}
             </div>
           </div>
         </div>

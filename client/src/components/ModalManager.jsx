@@ -22,7 +22,8 @@ const ModalManager = () => {
     scheduleExam,
     passRound,
     failRound,
-    candidates
+    candidates,
+    updateStatusViaApi
   } = useCandidates();
 
   // Get Current Details for Candidates
@@ -39,73 +40,58 @@ const ModalManager = () => {
   const currentCandidate = getCurrentCandidate();
 
   // Exam Schedule
-  const handleExamScheduleClick = () => {
-    if (!selectedDate || !showExamCalendar) return;
-    const candidateKey = showExamCalendar.toString().replace(/^(tech-|hr-|pass-|fail-|applied-|exam-)/, '');
-    scheduleExam(candidateKey, selectedDate);
+  const handleExamScheduleConfirm = async () => {
+    if (!selectedDate) return alert("Exam date required");
+
+    const jaId = showExamCalendar;
+    await updateStatusViaApi(jaId, {
+      status: "Exam",
+      examDate: selectedDate,
+      feedback: message || null
+    });
+
     closeAllModals();
   };
+
 
   // Messages
-  const handleSendMessageClick = () => {
-    if (!message || !showMessage) return;
+  const handleSendMessageClick = async () => {
+    if (!showMessage) return;
+
     const key = showMessage.toString();
-    const id = key.replace(/^(tech-pass-|tech-fail-|hr-pass-|hr-fail-|applied-pass-|applied-fail-|exam-pass-|exam-fail-)/, '');
+    const jaId = key.replace(/^(jobapp-status-applied-|jobapp-status-shortlist-|jobapp-status-reject-|jobapp-status-hold-)/, "");
 
-    // Applied to Shortlist
-    if (key.startsWith('applied-pass-')) {
-      updateCandidate(id, c => ({ ...c, jobApplicationStatus: 'Shortlisted', overallStatus: 'Technical Interview' }));
+    // Applied
+    if (key.startsWith("jobapp-status-applied-")) {
+      await updateStatusViaApi(jaId, { status: "Applied", feedback: message || null });
       closeAllModals();
       return;
     }
 
-    // Applied to Reject
-    if (key.startsWith('applied-fail-')) {
-      updateCandidate(id, c => ({ ...c, jobApplicationStatus: 'Rejected', overallStatus: 'Rejected' }));
+    // Shortlisted
+    if (key.startsWith("jobapp-status-shortlist-")) {
+      await updateStatusViaApi(jaId, { status: "Shortlisted", feedback: message || null });
       closeAllModals();
       return;
     }
 
-    // Exam pass to Shortlisted to Technical Interview
-    if (key.startsWith('exam-pass-')) {
-      updateCandidate(id, c => ({ ...c, jobApplicationStatus: 'Shortlisted', overallStatus: 'Technical Interview' }));
+    // Rejected
+    if (key.startsWith("jobapp-status-reject-")) {
+      await updateStatusViaApi(jaId, { status: "Rejected", feedback: message || null });
       closeAllModals();
       return;
     }
 
-    // Exam Fail to Rejected
-    if (key.startsWith('exam-fail-')) {
-      updateCandidate(id, c => ({ ...c, jobApplicationStatus: 'Rejected', overallStatus: 'Rejected' }));
+    // Hold
+    if (key.startsWith("jobapp-status-hold-")) {
+      await updateStatusViaApi(jaId, { status: "Hold", feedback: message || null });
       closeAllModals();
       return;
     }
 
-    // Tech IsClear
-    if (key.startsWith('tech-pass-')) {
-      const candidateId = key.replace(/^tech-pass-/, '');
-      closeAllModals();
-      return;
-    }
-
-    // Tech Not Clear
-    if (key.startsWith('tech-fail-')) {
-      closeAllModals();
-      return;
-    }
-
-    // HR Clear
-    if (key.startsWith('hr-pass-')) {
-      closeAllModals();
-      return;
-    }
-
-    // HR Not Clear
-    if (key.startsWith('hr-fail-')) {
-      closeAllModals();
-      return;
-    }
     closeAllModals();
   };
+
 
   // Ratings
   const handleRatingSubmitClick = () => {
@@ -160,6 +146,8 @@ const ModalManager = () => {
     );
   };
 
+
+
   if (!currentCandidate) return null;
 
   return (
@@ -191,7 +179,7 @@ const ModalManager = () => {
                   Cancel
                 </button>
                 <button
-                  onClick={handleExamScheduleClick}
+                  onClick={handleExamScheduleConfirm}
                   disabled={!selectedDate}
                   className="px-4 py-2 bg-blue-700 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed rounded text-white text-sm">
                   Schedule

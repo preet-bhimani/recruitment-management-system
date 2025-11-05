@@ -84,7 +84,7 @@ const JobApplication = ({ role = "admin" }) => {
     });
 
     // Overall Staus Fileds
-    const statusOptions = ["Applied", "Exam", "Shortlisted", "Rejected"];
+    const statusOptions = ["Applied", "Exam", "Shortlisted", "Rejected", "Hold"];
     const overallStatusOptions = [
         "Applied",
         "Exam",
@@ -248,6 +248,7 @@ const JobApplication = ({ role = "admin" }) => {
                                 <p><span className="font-medium text-purple-300">Applied Date:</span> {ja.appliedDate || "-"}</p>
                                 <p><span className="font-medium text-purple-300">Overall Status:</span>{" "}
                                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium text-white ${badge(ja.overallStatus)}`}>{ja.overallStatus || "-"}</span></p>
+                                <p><span className="font-medium text-purple-300">Hold Status:</span> {ja.holdOverallStatus || "-"}</p>
                             </div>
 
                             {/* Action Buttons */}

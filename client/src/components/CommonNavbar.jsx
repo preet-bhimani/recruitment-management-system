@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import logo from '../photos/company logo/ROIMA.jpeg';
 import { Search, User, FileText, Key, Bell, Briefcase, LogOut, ChevronDown, Upload } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+const CommonNavbar = ({ hasSelectedApplication = false }) => {
 
-const CommonNavbar = ({ isLoggedIn = false, hasSelectedApplication = false, role = "" }) => {
     const [ProfileDropdown, setProfileDropdown] = useState(false);
+    const { isLoggedIn, role, logout } = useAuth();
+    const navigate = useNavigate();
+    
+    const handleLogout = () => {
+        logout();
+        navigate("/login");
+    };
 
     return (
         <nav className="bg-neutral-900 border-b border-neutral-800 px-4 py-3">
@@ -15,8 +24,7 @@ const CommonNavbar = ({ isLoggedIn = false, hasSelectedApplication = false, role
                         <img
                             src={logo}
                             alt="Company Logo"
-                            className="w-full h-full object-cover"
-                        />
+                            className="w-full h-full object-cover" />
                     </div>
                 </div>
 
@@ -27,15 +35,14 @@ const CommonNavbar = ({ isLoggedIn = false, hasSelectedApplication = false, role
                         <input
                             type="text"
                             placeholder="Search jobs"
-                            className="w-full pl-10 pr-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
+                            className="w-full pl-10 pr-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
                     </div>
                 </div>
 
                 {/* Right Section */}
                 {isLoggedIn ? (
                     <div className="flex items-center gap-4">
-                        
+
                         {/* Upload Documents Link */}
                         {role === "Candidates" && hasSelectedApplication && (
                             <a
@@ -61,9 +68,9 @@ const CommonNavbar = ({ isLoggedIn = false, hasSelectedApplication = false, role
                             {ProfileDropdown && (
                                 <div className="absolute right-0 mt-2 w-56 bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg z-50">
                                     <div className="py-2">
-                                        
+
                                         {/* Only for Candidates */}
-                                        {role === "Candidates" && (
+                                        {role === "Candidate" && (
                                             <>
                                                 <a
                                                     href="/resume"
@@ -99,10 +106,10 @@ const CommonNavbar = ({ isLoggedIn = false, hasSelectedApplication = false, role
                                             <Key className="w-4 h-4" />
                                             Update Password
                                         </a>
-                                        
+
                                         <div className="border-t border-neutral-800 mt-2 pt-2">
                                             <button
-                                                onClick={() => console.log("Logout")}
+                                                onClick={handleLogout   }
                                                 className="flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-neutral-800 hover:text-red-300 transition w-full text-left">
                                                 <LogOut className="w-4 h-4" />
                                                 Logout
@@ -133,7 +140,7 @@ const CommonNavbar = ({ isLoggedIn = false, hasSelectedApplication = false, role
             {ProfileDropdown && (
                 <div
                     className="fixed inset-0 z-40"
-                    onClick={() => setProfileDropdown(false)}/>
+                    onClick={() => setProfileDropdown(false)} />
             )}
         </nav>
     );

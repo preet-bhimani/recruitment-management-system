@@ -277,6 +277,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "server.Controllers.CandidateController",
+    "Method": "CandidateApplyForJob",
+    "RelativePath": "api/Candidate/apply",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "jaDto",
+        "Type": "server.Models.Dto.JobApplyCandidateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "server.Controllers.JobApplicationController",
     "Method": "AddJobApplication",
     "RelativePath": "api/JobApplication",
@@ -320,7 +336,7 @@
   },
   {
     "ContainingType": "server.Controllers.JobApplicationController",
-    "Method": "UpdateJobApplication",
+    "Method": "UpdateJobApplicationBasedItsStatus",
     "RelativePath": "api/JobApplication/update/{id}",
     "HttpMethod": "PUT",
     "IsController": true,

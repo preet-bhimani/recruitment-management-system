@@ -3,10 +3,12 @@ import { LogIn, Eye, EyeOff } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
 
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [errors, setErrors] = useState({ email: "", password: "" });
@@ -58,9 +60,7 @@ const Login = () => {
             });
 
             // Store Token and Role in Session Storage
-            sessionStorage.setItem("accessToken", res.data.token);
-            sessionStorage.setItem("refreshToken", res.data.refreshToken);
-            sessionStorage.setItem("userRole", res.data.role ?? "Candidate");
+            login(res.data.token, res.data.role, res.data.userId)
 
             toast.success(res.data.message || "Login successful!");
 

@@ -85,6 +85,7 @@ namespace server.Controllers
                     ja.JAId,
                     AppliedDate = ja.CreatedAt.ToString("yyyy-MM-dd"),
                     ja.OverallStatus,
+                    ja.HoldOverallStatus,
                     ja.Status,
                     Photo = !string.IsNullOrEmpty(ja.User.Photo) ? baseUrl + ja.User.Photo : null,
                     ja.User.FullName,
@@ -110,8 +111,9 @@ namespace server.Controllers
             return Ok(jobapp);
         }
 
+        // Update job application based on its status
         [HttpPut("update/{id:guid}")]
-        public async Task<IActionResult> UpdateJobApplication(JobApplicationDto jaDto, Guid id)
+        public async Task<IActionResult> UpdateJobApplicationBasedItsStatus(JobApplicationDto jaDto, Guid id)
         {
             // Model Validation
             if (!ModelState.IsValid)

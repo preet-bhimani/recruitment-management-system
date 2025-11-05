@@ -24,7 +24,6 @@ const AdminAddJobApplication = () => {
       userId: "",
       joId: "",
       status: "",
-      overallStatus: ""
     });
 
   // Handle Submit
@@ -56,14 +55,6 @@ const AdminAddJobApplication = () => {
     }
     else {
       newErrors.status = "";
-    }
-
-    if (!formData.overallStatus.trim()) {
-      newErrors.overallStatus = "Overall Status cannot be empty.";
-      hasError = true;
-    }
-    else {
-      newErrors.overallStatus = "";
     }
 
     setErrors(newErrors);
@@ -173,26 +164,9 @@ const AdminAddJobApplication = () => {
               <option value="Exam">Exam</option>
               <option value="Shortlisted">Shortlisted</option>
               <option value="Rejected">Rejected</option>
-            </select>
-            {errors.status && (<p className="text-rose-500 text-sm mt-1">{errors.status}</p>)}
-          </div>
-
-          {/* Overall Status */}
-          <div>
-            <label className="block mb-1 text-sm font-medium">Overall Status <span className="text-rose-500">*</span></label>
-            <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700"
-              value={formData.overallStatus}
-              onChange={(e) => setFormData({ ...formData, overallStatus: e.target.value })}>
-              <option value="" disabled>Select Overall Status</option>
-              <option value="Applied">Applied</option>
-              <option value="Exam">Exam</option>
-              <option value="Technical interview">Technical interview</option>
-              <option value="HR interview">HR interview</option>
-              <option value="Selected">Selected</option>
-              <option value="Rejected">Rejected</option>
               <option value="Hold">Hold</option>
             </select>
-            {errors.overallStatus && (<p className="text-rose-500 text-sm mt-1">{errors.overallStatus}</p>)}
+            {errors.status && (<p className="text-rose-500 text-sm mt-1">{errors.status}</p>)}
           </div>
 
           {/* Submit */}
