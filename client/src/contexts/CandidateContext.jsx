@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 import { toast } from "react-toastify";
 
 const CandidateContext = createContext();
@@ -33,6 +34,7 @@ export const CandidateProvider = ({ children }) => {
       const res = await axios.get(`https://localhost:7119/api/JobApplication`);
       setCandidates(res.data || []);
     } catch (err) {
+      console.log(err);
       toast.error("Failed to fetch candidates!");
     }
   };
@@ -192,7 +194,6 @@ export const CandidateProvider = ({ children }) => {
     passRound,
     failRound,
     scheduleExam,
-    updateCandidate,
     updateStatusViaApi
   };
 

@@ -293,6 +293,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "server.Controllers.GoogleAuthController",
+    "Method": "ExchangeGoogleCode",
+    "RelativePath": "api/GoogleAuth/exchange",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "gsDto",
+        "Type": "server.Models.Dto.GoogleIntegrationSettingsDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "server.Controllers.JobApplicationController",
     "Method": "AddJobApplication",
     "RelativePath": "api/JobApplication",

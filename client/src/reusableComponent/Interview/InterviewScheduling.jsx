@@ -87,7 +87,7 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         </label>
                         <input
                             type="text"
-                            name="jaid"
+                            name="jaId"
                             placeholder="Enter JAID"
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                     </div>
@@ -111,7 +111,7 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         </label>
                         <input
                             type="text"
-                            name="joid"
+                            name="joId"
                             placeholder="Enter JOID"
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                     </div>
@@ -128,7 +128,7 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         </label>
                         <input
                             type="date"
-                            name="date"
+                            name="techDate"
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
                     </div>
 
@@ -139,7 +139,7 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         </label>
                         <input
                             type="time"
-                            name="time"
+                            name="techTime"
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
                     </div>
 
@@ -174,7 +174,6 @@ const InterviewScheduling = ({ role = "admin" }) => {
                 <button
                     type="button"
                     className="px-6 py-2 bg-purple-700 hover:bg-purple-600 rounded font-medium transition text-white flex items-center gap-2">
-
                     + ADD {selectedType === 'technical' ? 'Technical' : 'HR'} Meeting
                 </button>
             </div>
