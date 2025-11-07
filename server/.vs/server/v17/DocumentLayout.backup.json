@@ -3,12 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\controllers\\jobapplicationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\controllers\\jobapplicationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\controllers\\jobapplicationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\controllers\\jobapplicationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\controllers\\technicalinterviewcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -31,6 +35,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\appsettings.json",
+              "RelativeDocumentMoniker": "server\\appsettings.json",
+              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\appsettings.json",
+              "RelativeToolTip": "server\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-11-07T17:31:42.844Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "JobApplicationController.cs",
               "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\JobApplicationController.cs",
               "RelativeDocumentMoniker": "server\\Controllers\\JobApplicationController.cs",
@@ -56,7 +73,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "TechnicalInterviewController.cs",
               "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\TechnicalInterviewController.cs",
               "RelativeDocumentMoniker": "server\\Controllers\\TechnicalInterviewController.cs",
@@ -64,12 +81,11 @@
               "RelativeToolTip": "server\\Controllers\\TechnicalInterviewController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-07T10:24:52.057Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-07T10:24:52.057Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "TechnicalInterview.cs",
               "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Entities\\TechnicalInterview.cs",
               "RelativeDocumentMoniker": "server\\Models\\Entities\\TechnicalInterview.cs",

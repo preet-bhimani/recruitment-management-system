@@ -40,7 +40,7 @@
               "RelativeDocumentMoniker": "server\\appsettings.json",
               "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\appsettings.json",
               "RelativeToolTip": "server\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAADAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-11-07T17:31:42.844Z",
               "EditorCaption": ""
@@ -55,8 +55,7 @@
               "RelativeToolTip": "server\\Controllers\\JobApplicationController.cs",
               "ViewState": "AgIAAI0AAAAAAAAAAAAowE0AAABAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-07T12:07:53.827Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-07T12:07:53.827Z"
             },
             {
               "$type": "Document",
@@ -68,8 +67,7 @@
               "RelativeToolTip": "server\\Program.cs",
               "ViewState": "AgIAAE4AAAAAAAAAAAAAADcAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-07T11:25:01.318Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-07T11:25:01.318Z"
             },
             {
               "$type": "Document",
