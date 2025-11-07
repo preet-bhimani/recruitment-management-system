@@ -3,12 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\controllers\\googleauthcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\controllers\\googleauthcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\controllers\\jobapplicationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\controllers\\jobapplicationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\controllers\\technicalinterviewcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\controllers\\technicalinterviewcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|c:\\users\\preet\\onedrive\\desktop\\roima_pre_assignment\\recruitment-project\\server\\server\\models\\entities\\technicalinterview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DAF70FE1-CF46-4782-97AA-5D30A2F81FFC}|server\\server.csproj|solutionrelative:server\\models\\entities\\technicalinterview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,33 +26,58 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\appsettings.json",
-              "RelativeDocumentMoniker": "server\\appsettings.json",
-              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\appsettings.json",
-              "RelativeToolTip": "server\\appsettings.json",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABIAAAAbAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-11-06T18:00:57.171Z",
+              "DocumentIndex": 0,
+              "Title": "JobApplicationController.cs",
+              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\JobApplicationController.cs",
+              "RelativeDocumentMoniker": "server\\Controllers\\JobApplicationController.cs",
+              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\JobApplicationController.cs",
+              "RelativeToolTip": "server\\Controllers\\JobApplicationController.cs",
+              "ViewState": "AgIAAI0AAAAAAAAAAAAowE0AAABAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-07T12:07:53.827Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "GoogleAuthController.cs",
-              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\GoogleAuthController.cs",
-              "RelativeDocumentMoniker": "server\\Controllers\\GoogleAuthController.cs",
-              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\GoogleAuthController.cs",
-              "RelativeToolTip": "server\\Controllers\\GoogleAuthController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFMAAAA1AAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Program.cs",
+              "RelativeDocumentMoniker": "server\\Program.cs",
+              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Program.cs",
+              "RelativeToolTip": "server\\Program.cs",
+              "ViewState": "AgIAAE4AAAAAAAAAAAAAADcAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-06T16:48:20.562Z",
+              "WhenOpened": "2025-11-07T11:25:01.318Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "TechnicalInterviewController.cs",
+              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\TechnicalInterviewController.cs",
+              "RelativeDocumentMoniker": "server\\Controllers\\TechnicalInterviewController.cs",
+              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Controllers\\TechnicalInterviewController.cs",
+              "RelativeToolTip": "server\\Controllers\\TechnicalInterviewController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-07T10:24:52.057Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "TechnicalInterview.cs",
+              "DocumentMoniker": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Entities\\TechnicalInterview.cs",
+              "RelativeDocumentMoniker": "server\\Models\\Entities\\TechnicalInterview.cs",
+              "ToolTip": "C:\\Users\\preet\\OneDrive\\Desktop\\Roima_Pre_Assignment\\recruitment-project\\server\\server\\Models\\Entities\\TechnicalInterview.cs",
+              "RelativeToolTip": "server\\Models\\Entities\\TechnicalInterview.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-07T10:05:01.807Z"
             }
           ]
         }

@@ -1,19 +1,168 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Clock } from "lucide-react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useLocation, useNavigate } from "react-router-dom";
+
 
 const InterviewScheduling = ({ role = "admin" }) => {
 
     const [selectedType, setSelectedType] = useState('technical');
 
+    const navigate = useNavigate();
+
+    const location = useLocation();
+    const data = location.state;
+
+    // Form Data for Meeting 
+    const [formData, setFormData] = useState({
+        meetingSubject: "",
+        joId: "",
+        jaId: "",
+        userId: "",
+        techDate: "",
+        techTime: "",
+        interviewerName: "",
+        interviewerEmail: "",
+    });
+
+    // Errors
+    const [errors, setErrors] = useState({
+        meetingSubject: "",
+        joId: "",
+        jaId: "",
+        userId: "",
+        techDate: "",
+        techTime: "",
+        interviewerName: "",
+        interviewerEmail: "",
+    })
+
     const getDuration = (type) => {
-        return type === 'technical' ? 2 : 1;};
+        return type === 'technical' ? 2 : 1;
+    };
 
     const getDurationText = (type) => {
         const hours = getDuration(type);
-        return `${hours} hour${hours > 1 ? 's' : ''}`;};
+        return `${hours} hour${hours > 1 ? 's' : ''}`;
+    };
 
-    const handleTypeChange = (e) => {
-        setSelectedType(e.target.value);};
+    // Handle Meeting Submission
+    const handleMeeting = async (e) => {
+        e.preventDefault();
+
+        let hasError = false;
+        const newErrors = { ...errors };
+
+        // Validate Meeting Subject
+        if (!formData.meetingSubject.trim()) {
+            newErrors.meetingSubject = "Meeting Subject is required";
+            hasError = true;
+        }
+        else {
+            newErrors.meetingSubject = "";
+        }
+
+        // Validate Job Application ID
+        if (!formData.jaId.trim()) {
+            newErrors.jaId = "Job Application ID is required";
+            hasError = true;
+        }
+        else {
+            newErrors.jaId = "";
+        }
+
+        // Validate User ID
+        if (!formData.userId.trim()) {
+            newErrors.userId = "User ID is required";
+            hasError = true;
+        }
+        else {
+            newErrors.userId = "";
+        }
+
+        // Validate Job Opening ID
+        if (!formData.joId.trim()) {
+            newErrors.joId = "Job Opening ID is required";
+            hasError = true;
+        }
+        else {
+            newErrors.joId = "";
+        }
+
+        // Validate Tech Date
+        if (!formData.techDate.trim()) {
+            newErrors.techDate = "Technical Date is required";
+            hasError = true;
+        }
+        else {
+            newErrors.techDate = "";
+        }
+
+        // Validate Tech Time
+        if (!formData.techTime.trim()) {
+            newErrors.techTime = "Technical Time is required";
+            hasError = true;
+        }
+        else {
+            newErrors.techTime = "";
+        }
+
+        // Validate Interviewer Email
+        if (!formData.interviewerEmail.trim()) {
+            newErrors.interviewerEmail = "Interview Email is required";
+            hasError = true;
+        }
+        else {
+            newErrors.interviewerEmail = "";
+        }
+
+        // Validate Interviewer Name
+        if (!formData.interviewerName.trim()) {
+            newErrors.interviewerName = "interviewer Name is required";
+            hasError = true;
+        }
+        else {
+            newErrors.interviewerName = "";
+        }
+
+        setErrors(newErrors);
+        if (hasError) return;
+
+        // Create Playload as It has to be in JSON Format
+        try {
+            const payload = {
+                JOId: formData.joId,
+                JAId: formData.jaId,
+                UserId: formData.userId,
+                MeetingSubject: formData.meetingSubject,
+                TechDate: formData.techDate,
+                TechTime: formData.techTime,
+                DurationMinutes: selectedType === "technical" ? 120 : 60,
+                InterviewerName: formData.interviewerName,
+                InterviewerEmail: formData.interviewerEmail
+            };
+            const res = await axios.post(`https://localhost:7119/api/TechnicalInterview/schedule`, 
+                payload, { headers: { "Content-Type": "application/json" } });
+            toast.success(res.data.message || "Technical interview scheduled successfully!");
+            navigate(-1);
+        }
+        catch (err) {
+            toast.error(err.response.data.message || "Something went wrong");
+        }
+    }
+
+    // Set Formdata from Location State
+    useEffect(() => {
+        if (data) {
+            setFormData(prev => ({
+                ...prev,
+                joId: data.joId,
+                jaId: data.jaId,
+                userId: data.userId,
+            }));
+        }
+    }, [data]);
 
     return <>
         <form className="bg-neutral-900  rounded-md p-6 shadow-sm">
@@ -30,8 +179,8 @@ const InterviewScheduling = ({ role = "admin" }) => {
                             name="meetingType"
                             value="technical"
                             className="mr-3"
-                            defaultChecked
-                            onChange={handleTypeChange} />
+                            checked={selectedType === "technical"}
+                            onChange={() => setSelectedType("technical")} />
                         <div>
                             <div className="font-medium text-purple-400">Technical Interview</div>
                         </div>
@@ -42,7 +191,8 @@ const InterviewScheduling = ({ role = "admin" }) => {
                             name="meetingType"
                             value="hr"
                             className="mr-3"
-                            onChange={handleTypeChange} />
+                            checked={selectedType === "hr"}
+                            onChange={() => setSelectedType("hr")} />
                         <div>
                             <div className="font-medium text-green-400">HR Interview</div>
                         </div>
@@ -76,8 +226,11 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         <input
                             type="text"
                             name="meetingSubject"
+                            value={formData.meetingSubject}
+                            onChange={(e) => setFormData({ ...formData, meetingSubject: e.target.value })}
                             placeholder="Enter Meeting Subject"
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                        {errors.meetingSubject && (<p className="text-rose-500 text-sm mt-1">{errors.meetingSubject}</p>)}
                     </div>
 
                     {/* Job Application ID */}
@@ -88,8 +241,11 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         <input
                             type="text"
                             name="jaId"
+                            value={formData.jaId}
+                            readOnly
                             placeholder="Enter JAID"
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                        {errors.jaId && (<p className="text-rose-500 text-sm mt-1">{errors.jaId}</p>)}
                     </div>
 
                     {/* User ID */}
@@ -100,8 +256,11 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         <input
                             type="text"
                             name="userID"
+                            value={formData.userId}
+                            readOnly
                             placeholder="Enter User ID"
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                        {errors.userId && (<p className="text-rose-500 text-sm mt-1">{errors.userId}</p>)}
                     </div>
 
                     {/* Job Opening ID */}
@@ -112,8 +271,11 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         <input
                             type="text"
                             name="joId"
+                            value={formData.joId}
+                            readOnly
                             placeholder="Enter JOID"
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                        {errors.joId && (<p className="text-rose-500 text-sm mt-1">{errors.joId}</p>)}
                     </div>
                 </div>
 
@@ -129,7 +291,10 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         <input
                             type="date"
                             name="techDate"
+                            value={formData.techDate}
+                            onChange={(e) => setFormData({ ...formData, techDate: e.target.value })}
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
+                        {errors.techDate && (<p className="text-rose-500 text-sm mt-1">{errors.techDate}</p>)}
                     </div>
 
                     {/* Time */}
@@ -140,7 +305,10 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         <input
                             type="time"
                             name="techTime"
+                            value={formData.techTime}
+                            onChange={(e) => setFormData({ ...formData, techTime: e.target.value })}
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
+                        {errors.techTime && (<p className="text-rose-500 text-sm mt-1">{errors.techTime}</p>)}
                     </div>
 
                     {/* Interviewer Name */}
@@ -151,8 +319,11 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         <input
                             type="text"
                             name="interviewerName"
+                            value={formData.interviewerName}
+                            onChange={(e) => setFormData({ ...formData, interviewerName: e.target.value })}
                             placeholder="Enter Interviewer's name"
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                        {errors.interviewerName && (<p className="text-rose-500 text-sm mt-1">{errors.interviewerName}</p>)}
                     </div>
 
                     {/* Interviewer Email */}
@@ -163,8 +334,11 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         <input
                             type="email"
                             name="interviewerEmail"
+                            value={formData.interviewerEmail}
+                            onChange={(e) => setFormData({ ...formData, interviewerEmail: e.target.value })}
                             placeholder="Enter Interviewer's email"
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                        {errors.interviewerEmail && (<p className="text-rose-500 text-sm mt-1">{errors.interviewerEmail}</p>)}
                     </div>
                 </div>
             </div>
@@ -173,6 +347,7 @@ const InterviewScheduling = ({ role = "admin" }) => {
             <div className="flex gap-3 justify-end mt-8 pt-6 border-t border-neutral-600">
                 <button
                     type="button"
+                    onClick={handleMeeting}
                     className="px-6 py-2 bg-purple-700 hover:bg-purple-600 rounded font-medium transition text-white flex items-center gap-2">
                     + ADD {selectedType === 'technical' ? 'Technical' : 'HR'} Meeting
                 </button>

@@ -540,6 +540,32 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "server.Controllers.TechnicalInterviewController",
+    "Method": "ScheduleMeeting",
+    "RelativePath": "api/TechnicalInterview/schedule",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "stiDto",
+        "Type": "server.Models.Dto.ScheduleTechnicalInterviewDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.TechnicalInterviewController",
+    "Method": "GetAllCandidatesIsTechnicalInterview",
+    "RelativePath": "api/TechnicalInterview/waitinterview",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "server.Controllers.UserController",
     "Method": "GetAllUsers",
     "RelativePath": "api/User",

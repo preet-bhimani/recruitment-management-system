@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const AdminAddTechInterview = () => {
 
@@ -10,30 +12,22 @@ const AdminAddTechInterview = () => {
 
     const navigate = useNavigate();
 
-    const techin = [
-        {
-            jaId: "9282H458-JAK1-42N9-WO58-30KZMN1EPL589",
-            fullName: "Preet Bhimani",
-            title: "Jr. Software Developer",
-            email: "preet@gmail.com",
-            isClear: "Clear",
-            interviewerName: "Paresh Tanna",
-            date: "2024-09-14",
-            feedback: "Congratulation!!! You completed first round. Now prepare for next round",
-            photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-        },
-        {
-            jaId: "0192R489-HFB7-83B4-DJ67-10URDK2QLZ75",
-            fullName: "Ronak Jalalji",
-            title: "Sr. Cloud Engineer",
-            email: "ronak@gamil.com",
-            isClear: null,
-            interviewerName: null,
-            date: null,
-            feedback: null,
-            photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-        },
-    ];
+    const [techin, setTechin] = useState([]);
+
+    // Fetch Candidate whose OverallStatus is Technical Interview
+    const fetchCandidatetoSetTechnicalInterviews = async () => {
+        try {
+            const res = await axios.get(`https://localhost:7119/api/TechnicalInterview/waitinterview`)
+            setTechin(res.data || []);
+        }
+        catch (err) {
+            toast.error("Error fetching candidates!");
+        }
+    }
+
+    useEffect(() => {
+        fetchCandidatetoSetTechnicalInterviews();
+    }, [])
 
     return <div className="flex flex-col h-screen bg-neutral-950 text-neutral-100">
 
@@ -65,19 +59,6 @@ const AdminAddTechInterview = () => {
                                     <p><span className="font-medium text-purple-300">Full Name:</span> {tech.fullName}</p>
                                     <p><span className="font-medium text-purple-300">Title:</span> {tech.title}</p>
                                     <p><span className="font-medium text-purple-300">Email:</span> {tech.email}</p>
-                                    <p><span className="font-medium text-purple-300">Interviewer Name:</span> {tech.interviewerName || "-"}</p>
-                                    <p><span className="font-medium text-purple-300">Date:</span> {tech.date || "-"}</p>
-                                    <p>
-                                        <span className="font-medium text-purple-300">IsClear:</span>{" "}
-                                        <span
-                                            className={`px-2 py-0.5 rounded text-xs ${tech.isClear === "clear"
-                                                ? "bg-emerald-800 text-emerald-200"
-                                                : tech.isClear === "In Progress"
-                                                    ? "bg-yellow-800 text-yellow-200"
-                                                    : "bg-rose-800 text-rose-200"}`}>
-                                            {tech.isClear || "-"}
-                                        </span>
-                                    </p>
                                     <div className="col-span-1 sm:col-span-2 md:col-span-4">
                                         <div className="font-medium text-purple-300">Feedback:</div>
                                         <div className="text-neutral-200">{tech.feedback || "-"}</div>
@@ -89,7 +70,7 @@ const AdminAddTechInterview = () => {
                             <div className="flex gap-2 mt-3 md:mt-0 md:ml-4 flex-shrink-0">
                                 <button
                                     className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs w-full md:w-auto justify-center"
-                                    onClick={() => navigate("/admin-add-meeting")}>
+                                    onClick={() => navigate("/admin-add-meeting", { state: tech })}>
                                     <Plus size={14} /> Schedule Meeting
                                 </button>
                             </div>

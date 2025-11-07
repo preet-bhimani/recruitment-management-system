@@ -31,6 +31,8 @@ namespace server.Models.Entities
 
         public required string MeetingLink { get; set; }
 
+        public string? GoogleEventId { get; set; }
+
         [Required]
         public required string InterviewerName { get; set; }
 
@@ -39,8 +41,8 @@ namespace server.Models.Entities
 
         public int NoOfRound { get; set; }
 
-        public required string TechIsClear { get; set; } = "Pending";
-        public required string TechStatus { get; set; } = "In Progress";
+        public string TechIsClear { get; set; } = "Pending";
+        public string TechStatus { get; set; } = "In Progress";
 
         public string? TechFeedback { get; set; }
 
