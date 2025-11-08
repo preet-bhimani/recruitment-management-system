@@ -1,0 +1,51 @@
+﻿namespace server.Services
+{
+    public class EmailTemplateService
+    {
+        // Technical interview template for candidates
+        public string TechnicalInterviewCandidateTemplate(
+            string candidateName, int round, DateTime date, string time, string interviewerName, string meetingLink)
+        {
+            return $@"
+                <h3>Technical Interview Scheduled</h3>
+                <p>Dear {candidateName},</p>
+                <p>Your technical interview has been scheduled.</p>
+
+                <p>
+                    <b>Round:</b> {round}<br/>
+                    <b>Date:</b> {date:dd MMM yyyy}<br/>
+                    <b>Time:</b> {time} IST<br/>
+                    <b>Meeting Link:</b> 
+                    <a href='{meetingLink}' 
+                    style=""display:inline-block; background-color:#6a0dad; color:#ffffff; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:600;"">
+                    Join Meeting
+                    </a>
+                </p>
+
+                <p>Best of luck!</p>
+                <p><i>Regards,<br/>Roima Team</i></p>";
+        }
+        public string TechnicalInterviewInterviewerTemplate(
+            string interviewerName, string candidateName, int round, DateTime date, string time, string meetingLink)
+        {
+            return $@"
+                <h3>New Interview Assigned</h3>
+                <p>Dear {interviewerName},</p>
+                <p>You have been assigned to conduct a technical interview.</p>
+
+                <p>
+                    <b>Candidate:</b> {candidateName}<br/>
+                    <b>Round:</b> {round}<br/>
+                    <b>Date:</b> {date:dd MMM yyyy}<br/>
+                    <b>Time:</b> {time} IST<br/>
+                    <a href='{meetingLink}' 
+                    style=""display:inline-block; background-color:#6a0dad; color:#ffffff; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:600;"">
+                    Join Meeting
+                    </a>
+                </p>
+
+                <p>Please evaluate the candidate and submit feedback.</p>
+                <p><i>Regards,<br/>Roima Team</i></p>";
+        }
+    }
+}

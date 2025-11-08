@@ -2,54 +2,39 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Filter, Download, Eye, Edit, Trash2 } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const TechnicalInterview = ({ role = "admin" }) => {
 
   const navigate = useNavigate();
 
-  const techin = [
-    {
-      tiId: "8171H347-JAK0-31N8-WO47-29KZMN0EPL48",
-      fullName: "Preet Bhimani",
-      title: "Jr. Software Developer",
-      email: "preet@gmail.com",
-      date: "2024-12-21",
-      isClear: "Clear",
-      status: "Clear",
-      rating: 4,
-      interviewerName: "Paresh Tanna",
-      photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-      noofRound: 3,
-    },
-    {
-      tiId: "0192R489-HFB7-83B4-DJ67-10URDK2QLZ75",
-      fullName: "Rutvik Dollar",
-      title: "Quality Analyst",
-      email: "rutvik@gamil.com",
-      date: "2025-07-14",
-      isClear: "Not Clear",
-      status: "Not Clear",
-      rating: 2,
-      interviewerName: "Nirav Bhatt",
-      photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-      noofRound: 2,
-    },
-  ];
+  const [techin, setTechin] = useState([]); 
+
+  const fetchTechin = async () =>{
+    try {
+      const res = await axios.get(`https://localhost:7119/api/TechnicalInterview`);
+      setTechin(res.data || []);
+    } 
+    catch (err) {
+      toast.error("Error fetching data!");
+    }
+  }
 
   // Filters Data
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     jobTitle: "",
     noOfRoundMin: "",
-    isClear: "",
-    status: "",
+    techIsClear: "",
+    techStatus: "",
     dateFrom: "",
     dateTo: "",
     minRating: "",
   });
 
   const jobTitles = useMemo(() => Array.from(new Set(techin.map((t) => t.title))).sort(), [techin]);
-  const isClearOptions = ["In Progress", "Clear", "Not Clear"];
+  const techIsClearOptions = ["In Progress", "Clear", "Not Clear"];
   const statusOptions = ["In Progress", "Clear", "Not Clear"];
 
   // Filter Logic
@@ -57,17 +42,17 @@ const TechnicalInterview = ({ role = "admin" }) => {
     return techin.filter((t) => {
       if (filters.jobTitle && t.title !== filters.jobTitle) return false;
       if (filters.noOfRoundMin && Number(t.noofRound) < Number(filters.noOfRoundMin)) return false;
-      if (filters.isClear && t.isClear !== filters.isClear) return false;
-      if (filters.status && t.status !== filters.status) return false;
+      if (filters.techIsClear && t.techIsClear !== filters.techIsClear) return false;
+      if (filters.techStatus && t.techStatus !== filters.techStatus) return false;
       if (filters.minRating && Number(t.rating) < Number(filters.minRating)) return false;
       if (filters.dateFrom) {
         const from = new Date(filters.dateFrom);
-        const d = new Date(t.date);
+        const d = new Date(t.techDate);
         if (d < from) return false;
       }
       if (filters.dateTo) {
         const to = new Date(filters.dateTo);
-        const d = new Date(t.date);
+        const d = new Date(t.techDate);
         if (d > to) return false;
       }
       return true;
@@ -78,7 +63,7 @@ const TechnicalInterview = ({ role = "admin" }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
   const pageItems = useMemo(() => paginate(filtered, currentPage, pageSize), [filtered, currentPage, pageSize]);
-  useEffect(() => setCurrentPage(1), [filters]);
+  useEffect(() => setCurrentPage(1), fetchTechin(), [filters]);
 
   return (
     <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
@@ -131,15 +116,15 @@ const TechnicalInterview = ({ role = "admin" }) => {
                 className="w-full bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm" />
             </div>
 
-            {/* IsClear */}
+            {/* TechIsClear */}
             <div>
-              <label className="block text-xs text-neutral-300 mb-1">isClear</label>
+              <label className="block text-xs text-neutral-300 mb-1">TechIsClear</label>
               <select
-                value={filters.isClear}
-                onChange={(e) => setFilters((f) => ({ ...f, isClear: e.target.value }))}
+                value={filters.techIsClear}
+                onChange={(e) => setFilters((f) => ({ ...f, techIsClear: e.target.value }))}
                 className="w-full bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm">
                 <option value="">All</option>
-                {isClearOptions.map((s) => (
+                {techIsClearOptions.map((s) => (
                   <option key={s} value={s}>
                     {s}
                   </option>
@@ -147,12 +132,12 @@ const TechnicalInterview = ({ role = "admin" }) => {
               </select>
             </div>
 
-            {/* Status */}
+            {/* techStatus */}
             <div>
-              <label className="block text-xs text-neutral-300 mb-1">Status</label>
+              <label className="block text-xs text-neutral-300 mb-1">techStatus</label>
               <select
-                value={filters.status}
-                onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value }))}
+                value={filters.techStatus}
+                onChange={(e) => setFilters((f) => ({ ...f, techStatus: e.target.value }))}
                 className="w-full bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm">
                 <option value="">All</option>
                 {statusOptions.map((s) => (
@@ -208,8 +193,8 @@ const TechnicalInterview = ({ role = "admin" }) => {
                 setFilters({
                   jobTitle: "",
                   noOfRoundMin: "",
-                  isClear: "",
-                  status: "",
+                  techIsClear: "",
+                  techStatus: "",
                   dateFrom: "",
                   dateTo: "",
                   minRating: "",
@@ -243,32 +228,32 @@ const TechnicalInterview = ({ role = "admin" }) => {
                 <p className="break-words"><span className="font-medium text-purple-300">Full Name:</span> {tech.fullName}</p>
                 <p className="break-words"><span className="font-medium text-purple-300">Title:</span> {tech.title}</p>
                 <p className="break-words"><span className="font-medium text-purple-300">Email:</span> {tech.email}</p>
-                <p className="break-words"><span className="font-medium text-purple-300">Date:</span> {tech.date}</p>
-                <p className="truncate"><span className="font-medium text-purple-300">No. of Rounds:</span> {tech.noofRound}</p>
+                <p className="break-words"><span className="font-medium text-purple-300">Date:</span> {tech.techDate}</p>
+                <p className="truncate"><span className="font-medium text-purple-300">No. of Rounds:</span> {tech.noOfRound}</p>
 
-                {/* IsClear */}
-                <p className="truncate">
-                  <span className="font-medium text-purple-300">IsClear:</span>{" "}
+                {/* techIsClear */}
+                <p>
+                  <span className="font-medium text-purple-300">TechIsClear:</span>{" "}
                   <span
-                    className={`px-2 py-0.5 rounded text-xs ${tech.isClear === "Clear"
+                    className={`px-2 py-0.5 rounded text-xs ${tech.techIsClear === "Clear"
                       ? "bg-emerald-800 text-emerald-200"
-                      : tech.isClear === "In Progress"
+                      : tech.techIsClear === "In Progress"
                         ? "bg-yellow-800 text-yellow-200"
                         : "bg-rose-800 text-rose-200"}`}>
-                    {tech.isClear}
+                    {tech.techIsClear}
                   </span>
                 </p>
 
-                {/* Status */}
-                <p className="truncate">
-                  <span className="font-medium text-purple-300">Status:</span>{" "}
+                {/* TechStatus */}
+                <p>
+                  <span className="font-medium text-purple-300">TechStatus:</span>{" "}
                   <span
-                    className={`px-2 py-0.5 rounded text-xs ${tech.status === "Clear"
+                    className={`px-2 py-0.5 rounded text-xs ${tech.techStatus === "Clear"
                       ? "bg-emerald-800 text-emerald-200"
-                      : tech.status === "In Progress"
+                      : tech.techStatus === "In Progress"
                         ? "bg-yellow-800 text-yellow-200"
                         : "bg-rose-800 text-rose-200"}`}>
-                    {tech.status}
+                    {tech.techStatus}
                   </span>
                 </p>
               </div>
@@ -282,7 +267,8 @@ const TechnicalInterview = ({ role = "admin" }) => {
 
               {role === "admin" && (
                 <>
-                  <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs" onClick={() => navigate('/admin-update-techinterview')}>
+                  <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs" 
+                  onClick={() => navigate(`/admin-update-techinterview/${tech.tiId}`)}>
                     <Edit size={14} /> Update
                   </button>
                   <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">

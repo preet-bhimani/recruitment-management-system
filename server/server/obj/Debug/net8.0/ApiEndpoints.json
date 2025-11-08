@@ -541,6 +541,32 @@
   },
   {
     "ContainingType": "server.Controllers.TechnicalInterviewController",
+    "Method": "GetAllCandidatesfromTechnicalInterview",
+    "RelativePath": "api/TechnicalInterview",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.TechnicalInterviewController",
+    "Method": "GetTechnicalInterviewById",
+    "RelativePath": "api/TechnicalInterview/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.TechnicalInterviewController",
     "Method": "ScheduleMeeting",
     "RelativePath": "api/TechnicalInterview/schedule",
     "HttpMethod": "POST",
@@ -550,6 +576,27 @@
       {
         "Name": "stiDto",
         "Type": "server.Models.Dto.ScheduleTechnicalInterviewDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "server.Controllers.TechnicalInterviewController",
+    "Method": "UpdateTechnicalInterview",
+    "RelativePath": "api/TechnicalInterview/update/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "utDto",
+        "Type": "server.Models.Dto.UpdateTechnicalInterviewDto",
+        "IsRequired": true
+      },
+      {
+        "Name": "id",
+        "Type": "System.Guid",
         "IsRequired": true
       }
     ],

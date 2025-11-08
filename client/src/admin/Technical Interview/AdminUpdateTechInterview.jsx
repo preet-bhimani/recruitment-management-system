@@ -1,38 +1,148 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import { Clock } from "lucide-react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const AdminUpdateTechInterview = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [selectedType, setSelectedType] = useState('technical');
+    const { id } = useParams();
+    const navigate = useNavigate();
 
     const [techData, setTechData] = useState({
-        tiId: "8171H347-JAK0-31N8-WO47-29KZMN0EPL48",
-        jaId: "9282H458-JAK1-42N9-WO58-30KZMN1EPL589",
-        userID: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
-        joId: "8723B287-CCC3-46D9-CE23-08EEBF2GFD35",
-        meetingSubject: "Tech Round 1",
-        interviewEmail: "preet@gmail.com",
-        interviewerName: "Paresh Tanna",
-        date: "2024-09-14",
-        time: "12:00",
-        feedback: "Congratulation!!! You completed first round. Now prepare for next round",
-        rating: 4,
-        IsClear: "Pass",
-        meetingLink: "www.microsoftteams.com",
-        status: "Clear"
+        tiId: "",
+        jaId: "",
+        userId: "",
+        joId: "",
+        meetingSubject: "",
+        interviewerEmail: "",
+        interviewerName: "",
+        techDate: "",
+        techTime: "",
+        techFeedback: "",
+        techRating: null,
+        techIsClear: "",
+        meetingLink: "",
+        techStatus: ""
     })
 
+    // Errors
+    const [errors, setErrors] = useState({
+        meetingSubject: "",
+        techDate: "",
+        techTime: "",
+        interviewerName: "",
+        interviewerEmail: "",
+    })
+
+    // Fetch Technical Interview Data
+    const fetchTechin = async () => {
+        try {
+            const res = await axios.get(`https://localhost:7119/api/TechnicalInterview/${id}`);
+            setTechData(res.data || []);
+        } catch (err) {
+            toast.error("Error fetching data!");
+        }
+    }
+
     const getDuration = (type) => {
-        return type === 'technical' ? 2 : 1;};
+        return type === 'technical' ? 2 : 1;
+    };
 
     const getDurationText = (type) => {
         const hours = getDuration(type);
-        return `${hours} hour${hours > 1 ? 's' : ''}`;};
+        return `${hours} hour${hours > 1 ? 's' : ''}`;
+    };
 
-    const handleTypeChange = (e) => {
-        setSelectedType(e.target.value);};
+    // Handle Meeting Submission
+    const handleTechinUpdate = async (e) => {
+        e.preventDefault();
+
+        let hasError = false;
+        const newErrors = { ...errors };
+
+        // Validate Meeting Subject
+        if (!techData.meetingSubject.trim()) {
+            newErrors.meetingSubject = "Meeting Subject is required";
+            hasError = true;
+        }
+        else {
+            newErrors.meetingSubject = "";
+        }
+
+        // Validate Tech Date
+        if (!techData.techDate.trim()) {
+            newErrors.techDate = "Technical Date is required";
+            hasError = true;
+        }
+        else {
+            newErrors.techDate = "";
+        }
+
+        // Validate Tech Time
+        if (!techData.techTime.trim()) {
+            newErrors.techTime = "Technical Time is required";
+            hasError = true;
+        }
+        else {
+            newErrors.techTime = "";
+        }
+
+        // Validate Interviewer Email
+        if (!techData.interviewerEmail.trim()) {
+            newErrors.interviewerEmail = "Interview Email is required";
+            hasError = true;
+        }
+        else {
+            newErrors.interviewerEmail = "";
+        }
+
+        // Validate Interviewer Name
+        if (!techData.interviewerName.trim()) {
+            newErrors.interviewerName = "interviewer Name is required";
+            hasError = true;
+        }
+        else {
+            newErrors.interviewerName = "";
+        }
+
+        setErrors(newErrors);
+        if (hasError) return;
+
+        // Create Playload as It has to be in JSON Format
+        try {
+            const payload = {
+                JOId: techData.joId,
+                JAId: techData.jaId,
+                UserId: techData.userId,
+                MeetingSubject: techData.meetingSubject,
+                TechDate: techData.techDate,
+                TechTime: techData.techTime,
+                DurationMinutes: selectedType === "technical" ? 120 : 60,
+                InterviewerName: techData.interviewerName,
+                InterviewerEmail: techData.interviewerEmail,
+                TechStatus: techData.techStatus,
+                TechIsClear: techData.techIsClear,
+                TechFeedback: techData.techFeedback,
+                TechRating: techData.techRating,
+            };
+            const res = await axios.put(`https://localhost:7119/api/TechnicalInterview/update/${id}`, 
+                payload, { headers: { "Content-Type": "application/json" } });
+            toast.success(res.data.message || "Technical interview updated successfully!");
+            navigate(-1);
+        }
+        catch (err) {
+            toast.error(err.response.data || "Something went wrong");
+        }
+    }
+
+    useEffect(() => {
+        fetchTechin();
+    }, [])
 
     return <div className="flex flex-col h-screen bg-neutral-950 text-neutral-100">
         {/* Navbar */}
@@ -45,8 +155,8 @@ const AdminUpdateTechInterview = () => {
 
             <div className="flex-1 overflow-y-auto p-4">
                 <div className="text-center mb-8">
-                        <h1 className="text-4xl font-bold text-white mb-4">Update Technical Interview Meeting</h1>
-                    </div>
+                    <h1 className="text-4xl font-bold text-white mb-4">Update Technical Interview Meeting</h1>
+                </div>
 
                 {/* Meeting Form */}
                 <div className="max-w-5xl mx-auto">
@@ -64,8 +174,8 @@ const AdminUpdateTechInterview = () => {
                                         name="meetingType"
                                         value="technical"
                                         className="mr-3"
-                                        defaultChecked
-                                        onChange={handleTypeChange} />
+                                        checked={selectedType === "technical"}
+                                        onChange={() => setSelectedType("technical")} />
                                     <div>
                                         <div className="font-medium text-purple-400">Technical Interview</div>
                                     </div>
@@ -76,7 +186,8 @@ const AdminUpdateTechInterview = () => {
                                         name="meetingType"
                                         value="hr"
                                         className="mr-3"
-                                        onChange={handleTypeChange} />
+                                        checked={selectedType === "hr"}
+                                        onChange={() => setSelectedType("hr")} />
                                     <div>
                                         <div className="font-medium text-green-400">HR Interview</div>
                                     </div>
@@ -103,7 +214,7 @@ const AdminUpdateTechInterview = () => {
                                 </label>
                                 <input
                                     type="text"
-                                    defaultValue={techData.tiId}
+                                    value={techData.tiId}
                                     disabled
                                     className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-300 cursor-not-allowed" />
                             </div>
@@ -119,8 +230,10 @@ const AdminUpdateTechInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={techData.meetingSubject}
+                                        value={techData.meetingSubject}
+                                        onChange={(e) => setTechData({ ...techData, meetingSubject: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                                    {errors.meetingSubject && (<p className="text-rose-500 text-sm mt-1">{errors.meetingSubject}</p>)}
                                 </div>
 
                                 {/* Job Application ID */}
@@ -130,7 +243,8 @@ const AdminUpdateTechInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={techData.jaId}
+                                        value={techData.jaId}
+                                        disabled
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
@@ -141,7 +255,8 @@ const AdminUpdateTechInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={techData.userID}
+                                        value={techData.userId}
+                                        disabled
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
@@ -152,33 +267,37 @@ const AdminUpdateTechInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={techData.joId}
+                                        value={techData.joId}
+                                        disabled
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
-                                {/* Feedback */}
+                                {/* techFeedback */}
                                 <div>
                                     <label className="block mb-1 text-sm font-medium">
-                                        Feedback
+                                        techFeedback
                                     </label>
                                     <textarea
                                         placeholder="Enter Comment"
                                         rows="4"
-                                        defaultValue={techData.feedback}
+                                        value={techData.techFeedback}
+                                        onChange={(e) => setTechData({ ...techData, techFeedback: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 resize-none">
                                     </textarea>
                                 </div>
 
-                                {/* IsClear */}
+                                {/* techIsClear */}
                                 <div>
-                                    <label className="block mb-1 text-sm font-medium">IsClear</label>
+                                    <label className="block mb-1 text-sm font-medium">techIsClear</label>
                                     <select
-                                        name="isClear"
-                                        defaultValue={techData.IsClear}
+                                        name="techIsClear"
+                                        value={techData.techIsClear}
+                                        onChange={(e) => setTechData({ ...techData, techIsClear: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100">
-                                        <option value="Pass">Pass</option>
-                                        <option value="Fail">Fail</option>
-                                        <option value="Wait">Wait</option>
+                                        <option value="Clear">Clear</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Not Clear">Not Clear</option>
+                                        <option value="Pending">Pending</option>
                                     </select>
                                 </div>
                             </div>
@@ -194,8 +313,10 @@ const AdminUpdateTechInterview = () => {
                                     </label>
                                     <input
                                         type="date"
-                                        defaultValue={techData.date}
+                                        value={techData.techDate}
+                                        onChange={(e) => setTechData({ ...techData, techDate: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
+                                    {errors.techDate && (<p className="text-rose-500 text-sm mt-1">{errors.techDate}</p>)}
                                 </div>
 
                                 {/* Time */}
@@ -205,8 +326,10 @@ const AdminUpdateTechInterview = () => {
                                     </label>
                                     <input
                                         type="time"
-                                        defaultValue={techData.time}
+                                        value={techData.techTime}
+                                        onChange={(e) => setTechData({ ...techData, techTime: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
+                                    {errors.techTime && (<p className="text-rose-500 text-sm mt-1">{errors.techTime}</p>)}
                                 </div>
 
                                 {/* Interviewer Name */}
@@ -216,8 +339,10 @@ const AdminUpdateTechInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={techData.interviewerName}
+                                        value={techData.interviewerName}
+                                        onChange={(e) => setTechData({ ...techData, interviewerName: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                                    {errors.interviewerName && (<p className="text-rose-500 text-sm mt-1">{errors.interviewerName}</p>)}
                                 </div>
 
                                 {/* Interviewer Email */}
@@ -227,8 +352,10 @@ const AdminUpdateTechInterview = () => {
                                     </label>
                                     <input
                                         type="email"
-                                        defaultValue={techData.interviewEmail}
+                                        value={techData.interviewerEmail}
+                                        onChange={(e) => setTechData({ ...techData, interviewerEmail: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                                    {errors.interviewerEmail && (<p className="text-rose-500 text-sm mt-1">{errors.interviewerEmail}</p>)}
                                 </div>
 
                                 {/* Meeting Link */}
@@ -238,7 +365,8 @@ const AdminUpdateTechInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={techData.meetingLink}
+                                        value={techData.meetingLink}
+                                        disabled
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
@@ -249,22 +377,25 @@ const AdminUpdateTechInterview = () => {
                                     </label>
                                     <input
                                         type="number"
+                                        onChange={(e) => setTechData({ ...techData, techRating: e.target.value })}
                                         max={5}
                                         min={0}
-                                        defaultValue={techData.rating}
+                                        value={techData.techRating}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
-                                {/* Status */}
+
+                                {/* techStatus */}
                                 <div>
-                                    <label className="block mb-1 text-sm font-medium">Status</label>
+                                    <label className="block mb-1 text-sm font-medium">techStatus</label>
                                     <select
-                                        name="Status"
-                                        defaultValue={techData.status}
+                                        name="techStatus"
+                                        value={techData.techStatus}
+                                        onChange={(e) => setTechData({ ...techData, techStatus: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100">
                                         <option value="Clear">Clear</option>
                                         <option value="In Progress">In Progress</option>
+                                        <option value="Not Clear">Not Clear</option>
                                         <option value="Hold">Hold</option>
-                                        <option value="Inactive">Not Clear</option>
                                     </select>
                                 </div>
                             </div>
@@ -274,6 +405,7 @@ const AdminUpdateTechInterview = () => {
                         <div className="flex gap-3 justify-end mt-8 pt-6 border-t border-neutral-600">
                             <button
                                 type="button"
+                                onClick={handleTechinUpdate}
                                 className="px-6 py-2 bg-purple-700 hover:bg-purple-600 rounded font-medium transition text-white flex items-center gap-2">
                                 + Update {selectedType === 'technical' ? 'Technical' : 'HR'} Interview
                             </button>

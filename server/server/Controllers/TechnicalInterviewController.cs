@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Models.Dto;
 using server.Models.Entities;
+using server.Services;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -20,14 +22,19 @@ namespace server.Controllers
         private readonly AppDbContext dbContext;
         private readonly IHttpClientFactory http;
         private readonly IConfiguration cfg;
+        private readonly EmailService emailService;
+        private readonly EmailTemplateService templateService;
 
-        public TechnicalInterviewController(AppDbContext dbContext, IHttpClientFactory http, IConfiguration cfg)
+        public TechnicalInterviewController(AppDbContext dbContext, IHttpClientFactory http, IConfiguration cfg, EmailService emailService, EmailTemplateService templateService)
         {
             this.dbContext = dbContext;
             this.http = http;
             this.cfg = cfg;
+            this.emailService = emailService;
+            this.templateService = templateService;
         }
 
+        // Get access token to generate meeting
         private async Task<string> GetAccessToken(string refreshToken)
         {
             var form = new Dictionary<string, string>
@@ -47,6 +54,7 @@ namespace server.Controllers
             return token!.access_token;
         }
 
+        // Schedule meeting endpoint
         [HttpPost("schedule")]
         public async Task<IActionResult> ScheduleMeeting(ScheduleTechnicalInterviewDto stiDto)
         {
@@ -167,6 +175,33 @@ namespace server.Controllers
             await dbContext.TechnicalInterviews.AddAsync(entity);
             await dbContext.SaveChangesAsync();
 
+
+            // Candidate Email
+            var candidateEmailBody = templateService.TechnicalInterviewCandidateTemplate(
+                candidate.FullName,
+                nextRound,
+                stiDto.TechDate.ToDateTime(stiDto.TechTime),
+                stiDto.TechTime.ToString(@"hh\:mm"),
+                stiDto.InterviewerName,
+                meetingLink);
+
+            await emailService.SendEmail(candidate.Email,
+                $"Technical Interview Scheduled - Round {nextRound}",
+                candidateEmailBody);
+
+            // Interviewer Email
+            var interviewerEmailBody = templateService.TechnicalInterviewInterviewerTemplate(
+                stiDto.InterviewerName,
+                candidate.FullName,
+                nextRound,
+                stiDto.TechDate.ToDateTime(stiDto.TechTime),
+                stiDto.TechTime.ToString(@"hh\:mm"),
+                meetingLink);
+
+            await emailService.SendEmail(stiDto.InterviewerEmail,
+                $"Interview Assigned - {candidate.FullName} (Round {nextRound})",
+                interviewerEmailBody);
+
             return Ok(new
             {
                 message = "Technical interview scheduled successfully",
@@ -229,6 +264,273 @@ namespace server.Controllers
 
             return Ok(result);
         }
+
+        // Get candidates details from technical interview table
+        [HttpGet]
+        public async Task<IActionResult> GetAllCandidatesfromTechnicalInterview()
+        {
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+
+            var candidates = await dbContext.TechnicalInterviews
+                .Select(c => new
+                {
+                    c.TIId,
+                    c.TechDate,
+                    c.TechRating,
+                    c.NoOfRound,
+                    c.TechIsClear,
+                    c.TechStatus,
+                    Photo = !string.IsNullOrEmpty(c.User.Photo) ? baseUrl + c.User.Photo : null,
+                    c.User.FullName,
+                    c.User.Email,
+                    c.JobOpening.Title,
+                })
+                .ToListAsync();
+
+            return Ok(candidates);
+        }
+
+        // Get technical interview by Id
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetTechnicalInterviewById(Guid id)
+        {
+            var techin = await dbContext.TechnicalInterviews.FindAsync(id);
+            if( techin == null)
+            {
+                return BadRequest("Technical Intervuew not found");
+            }
+
+            return Ok(techin);
+        }
+
+        private static readonly TimeZoneInfo IstTz = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata");
+        private static DateTime ToUtc(DateOnly d, TimeOnly t)
+        {
+            var local = new DateTime(d.Year, d.Month, d.Day, t.Hour, t.Minute, 0, DateTimeKind.Unspecified);
+            return TimeZoneInfo.ConvertTimeToUtc(local, IstTz);
+        }
+
+        private static bool IsMeetingCompleted(DateOnly date, TimeOnly time)
+        {
+            var nowIst = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, IstTz);
+            var meetingDateTime = date.ToDateTime(time);
+
+            return nowIst > meetingDateTime;
+        }
+
+        // Change Google event as per update meeting
+        private async Task<bool> UpdateGoogleEvent(string accessToken, string eventId, DateOnly d, TimeOnly t, int durationMinutes, string interviewerName, string interviewerEmail, string candidateName, string candidateEmail)
+        {
+            var startUtc = ToUtc(d, t);
+            var endUtc = startUtc.AddMinutes(durationMinutes);
+
+            var body = new
+            {
+                start = new { dateTime = startUtc.ToString("yyyy-MM-ddTHH:mm:ssZ"), timeZone = "Asia/Kolkata" },
+                end = new { dateTime = endUtc.ToString("yyyy-MM-ddTHH:mm:ssZ"), timeZone = "Asia/Kolkata" },
+                attendees = new[]
+                {
+                    new { email = candidateEmail, displayName = candidateName },
+                    new { email = interviewerEmail, displayName = interviewerName }
+                }
+            };
+
+            var req = new HttpRequestMessage(new HttpMethod("PATCH"),
+                $"https://www.googleapis.com/calendar/v3/calendars/primary/events/{eventId}?conferenceDataVersion=1&sendUpdates=all");
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            req.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
+
+            var client = http.CreateClient();
+            var res = await client.SendAsync(req);
+            return res.IsSuccessStatusCode;
+        }
+
+        // Update technical interview
+        [HttpPut("update/{id:guid}")]
+        public async Task<IActionResult> UpdateTechnicalInterview(UpdateTechnicalInterviewDto utDto, Guid id)
+        {
+            // Model validation
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var entity = await dbContext.TechnicalInterviews
+                .Include(t => t.JobApplication)
+                .FirstOrDefaultAsync(t => t.TIId == id);
+
+            if (entity == null)
+            {
+                return NotFound("TechnicalInterview round not found.");
+            }
+
+            // Check exam date is gone or not?
+            bool dateGone = IsMeetingCompleted(entity.TechDate, entity.TechTime); 
+
+            // Find job application
+            var ja = await dbContext.JobApplications.FirstOrDefaultAsync(j => j.JAId == entity.JAId);
+            if (ja == null) return NotFound("JobApplication not found.");
+
+            // Update based on TechIsClear
+            switch (utDto.TechIsClear)
+            {
+                case "Pending":
+
+                    // if exam date is not gone the allow to change the meeting details
+                    if (!dateGone)
+                    {
+                        // Update DB fields
+                        entity.TechDate = utDto.TechDate;
+                        entity.TechTime = utDto.TechTime;
+                        entity.MeetingSubject = utDto.MeetingSubject;
+                        entity.TechFeedback = utDto.TechFeedback;
+                        entity.InterviewerName = utDto.InterviewerName;
+                        entity.InterviewerEmail = utDto.InterviewerEmail;
+
+                        // Also update Google Calendar via EventId
+                        if (!string.IsNullOrWhiteSpace(entity.GoogleEventId))
+                        {
+                            // Find token in DB
+                            var setting = await dbContext.GoogleIntegrationSettings.FirstOrDefaultAsync();
+                            if (setting == null)
+                            { 
+                                return BadRequest("Google not connected.");
+                            }
+                            var token = await GetAccessToken(setting.RefreshToken);
+                            var cand = await dbContext.Users.FirstOrDefaultAsync(u => u.UserId == entity.UserId);
+
+                            // Cal UpdateGoogleEvent and set new event in Calander
+                            var ok = await UpdateGoogleEvent(token, entity.GoogleEventId, utDto.TechDate, utDto.TechTime, 120, utDto.InterviewerName, utDto.InterviewerEmail, cand.FullName, cand.Email);
+                            if (!ok)
+                            {
+                                return BadRequest("Google event update failed.");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest("Meeting is already completed. Cannot change date/time or interviewer.");
+                    }
+                    break;
+
+                case "In Progress":
+
+                    // If exam date is gone
+                    if (dateGone)
+                    {
+                        // Check rating must be null so that we get idea that result is distributed or not
+                        if (entity.TechRating == null)
+                        {
+                            entity.TechIsClear = "In Progress";
+                            entity.TechStatus = "In Progress";
+                        }
+                        else
+                        {
+                            return BadRequest("Result already distributed.");
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest("Meeting is not completed yet.");
+                    }
+                    break;
+
+                case "Clear":
+
+                    // Exam date gone
+                    if (dateGone)
+                    {
+                        // TechRating and TechFeedback are required to submit clear
+                        if (utDto.TechRating == null || string.IsNullOrWhiteSpace(utDto.TechFeedback))
+                        {
+                            return BadRequest("TechRating and TechFeedback are required when marking Clear.");
+                        }
+
+                        entity.TechIsClear = "Clear";
+                        entity.TechRating = utDto.TechRating;
+                        entity.TechFeedback = utDto.TechFeedback;
+
+                        // Change TechStatus and OverallStatus
+                        entity.TechStatus = "In Progress";
+                        ja.OverallStatus = "Technical Interview";
+                    }
+                    else
+                    {
+                        return BadRequest("Meeting is not completed yet.");
+                    }
+                    break;
+
+                case "Not Clear":
+
+                    // Exam date must gone
+                    if (dateGone)
+                    {
+                        // TechRating and TechFeedback are required to submit Not Clear
+                        if (utDto.TechRating == null || string.IsNullOrWhiteSpace(utDto.TechFeedback))
+                        {
+                            return BadRequest("TechRating and TechFeedback are required when marking Not Clear.");
+                        }
+
+                        entity.TechIsClear = "Not Clear";
+                        entity.TechRating = utDto.TechRating;
+                        entity.TechFeedback = utDto.TechFeedback;
+
+                        // Change TechStatus and OverallStatus
+                        entity.TechStatus = "Not Clear";
+                        ja.OverallStatus = "Rejected";
+                    }
+                    else
+                    {
+                        return BadRequest("Meeting is not completed yet.");
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+
+            // Update based on TechStatus
+            switch (utDto.TechStatus)
+            {
+                case "Clear":
+
+                    // Exam must gone
+                    if (dateGone)
+                    {
+                        // Check all previous round status is Clear and there is no null values in TechRating and TechFeedback
+                        var rounds = await dbContext.TechnicalInterviews
+                            .Where(t => t.JAId == entity.JAId)
+                            .Select(t => new { t.TechIsClear, t.TechFeedback, t.TechRating })
+                            .ToListAsync();
+
+                        var allClear = rounds.Count > 0 && rounds.All(r => r.TechIsClear == "Clear" && r.TechRating != null && !string.IsNullOrWhiteSpace(r.TechFeedback));
+                        if (!allClear) return BadRequest("All rounds must be Clear with rating and feedback before final Clear.");
+
+                        entity.TechStatus = "Clear";
+                        ja.OverallStatus = "HR Interview";
+                    }
+                    else
+                    {
+                        return BadRequest("Meeting is not completed yet.");
+                    }
+                    break;
+
+                case "Hold":
+                    ja.OverallStatus = "Hold";
+                    break;
+
+                default:
+                    break;
+            }
+
+            entity.UpdatedAt = DateTime.UtcNow;
+            ja.UpdatedAt = DateTime.UtcNow;
+
+            await dbContext.SaveChangesAsync();
+            return Ok("Technical interview updated.");
+        }
+
 
         // Get token response
         public class GoogleTokenResponse

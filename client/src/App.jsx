@@ -102,7 +102,7 @@ function App() {
           <Route path='/admin-update-jobapplication/:id' element={<AdminUpdateJobApplication />} />
           <Route path='/admin-techinterview' element={<AdminTechInterview />} />
           <Route path='/admin-add-techinterview' element={<AdminAddTechInterview />} />
-          <Route path='/admin-update-techinterview' element={<AdminUpdateTechInterview />} />
+          <Route path='/admin-update-techinterview/:id' element={<AdminUpdateTechInterview />} />
           <Route path='/admin-hrinterview' element={<AdminHRInterview />} />
           <Route path='admin-add-hrinterview' element={<AdminAddHRInterview />} />
           <Route path='/admin-update-hrinterview' element={<AdminUpdateHRInterview />} />
