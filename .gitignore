@@ -3,7 +3,10 @@
 /obj/
 
 # Visual Studio cache
-/.vs
+.vs/
+bin/
+obj/
+backup-repo.git/
 
 # App settings (secrets)
 appsettings.json
