@@ -1,29 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import { Clock } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const AdminUpdateHRInterview = () => {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [selectedType, setSelectedType] = useState('hr');
+    const { id } = useParams();
+    const navigate = useNavigate();
 
     const [hrData, setHRData] = useState({
-        hiId: "8171H347-JAK0-31N8-WO47-29KZMN0EPL48",
-        jaId: "9282H458-JAK1-42N9-WO58-30KZMN1EPL589",
-        userID: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
-        joId: "8723B287-CCC3-46D9-CE23-08EEBF2GFD35",
-        meetingSubject: "HR Round 1",
-        interviewEmail: "preet@gmail.com",
-        interviewerName: "Paresh Tanna",
-        date: "2024-09-14",
-        time: "12:00",
-        feedback: "Congratulation!!! You completed first round. Now prepare for final round",
-        rating: 4.5,
-        IsClear: "Pass",
-        meetingLink: "www.microsoftteams.com",
-        status: "Clear"
+        hiId: "",
+        jaId: "",
+        userId: "",
+        joId: "",
+        meetingSubject: "",
+        interviewerEmail: "",
+        interviewerName: "",
+        hrDate: "",
+        hrTime: "",
+        hrFeedback: "",
+        hrRating: null,
+        hrIsClear: "",
+        meetingLink: "",
+        hrStatus: ""
     })
+
+    // Errors
+    const [errors, setErrors] = useState({
+        meetingSubject: "",
+        hrDate: "",
+        hrTime: "",
+        interviewerName: "",
+        interviewerEmail: "",
+    })
+
+    // Fetch HR Interview Data
+    const fetchHrIn = async () => {
+        try {
+            const res = await axios.get(`https://localhost:7119/api/HRInterview/${id}`);
+            setHRData(res.data || []);
+        } catch (err) {
+            toast.error("Error fetching data!");
+        }
+    }
 
     const getDuration = (type) => {
         return type === 'technical' ? 2 : 1;
@@ -37,6 +61,93 @@ const AdminUpdateHRInterview = () => {
     const handleTypeChange = (e) => {
         setSelectedType(e.target.value);
     };
+
+    // Handle Meeting Submission
+    const handleHrinUpdate = async (e) => {
+        e.preventDefault();
+
+        let hasError = false;
+        const newErrors = { ...errors };
+
+        // Validate Meeting Subject
+        if (!hrData.meetingSubject.trim()) {
+            newErrors.meetingSubject = "Meeting Subject is required";
+            hasError = true;
+        }
+        else {
+            newErrors.meetingSubject = "";
+        }
+
+        // Validate Tech Date
+        if (!hrData.hrDate.trim()) {
+            newErrors.hrDate = "HR Date is required";
+            hasError = true;
+        }
+        else {
+            newErrors.hrDate = "";
+        }
+
+        // Validate Tech Time
+        if (!hrData.hrTime.trim()) {
+            newErrors.hrTime = "HR Time is required";
+            hasError = true;
+        }
+        else {
+            newErrors.hrTime = "";
+        }
+
+        // Validate Interviewer Email
+        if (!hrData.interviewerEmail.trim()) {
+            newErrors.interviewerEmail = "Interview Email is required";
+            hasError = true;
+        }
+        else {
+            newErrors.interviewerEmail = "";
+        }
+
+        // Validate Interviewer Name
+        if (!hrData.interviewerName.trim()) {
+            newErrors.interviewerName = "interviewer Name is required";
+            hasError = true;
+        }
+        else {
+            newErrors.interviewerName = "";
+        }
+
+        setErrors(newErrors);
+        if (hasError) return;
+
+        // Create Playload as It has to be in JSON Format
+        try {
+            const payload = {
+                JOId: hrData.joId,
+                JAId: hrData.jaId,
+                UserId: hrData.userId,
+                MeetingSubject: hrData.meetingSubject,
+                HRDate: hrData.hrDate,
+                HRTime: hrData.hrTime,
+                DurationMinutes: 60,
+                InterviewerName: hrData.interviewerName,
+                InterviewerEmail: hrData.interviewerEmail,
+                HRStatus: hrData.hrStatus,
+                HRIsClear: hrData.hrIsClear,
+                HRFeedback: hrData.hrFeedback,
+                HRRating: hrData.hrRating,
+            };
+            const res = await axios.put(`https://localhost:7119/api/HRInterview/update/${id}`,
+                payload, { headers: { "Content-Type": "application/json" } });
+            toast.success(res.data || "HR interview updated successfully!");
+            navigate(-1);
+        }
+        catch (err) {
+            toast.error(err.response.data || "Something went wrong");
+        }
+    }
+
+    useEffect(() => {
+        fetchHrIn();
+    }, []);
+
     return <div className="flex flex-col h-screen bg-neutral-950 text-neutral-100">
         {/* Navbar */}
         <Navbar />
@@ -67,7 +178,7 @@ const AdminUpdateHRInterview = () => {
                                         name="meetingType"
                                         value="technical"
                                         className="mr-3"
-                                        defaultChecked
+                                        disabled
                                         onChange={handleTypeChange} />
                                     <div>
                                         <div className="font-medium text-blue-400">Technical Interview</div>
@@ -79,6 +190,7 @@ const AdminUpdateHRInterview = () => {
                                         name="meetingType"
                                         value="hr"
                                         className="mr-3"
+                                        defaultChecked
                                         onChange={handleTypeChange} />
                                     <div>
                                         <div className="font-medium text-green-400">HR Interview</div>
@@ -106,7 +218,7 @@ const AdminUpdateHRInterview = () => {
                                 </label>
                                 <input
                                     type="text"
-                                    defaultValue={hrData.hiId}
+                                    value={hrData.hiId}
                                     disabled
                                     className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-300 cursor-not-allowed" />
                             </div>
@@ -122,8 +234,10 @@ const AdminUpdateHRInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={hrData.meetingSubject}
+                                        value={hrData.meetingSubject}
+                                        onChange={(e) => setHRData({ ...hrData, meetingSubject: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                                    {errors.meetingSubject && (<p className="text-rose-500 text-sm mt-1">{errors.meetingSubject}</p>)}
                                 </div>
 
                                 {/* Job Application ID */}
@@ -133,7 +247,8 @@ const AdminUpdateHRInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={hrData.jaId}
+                                        value={hrData.jaId}
+                                        disabled
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
@@ -144,7 +259,8 @@ const AdminUpdateHRInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={hrData.userID}
+                                        value={hrData.userId}
+                                        disabled
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
@@ -155,33 +271,37 @@ const AdminUpdateHRInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={hrData.joId}
+                                        value={hrData.joId}
+                                        disabled
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
-                                {/* Feedback */}
+                                {/* hrFeedback */}
                                 <div>
                                     <label className="block mb-1 text-sm font-medium">
-                                        Feedback
+                                        hrFeedback
                                     </label>
                                     <textarea
                                         placeholder="Enter Comment"
                                         rows="4"
-                                        defaultValue={hrData.feedback}
+                                        value={hrData.hrFeedback}
+                                        onChange={(e) => setHRData({ ...hrData, hrFeedback: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 resize-none">
                                     </textarea>
                                 </div>
 
-                                {/* IsClear */}
+                                {/* hrIsClear */}
                                 <div>
-                                    <label className="block mb-1 text-sm font-medium">IsClear</label>
+                                    <label className="block mb-1 text-sm font-medium">hrIsClear</label>
                                     <select
-                                        name="isClear"
-                                        defaultValue={hrData.IsClear}
+                                        name="hrIsClear"
+                                        value={hrData.hrIsClear}
+                                        onChange={(e) => setHRData({ ...hrData, hrIsClear: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100">
-                                        <option value="Pass">Pass</option>
-                                        <option value="Fail">Fail</option>
-                                        <option value="Wait">Wait</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Clear">Clear</option>
+                                        <option value="Not Clear">Not Clear</option>
+                                        <option value="In Progress">In Progress</option>
                                     </select>
                                 </div>
                             </div>
@@ -197,8 +317,10 @@ const AdminUpdateHRInterview = () => {
                                     </label>
                                     <input
                                         type="date"
-                                        defaultValue={hrData.date}
+                                        value={hrData.hrDate}
+                                        onChange={(e) => setHRData({ ...hrData, hrDate: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
+                                    {errors.hrDate && (<p className="text-rose-500 text-sm mt-1">{errors.hrDate}</p>)}
                                 </div>
 
                                 {/* Time */}
@@ -208,8 +330,10 @@ const AdminUpdateHRInterview = () => {
                                     </label>
                                     <input
                                         type="time"
-                                        defaultValue={hrData.time}
+                                        value={hrData.hrTime}
+                                        onChange={(e) => setHRData({ ...hrData, hrTime: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
+                                    {errors.hrTime && (<p className="text-rose-500 text-sm mt-1">{errors.hrTime}</p>)}
                                 </div>
 
                                 {/* Interviewer Name */}
@@ -219,8 +343,10 @@ const AdminUpdateHRInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={hrData.interviewerName}
+                                        value={hrData.interviewerName}
+                                        onChange={(e) => setHRData({ ...hrData, interviewerName: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                                    {errors.interviewerName && (<p className="text-rose-500 text-sm mt-1">{errors.interviewerName}</p>)}
                                 </div>
 
                                 {/* Interviewer Email */}
@@ -230,8 +356,10 @@ const AdminUpdateHRInterview = () => {
                                     </label>
                                     <input
                                         type="email"
-                                        defaultValue={hrData.interviewEmail}
+                                        value={hrData.interviewerEmail}
+                                        onChange={(e) => setHRData({ ...hrData, interviewerEmail: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
+                                    {errors.interviewerEmail && (<p className="text-rose-500 text-sm mt-1">{errors.interviewerEmail}</p>)}
                                 </div>
 
                                 {/* Meeting Link */}
@@ -241,33 +369,37 @@ const AdminUpdateHRInterview = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        defaultValue={hrData.meetingLink}
+                                        value={hrData.meetingLink}
+                                        disabled
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
-                                {/* Rating */}
+                                {/* hrRating */}
                                 <div>
                                     <label className="block mb-1 text-sm font-medium">
-                                        Rating <span className="text-rose-500">*</span>
+                                        hrRating <span className="text-rose-500">*</span>
                                     </label>
                                     <input
                                         type="number"
                                         max={5}
-                                        min={0}
-                                        defaultValue={hrData.rating}
+                                        min={1}
+                                        value={hrData.hrRating}
+                                        onChange={(e) => setHRData({ ...hrData, hrRating: parseInt(e.target.value) })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
-                                {/* Status */}
+
+                                {/* hrStatus */}
                                 <div>
-                                    <label className="block mb-1 text-sm font-medium">Status</label>
+                                    <label className="block mb-1 text-sm font-medium">hrStatus</label>
                                     <select
-                                        name="Status"
-                                        defaultValue={hrData.status}
+                                        name="hrStatus"
+                                        value={hrData.hrStatus}
+                                        onChange={(e) => setHRData({ ...hrData, hrStatus: e.target.value })}
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100">
                                         <option value="Clear">Clear</option>
-                                        <option value="In Progress">In Progress</option>
+                                        <option value="In Progress" disabled>In Progress</option>
                                         <option value="Hold">Hold</option>
-                                        <option value="Inactive">Not Clear</option>
+                                        <option value="Not Clear" disabled>Not Clear</option>
                                     </select>
                                 </div>
                             </div>
@@ -277,6 +409,7 @@ const AdminUpdateHRInterview = () => {
                         <div className="flex gap-3 justify-end mt-8 pt-6 border-t border-neutral-600">
                             <button
                                 type="button"
+                                onClick={handleHrinUpdate}
                                 className="px-6 py-2 bg-purple-700 hover:bg-purple-600 rounded font-medium transition text-white flex items-center gap-2">
 
                                 + Update {selectedType === 'technical' ? 'Technical' : 'HR'} Interview

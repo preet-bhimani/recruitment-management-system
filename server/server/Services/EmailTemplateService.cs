@@ -25,6 +25,8 @@
                 <p>Best of luck!</p>
                 <p><i>Regards,<br/>Roima Team</i></p>";
         }
+
+        // Technical Interview template for interviewer
         public string TechnicalInterviewInterviewerTemplate(
             string interviewerName, string candidateName, int round, DateTime date, string time, string meetingLink)
         {
@@ -45,6 +47,54 @@
                 </p>
 
                 <p>Please evaluate the candidate and submit feedback.</p>
+                <p><i>Regards,<br/>Roima Team</i></p>";
+        }
+
+        // HR interview template for candidate
+        public string HRInterviewCandidateTemplate(
+            string candidateName, int round, DateTime date, string time, string interviewerName, string meetingLink)
+        {
+            return $@"
+                <h3>HR Interview Scheduled</h3>
+                <p>Dear {candidateName},</p>
+                <p>Your HR interview has been scheduled.</p>
+
+                <p>
+                    <b>Round:</b> {round}<br/>
+                    <b>Date:</b> {date:dd MMM yyyy}<br/>
+                    <b>Time:</b> {time} IST<br/>
+                    <b>Meeting Link:</b> 
+                    <a href='{meetingLink}' 
+                    style=""display:inline-block; background-color:#0077b6; color:#ffffff; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:600;"">
+                    Join Meeting
+                    </a>
+                </p>
+
+                <p>Best wishes!</p>
+                <p><i>Regards,<br/>Roima Team</i></p>";
+        }
+
+        // HR interview template for interviewer
+        public string HRInterviewInterviewerTemplate(
+            string interviewerName, string candidateName, int round, DateTime date, string time, string meetingLink)
+        {
+            return $@"
+                <h3>New HR Interview Assigned</h3>
+                <p>Dear {interviewerName},</p>
+                <p>You have been assigned to conduct an HR interview.</p>
+
+                <p>
+                    <b>Candidate:</b> {candidateName}<br/>
+                    <b>Round:</b> {round}<br/>
+                    <b>Date:</b> {date:dd MMM yyyy}<br/>
+                    <b>Time:</b> {time} IST<br/>
+                    <a href='{meetingLink}' 
+                    style=""display:inline-block; background-color:#0077b6; color:#ffffff; padding:8px 14px; border-radius:6px; text-decoration:none; font-weight:600;"">
+                    Join Meeting
+                    </a>
+                </p>
+
+                <p>Please evaluate the candidate and submit your HR feedback.</p>
                 <p><i>Regards,<br/>Roima Team</i></p>";
         }
     }

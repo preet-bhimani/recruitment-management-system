@@ -2,37 +2,24 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, Edit, Trash2, Filter, Download } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
+import axios from "axios";
+import { toast } from 'react-toastify';
 
 const HRInterview = ({ role = "admin" }) => {
 
     const navigate = useNavigate();
 
-    const hrin = [
-        {
-            hrId: "9282H458-JAK1-42N9-W158-30KZMN1EPL59",
-            fullName: "Preet Bhimani",
-            title: "Jr. Software Developer",
-            email: "preet@gmail.com",
-            date: "2024-12-22",
-            isClear: "Clear",
-            status: "Clear",
-            rating: 5,
-            noofRound: 2,
-            photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-        },
-        {
-            hrId: "1203R590-HFB8-94B5-DJ78-21URDK3QLZ86",
-            fullName: "Sahil Lotiya",
-            title: "Jr. Data Analyst",
-            email: "sahil@gamil.com",
-            date: "2025-08-01",
-            isClear: "Not Clear",
-            status: "Not Clear",
-            rating: 2,
-            noofRound: 1,
-            photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-        },
-    ];
+    const [hrin, setHrin] = useState([]);
+
+    const fetchHrin = async () => {
+        try {
+            const res = await axios.get(`https://localhost:7119/api/HRInterview`);
+            setHrin(res.data || []);
+        }
+        catch (err) {
+            toast.error("Error fetching data!");
+        }
+    }
 
     // Filters List
     const [showFilters, setShowFilters] = useState(false);
@@ -51,25 +38,25 @@ const HRInterview = ({ role = "admin" }) => {
         () => Array.from(new Set(hrin.map((h) => h.title))).sort(),
         [hrin]
     );
-    const isClearOptions = ["In Progress", "Clear", "Not Clear"];
+    const isClearOptions = ["Pending", "In Progress", "Clear", "Not Clear"];
     const statusOptions = ["In Progress", "Clear", "Not Clear", "Hold"];
 
     // Filter Logic
     const filtered = useMemo(() => {
         return hrin.filter((h) => {
             if (filters.jobTitle && h.title !== filters.jobTitle) return false;
-            if (filters.noOfRoundMin && Number(h.noofRound) < Number(filters.noOfRoundMin)) return false;
-            if (filters.isClear && h.isClear !== filters.isClear) return false;
-            if (filters.status && h.status !== filters.status) return false;
+            if (filters.noOfRoundMin && Number(h.noOfRound) < Number(filters.noOfRoundMin)) return false;
+            if (filters.isClear && h.hrIsClear !== filters.isClear) return false;
+            if (filters.status && h.hrStatus !== filters.status) return false;
             if (filters.minRating && Number(h.rating) < Number(filters.minRating)) return false;
             if (filters.dateFrom) {
                 const from = new Date(filters.dateFrom);
-                const d = new Date(h.date);
+                const d = new Date(h.hrDate);
                 if (d < from) return false;
             }
             if (filters.dateTo) {
                 const to = new Date(filters.dateTo);
-                const d = new Date(h.date);
+                const d = new Date(h.hrDate);
                 if (d > to) return false;
             }
             return true;
@@ -82,7 +69,7 @@ const HRInterview = ({ role = "admin" }) => {
     const pageItems = useMemo(
         () => paginate(filtered, currentPage, pageSize),
         [filtered, currentPage, pageSize]);
-    useEffect(() => setCurrentPage(1), [filters]);
+    useEffect(() => setCurrentPage(1), fetchHrin(), [filters]);
 
     return <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
         <div className="flex flex-wrap items-center justify-end gap-3 mb-4">
@@ -237,7 +224,7 @@ const HRInterview = ({ role = "admin" }) => {
 
             {pageItems.map((hr) => (
                 <div
-                    key={hr.hrId}
+                    key={hr.hiId}
                     className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
 
                     {/* Interview Details */}
@@ -245,23 +232,23 @@ const HRInterview = ({ role = "admin" }) => {
                         <img src={hr.photo} alt={hr.fullName} className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0">
-                            <p className="break-all"><span className="font-medium text-purple-300">HRId:</span>{" "}{hr.hrId}</p>
+                            <p className="break-all"><span className="font-medium text-purple-300">HIId:</span>{" "}{hr.hiId}</p>
                             <p className="break-words"><span className="font-medium text-purple-300">Full Name:</span>{" "}{hr.fullName}</p>
                             <p className="break-words"><span className="font-medium text-purple-300">Title:</span>{" "}{hr.title}</p>
                             <p className="break-words"><span className="font-medium text-purple-300">Email:</span>{" "}{hr.email}</p>
-                            <p className="break-words"><span className="font-medium text-purple-300">Date:</span>{" "}{hr.date}</p>
-                            <p className="truncate"><span className="font-medium text-purple-300">No. of Rounds:</span>{" "}{hr.noofRound}</p>
+                            <p className="break-words"><span className="font-medium text-purple-300">Date:</span>{" "}{hr.hrDate}</p>
+                            <p className="truncate"><span className="font-medium text-purple-300">No. of Rounds:</span>{" "}{hr.noOfRound}</p>
 
                             {/* IsClear */}
                             <p className="truncate">
                                 <span className="font-medium text-purple-300">IsClear:</span>{" "}
                                 <span
-                                    className={`px-2 py-0.5 rounded text-xs ${hr.isClear === "Clear"
+                                    className={`px-2 py-0.5 rounded text-xs ${hr.hrIsClear === "Clear"
                                         ? "bg-emerald-800 text-emerald-200"
-                                        : hr.isClear === "In Progress"
+                                        : hr.hrIsClear === "In Progress"
                                             ? "bg-yellow-800 text-yellow-200"
                                             : "bg-rose-800 text-rose-200"}`}>
-                                    {hr.isClear}
+                                    {hr.hrIsClear}
                                 </span>
                             </p>
 
@@ -269,12 +256,12 @@ const HRInterview = ({ role = "admin" }) => {
                             <p className="truncate">
                                 <span className="font-medium text-purple-300">Status:</span>{" "}
                                 <span
-                                    className={`px-2 py-0.5 rounded text-xs ${hr.status === "Clear"
+                                    className={`px-2 py-0.5 rounded text-xs ${hr.hrStatus === "Clear"
                                         ? "bg-emerald-800 text-emerald-200"
-                                        : hr.status === "In Progress"
+                                        : hr.hrStatus === "In Progress"
                                             ? "bg-yellow-800 text-yellow-200"
                                             : "bg-rose-800 text-rose-200"}`}>
-                                    {hr.status}
+                                    {hr.hrStatus}
                                 </span>
                             </p>
                         </div>
@@ -292,7 +279,7 @@ const HRInterview = ({ role = "admin" }) => {
                             <>
                                 <button
                                     className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                    onClick={() => navigate("/admin-update-hrinterview")}>
+                                    onClick={() => navigate(`/admin-update-hrinterview/${hr.hiId}`)}>
                                     <Edit size={14} /> Update
                                 </button>
 

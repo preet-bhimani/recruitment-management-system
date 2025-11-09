@@ -174,6 +174,7 @@ const AdminUpdateTechInterview = () => {
                                         name="meetingType"
                                         value="technical"
                                         className="mr-3"
+                                        defaultChecked
                                         checked={selectedType === "technical"}
                                         onChange={() => setSelectedType("technical")} />
                                     <div>
@@ -186,6 +187,7 @@ const AdminUpdateTechInterview = () => {
                                         name="meetingType"
                                         value="hr"
                                         className="mr-3"
+                                        disabled
                                         checked={selectedType === "hr"}
                                         onChange={() => setSelectedType("hr")} />
                                     <div>

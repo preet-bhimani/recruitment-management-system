@@ -16,7 +16,7 @@ namespace server.Data
         public DbSet<JobApplication> JobApplications { get; set; }
         public DbSet<GoogleIntegrationSettings> GoogleIntegrationSettings { get; set; }
         public DbSet<TechnicalInterview> TechnicalInterviews { get; set; }
-
+        public DbSet<HRInterview> HRInterviews { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -82,6 +82,30 @@ namespace server.Data
 
             modelBuilder.Entity<TechnicalInterview>()
                 .HasIndex(t => t.InterviewerEmail);
+
+            modelBuilder.Entity<HRInterview>()
+                .HasOne(h => h.JobOpening)
+                .WithMany()
+                .HasForeignKey(h => h.JOId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<HRInterview>()
+                .HasOne(h => h.JobApplication)
+                .WithMany()
+                .HasForeignKey(h => h.JAId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<HRInterview>()
+                .HasOne(h => h.User)
+                .WithMany()
+                .HasForeignKey(h => h.UserId);
+
+            modelBuilder.Entity<HRInterview>()
+                .HasIndex(h => new { h.JAId, h.NoOfRound })
+                .IsUnique();
+
+            modelBuilder.Entity<HRInterview>()
+                .HasIndex(h => h.InterviewerEmail);
         }
     }
 }

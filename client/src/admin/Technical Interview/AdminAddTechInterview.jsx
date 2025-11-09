@@ -59,6 +59,7 @@ const AdminAddTechInterview = () => {
                                     <p><span className="font-medium text-purple-300">Full Name:</span> {tech.fullName}</p>
                                     <p><span className="font-medium text-purple-300">Title:</span> {tech.title}</p>
                                     <p><span className="font-medium text-purple-300">Email:</span> {tech.email}</p>
+                                    <p><span className="font-medium text-purple-300">Last round:</span> {tech.lastRound}</p>
                                     <div className="col-span-1 sm:col-span-2 md:col-span-4">
                                         <div className="font-medium text-purple-300">Feedback:</div>
                                         <div className="text-neutral-200">{tech.feedback || "-"}</div>
@@ -70,7 +71,7 @@ const AdminAddTechInterview = () => {
                             <div className="flex gap-2 mt-3 md:mt-0 md:ml-4 flex-shrink-0">
                                 <button
                                     className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs w-full md:w-auto justify-center"
-                                    onClick={() => navigate("/admin-add-meeting", { state: tech })}>
+                                    onClick={() => navigate("/admin-add-meeting", { state: {...tech, overallStatus: "Technical Interview" } })}>
                                     <Plus size={14} /> Schedule Meeting
                                 </button>
                             </div>

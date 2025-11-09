@@ -7,12 +7,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const InterviewScheduling = ({ role = "admin" }) => {
 
-    const [selectedType, setSelectedType] = useState('technical');
-
     const navigate = useNavigate();
 
     const location = useLocation();
     const data = location.state;
+    console.log(data);
+    const [selectedType, setSelectedType] = useState(() => {
+        if (location.state?.overallStatus === "HR Interview") return "hr";
+        return "technical";
+    });
 
     // Form Data for Meeting 
     const [formData, setFormData] = useState({
@@ -22,6 +25,8 @@ const InterviewScheduling = ({ role = "admin" }) => {
         userId: "",
         techDate: "",
         techTime: "",
+        hrDate: "",
+        hrTime: "",
         interviewerName: "",
         interviewerEmail: "",
     });
@@ -34,6 +39,8 @@ const InterviewScheduling = ({ role = "admin" }) => {
         userId: "",
         techDate: "",
         techTime: "",
+        hrTime: "",
+        hrDate: "",
         interviewerName: "",
         interviewerEmail: "",
     })
@@ -90,23 +97,34 @@ const InterviewScheduling = ({ role = "admin" }) => {
             newErrors.joId = "";
         }
 
-        // Validate Tech Date
-        if (!formData.techDate.trim()) {
-            newErrors.techDate = "Technical Date is required";
+        // Validate Date
+        if (selectedType === "technical" && !formData.techDate.trim()) {
+            newErrors.hrDate = "Technical Date is required";
             hasError = true;
-        }
+        } 
+        else if (selectedType === "hr" && !formData.hrDate.trim()) {
+            newErrors.hrDate = "HR Date is required";
+            hasError = true;
+        } 
         else {
             newErrors.techDate = "";
+            newErrors.hrDate = "";
         }
 
-        // Validate Tech Time
-        if (!formData.techTime.trim()) {
-            newErrors.techTime = "Technical Time is required";
+        // Validate Time
+        if (selectedType === "technical" && !formData.techTime.trim()) {
+            newErrors.hrTime = "Technical Time is required";
             hasError = true;
-        }
+        } 
+        else if (selectedType === "hr" && !formData.hrTime.trim()) {
+            newErrors.hrTime = "HR Time is required";
+            hasError = true;
+        } 
         else {
             newErrors.techTime = "";
+            newErrors.hrTime = "";
         }
+
 
         // Validate Interviewer Email
         if (!formData.interviewerEmail.trim()) {
@@ -131,19 +149,35 @@ const InterviewScheduling = ({ role = "admin" }) => {
 
         // Create Playload as It has to be in JSON Format
         try {
-            const payload = {
-                JOId: formData.joId,
-                JAId: formData.jaId,
-                UserId: formData.userId,
-                MeetingSubject: formData.meetingSubject,
-                TechDate: formData.techDate,
-                TechTime: formData.techTime,
-                DurationMinutes: selectedType === "technical" ? 120 : 60,
-                InterviewerName: formData.interviewerName,
-                InterviewerEmail: formData.interviewerEmail
-            };
-            const res = await axios.post(`https://localhost:7119/api/TechnicalInterview/schedule`, 
-                payload, { headers: { "Content-Type": "application/json" } });
+            const payload = selectedType === "technical"
+                ? {
+                    JOId: formData.joId,
+                    JAId: formData.jaId,
+                    UserId: formData.userId,
+                    MeetingSubject: formData.meetingSubject,
+                    TechDate: formData.techDate,
+                    TechTime: formData.techTime,
+                    DurationMinutes: 120,
+                    InterviewerName: formData.interviewerName,
+                    InterviewerEmail: formData.interviewerEmail
+                }
+                : {
+                    JOId: formData.joId,
+                    JAId: formData.jaId,
+                    UserId: formData.userId,
+                    MeetingSubject: formData.meetingSubject,
+                    HRDate: formData.hrDate,
+                    HRTime: formData.hrTime,
+                    DurationMinutes: 60,
+                    InterviewerName: formData.interviewerName,
+                    InterviewerEmail: formData.interviewerEmail
+                };
+
+            const apiUrl = selectedType === "technical"
+                ? "https://localhost:7119/api/TechnicalInterview/schedule"
+                : "https://localhost:7119/api/HRInterview/schedule";
+            const res = await axios.post(apiUrl, payload, { headers: { "Content-Type": "application/json" } });
+
             toast.success(res.data.message || "Technical interview scheduled successfully!");
             navigate(-1);
         }
@@ -161,6 +195,13 @@ const InterviewScheduling = ({ role = "admin" }) => {
                 jaId: data.jaId,
                 userId: data.userId,
             }));
+
+            if (data.overallStatus === "Technical Interview") {
+                setSelectedType("technical");
+            }
+            else if (data.overallStatus === "HR Interview") {
+                setSelectedType("hr");
+            }
         }
     }, [data]);
 
@@ -179,6 +220,7 @@ const InterviewScheduling = ({ role = "admin" }) => {
                             name="meetingType"
                             value="technical"
                             className="mr-3"
+                            disabled
                             checked={selectedType === "technical"}
                             onChange={() => setSelectedType("technical")} />
                         <div>
@@ -191,6 +233,7 @@ const InterviewScheduling = ({ role = "admin" }) => {
                             name="meetingType"
                             value="hr"
                             className="mr-3"
+                            disabled
                             checked={selectedType === "hr"}
                             onChange={() => setSelectedType("hr")} />
                         <div>
@@ -291,8 +334,12 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         <input
                             type="date"
                             name="techDate"
-                            value={formData.techDate}
-                            onChange={(e) => setFormData({ ...formData, techDate: e.target.value })}
+                            value={selectedType === "technical" ? formData.techDate : formData.hrDate || ""}
+                            onChange={(e) =>
+                                selectedType === "technical"
+                                    ? setFormData({ ...formData, techDate: e.target.value })
+                                    : setFormData({ ...formData, hrDate: e.target.value })
+                            }
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
                         {errors.techDate && (<p className="text-rose-500 text-sm mt-1">{errors.techDate}</p>)}
                     </div>
@@ -305,8 +352,12 @@ const InterviewScheduling = ({ role = "admin" }) => {
                         <input
                             type="time"
                             name="techTime"
-                            value={formData.techTime}
-                            onChange={(e) => setFormData({ ...formData, techTime: e.target.value })}
+                            value={selectedType === "technical" ? formData.techTime : formData.hrTime || ""}
+                            onChange={(e) =>
+                                selectedType === "technical"
+                                    ? setFormData({ ...formData, techTime: e.target.value })
+                                    : setFormData({ ...formData, hrTime: e.target.value })
+                            }
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100" />
                         {errors.techTime && (<p className="text-rose-500 text-sm mt-1">{errors.techTime}</p>)}
                     </div>
