@@ -511,7 +511,7 @@ namespace server.Controllers
                         }
 
                         entity.HRStatus = "Clear";
-                        ja.OverallStatus = "Selected";
+                        ja.OverallStatus = "Document Pending";
                     }
                     else return BadRequest("Meeting is not completed yet.");
                     break;

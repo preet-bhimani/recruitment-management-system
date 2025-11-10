@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Uploads\User_Upload_Experience\" />
+    <Folder Include="Uploads\User_Upload_Pan\" />
+    <Folder Include="Uploads\User_Upload_Aadhar\" />
     <Folder Include="Uploads\User_Upload_Resumes\" />
     <Folder Include="Uploads\User_Upload_Photos\" />
   </ItemGroup>

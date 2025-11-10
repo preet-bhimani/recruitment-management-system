@@ -133,7 +133,7 @@ function App() {
           <Route path='/update-password' element={<UpdatePassword />} />
           <Route path='/notifications' element={<Notifications />} />
           <Route path='/myjobs' element={<MyJobs />} />
-          <Route path='/upload-documents' element={<UploadDocuments />} />
+          <Route path='/upload-documents/:id' element={<UploadDocuments />} />
           <Route path='/recruiter-dashboard' element={<RecruiterDashboard />} />
           <Route path='/recruiter-candidate' element={<RecruiterCandidate />} />
           <Route path='/recruiter-add-candidate' element={<RecruiterAddUser />} />

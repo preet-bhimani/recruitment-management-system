@@ -9,7 +9,10 @@ import { toast } from "react-toastify";
 const CandidateDashboard = () => {
 
   const [jobs, setJobs] = useState([]);
+  const [hasPendingDocuments, setHasPendingDocuments] = useState(false);
+  const [pendingJAId, setPendingJAId] = useState(null);
 
+  // Fetch Jobs
   const fetchJobs = async () => {
     try {
       const res = await axios.get(`https://localhost:7119/api/JobOpening/jobopen`)
@@ -19,6 +22,25 @@ const CandidateDashboard = () => {
       toast.error("Error to fectch jobs!")
     }
   }
+
+  // Fetch Pending Documents
+  const fetchPendingDocuments = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7119/api/Candidate/pending`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+
+      if (res.data && res.data.length > 0) {
+        setHasPendingDocuments(true);
+        setPendingJAId(res.data[0].jaId);
+      }
+    }
+    catch (err) {
+      console.log("Error fetching pending documents");
+    }
+  };
 
   const [filters, setFilters] = useState({
     city: "",
@@ -54,13 +76,14 @@ const CandidateDashboard = () => {
 
   useEffect(() => {
     fetchJobs();
+    fetchPendingDocuments();
   }, [])
 
   const navigate = useNavigate();
 
   return <div className="min-h-screen flex flex-col bg-neutral-950">
     {/* Navbar */}
-    <CommonNavbar isLoggedIn hasSelectedApplication role="Candidate" />
+    <CommonNavbar hasPendingDocuments={hasPendingDocuments} pendingJAId={pendingJAId} />
 
     {/* Main Layout */}
     <main className="flex-1 py-8 px-4">

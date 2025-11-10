@@ -83,5 +83,30 @@ namespace server.Controllers
 
             return Ok("Job application submitted successfully");
         }
+
+        // Get pending document list for candidates
+        [Authorize(Roles = "Candidate")]
+        [HttpGet("pending")]
+        public async Task<IActionResult> GetPendingForCandidate()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found.");
+            }
+            var userId = Guid.Parse(userIdClaim);
+
+            var result = await dbContext.JobApplications
+                .Where(ja => ja.UserId == userId && ja.OverallStatus == "Document Pending")
+                .Select(ja => new
+                {
+                    jaId = ja.JAId,
+                    joId = ja.JOId,
+                    title = ja.JobOpening.Title
+                })
+                .ToListAsync();
+
+            return Ok(result);
+        }
     }
 }

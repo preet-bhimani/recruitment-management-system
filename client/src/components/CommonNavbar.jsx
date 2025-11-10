@@ -3,12 +3,13 @@ import logo from '../photos/company logo/ROIMA.jpeg';
 import { Search, User, FileText, Key, Bell, Briefcase, LogOut, ChevronDown, Upload } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-const CommonNavbar = ({ hasSelectedApplication = false }) => {
+
+const CommonNavbar = ({ hasPendingDocuments = false, openUploadPopup }) => {
 
     const [ProfileDropdown, setProfileDropdown] = useState(false);
     const { isLoggedIn, role, logout } = useAuth();
     const navigate = useNavigate();
-    
+
     const handleLogout = () => {
         logout();
         navigate("/login");
@@ -43,14 +44,14 @@ const CommonNavbar = ({ hasSelectedApplication = false }) => {
                 {isLoggedIn ? (
                     <div className="flex items-center gap-4">
 
-                        {/* Upload Documents Link */}
-                        {role === "Candidates" && hasSelectedApplication && (
-                            <a
-                                href="/upload-documents"
+                        {/* Upload Documents Button*/}
+                        {role === "Candidate" && hasPendingDocuments && (
+                            <button
+                                onClick={() => navigate(`/upload-documents/${pendingJAId}`)}
                                 className="flex items-center gap-2 px-3 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg text-sm font-medium transition">
                                 <Upload className="w-4 h-4" />
                                 Upload Documents
-                            </a>
+                            </button>
                         )}
 
                         {/* Profile Section */}
@@ -69,7 +70,7 @@ const CommonNavbar = ({ hasSelectedApplication = false }) => {
                                 <div className="absolute right-0 mt-2 w-56 bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg z-50">
                                     <div className="py-2">
 
-                                        {/* Only for Candidates */}
+                                        {/* Only for Candidate */}
                                         {role === "Candidate" && (
                                             <>
                                                 <a
@@ -93,7 +94,7 @@ const CommonNavbar = ({ hasSelectedApplication = false }) => {
                                             </>
                                         )}
 
-                                        {/* Common sections for all users */}
+                                        {/* Common Sections */}
                                         <a
                                             href="/update-profile"
                                             className="flex items-center gap-3 px-4 py-2 text-neutral-300 hover:bg-neutral-800 hover:text-white transition">
@@ -107,9 +108,10 @@ const CommonNavbar = ({ hasSelectedApplication = false }) => {
                                             Update Password
                                         </a>
 
+                                        {/* Logout */}
                                         <div className="border-t border-neutral-800 mt-2 pt-2">
                                             <button
-                                                onClick={handleLogout   }
+                                                onClick={handleLogout}
                                                 className="flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-neutral-800 hover:text-red-300 transition w-full text-left">
                                                 <LogOut className="w-4 h-4" />
                                                 Logout
@@ -136,7 +138,7 @@ const CommonNavbar = ({ hasSelectedApplication = false }) => {
                 )}
             </div>
 
-            {/* Drop Down Close*/}
+            {/* Close Dropdown Overlay */}
             {ProfileDropdown && (
                 <div
                     className="fixed inset-0 z-40"
