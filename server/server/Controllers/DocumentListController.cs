@@ -23,8 +23,14 @@ namespace server.Controllers
         // Add and Update Document
         [Authorize(Roles = "Admin,Candidate")]
         [HttpPost]
-        public async Task<IActionResult> AddAndUpdateDocments([FromForm] DocumentListDto dto, IFormFile AadharFile, IFormFile PANFile, IFormFile? ExperienceFile)                                           
+        public async Task<IActionResult> AddAndUpdateDocments([FromForm] DocumentListDto dto, [FromForm] IFormFile? AadharFile, [FromForm] IFormFile? PANFile, [FromForm] IFormFile? ExperienceFile)                                           
         {
+            // Model Validation
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim))
             {
@@ -43,78 +49,83 @@ namespace server.Controllers
             string? storedExpName = existing?.ExperienceLetter;
 
             // Aadhar card upload
-            if (AadharFile == null || AadharFile.Length == 0)
+            if (AadharFile != null && AadharFile.Length > 0)
             {
-                return BadRequest("Aadhar Card is required.");
-            }
-
-            string aadharExt = Path.GetExtension(AadharFile.FileName).ToLowerInvariant();
-            if (aadharExt != ".pdf")
-            {
-                return BadRequest("Only PDF allowed for Aadhar Card.");
-            }
-
-            if (AadharFile.Length > 5 * 1024 * 1024)
-            {
-                return BadRequest("Aadhar Card max allowed size is 5MB.");
-            }
-
-            var aadharUploads = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Aadhar");
-            Directory.CreateDirectory(aadharUploads);
-
-            if (!string.IsNullOrWhiteSpace(storedAadharName))
-            {
-                var oldPath = Path.Combine(aadharUploads, storedAadharName);
-                if (System.IO.File.Exists(oldPath))
+                string aadharExt = Path.GetExtension(AadharFile.FileName).ToLowerInvariant();
+                if (aadharExt != ".pdf")
                 {
-                    System.IO.File.Delete(oldPath);
+                    return BadRequest("Only PDF allowed for Aadhar Card.");
+                }
+
+                if (AadharFile.Length > 5 * 1024 * 1024)
+                {
+                    return BadRequest("Aadhar Card max allowed size is 5MB.");
+                }
+
+                var aadharUploads = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Aadhar");
+                Directory.CreateDirectory(aadharUploads);
+
+                if (!string.IsNullOrWhiteSpace(storedAadharName))
+                {
+                    var oldPath = Path.Combine(aadharUploads, storedAadharName);
+                    if (System.IO.File.Exists(oldPath))
+                    {
+                        System.IO.File.Delete(oldPath);
+                    }
+                }
+
+                storedAadharName = $"{Guid.NewGuid():N}-{AadharFile.FileName}";
+                var fullAadharPath = Path.Combine(aadharUploads, storedAadharName);
+
+                using (var fs = new FileStream(fullAadharPath, FileMode.Create))
+                {
+                    await AadharFile.CopyToAsync(fs);
                 }
             }
-
-            storedAadharName = $"{Guid.NewGuid():N}-{AadharFile.FileName}";
-            var fullAadharPath = Path.Combine(aadharUploads, storedAadharName);
-
-            using (var fs = new FileStream(fullAadharPath, FileMode.Create))
+            else if (existing == null)
             {
-                await AadharFile.CopyToAsync(fs);
+                return BadRequest("Aadhar Card is required for new upload.");
             }
 
             // PAN card upload
-            if (PANFile == null || PANFile.Length == 0)
+            if (PANFile != null && PANFile.Length > 0)
             {
-                return BadRequest("PAN Card is required.");
-            }
-
-            string panExt = Path.GetExtension(PANFile.FileName).ToLowerInvariant();
-            if (panExt != ".pdf")
-            {
-                return BadRequest("Only PDF allowed for PAN Card.");
-            }
-
-            if (PANFile.Length > 5 * 1024 * 1024)
-            {
-                return BadRequest("PAN Card max allowed size is 5MB.");
-            }
-
-            var panUploads = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Pan");
-            Directory.CreateDirectory(panUploads);
-
-            if (!string.IsNullOrWhiteSpace(storedPANName))
-            {
-                var oldPath = Path.Combine(panUploads, storedPANName);
-                if (System.IO.File.Exists(oldPath))
+                string panExt = Path.GetExtension(PANFile.FileName).ToLowerInvariant();
+                if (panExt != ".pdf")
                 {
-                    System.IO.File.Delete(oldPath);
+                    return BadRequest("Only PDF allowed for PAN Card.");
+                }
+
+                if (PANFile.Length > 5 * 1024 * 1024)
+                {
+                    return BadRequest("PAN Card max allowed size is 5MB.");
+                }
+
+                var panUploads = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Pan");
+                Directory.CreateDirectory(panUploads);
+
+                if (!string.IsNullOrWhiteSpace(storedPANName))
+                {
+                    var oldPath = Path.Combine(panUploads, storedPANName);
+                    if (System.IO.File.Exists(oldPath))
+                    {
+                        System.IO.File.Delete(oldPath);
+                    }
+                }
+
+                storedPANName = $"{Guid.NewGuid():N}-{PANFile.FileName}";
+                var fullPanPath = Path.Combine(panUploads, storedPANName);
+
+                using (var fs = new FileStream(fullPanPath, FileMode.Create))
+                {
+                    await PANFile.CopyToAsync(fs);
                 }
             }
-
-            storedPANName = $"{Guid.NewGuid():N}-{PANFile.FileName}";
-            var fullPanPath = Path.Combine(panUploads, storedPANName);
-
-            using (var fs = new FileStream(fullPanPath, FileMode.Create))
+            else if (existing == null)
             {
-                await PANFile.CopyToAsync(fs);
+                return BadRequest("PAN Card is required for new upload.");
             }
+
 
             // Experience letter upload
             if (ExperienceFile != null && ExperienceFile.Length > 0)
@@ -157,7 +168,7 @@ namespace server.Controllers
             {
                 var doc = new DocumentList
                 {
-                    UserId = dto.UserId,
+                    UserId = userId,
                     JOId = dto.JOId,
                     JAId = dto.JAId,
                     BankAccNo = dto.BankAccNo,
@@ -261,6 +272,28 @@ namespace server.Controllers
             }
 
             return Ok(doc);
+        }
+
+        // Get all documents list 
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllDocuments()
+        {
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+
+            var docs = await dbContext.DocumentLists
+                .Select(d => new
+                {
+                    d.DLId,
+                    Photo = !string.IsNullOrEmpty(d.User.Photo) ? baseUrl + d.User.Photo : null,
+                    d.User.FullName,
+                    d.User.Email,
+                    d.JobOpening.Title,
+                    d.JobApplication.JAId,
+                })
+                .ToListAsync();
+
+            return Ok(docs);
         }
     }
 }

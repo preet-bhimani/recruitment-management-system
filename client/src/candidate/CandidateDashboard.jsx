@@ -5,12 +5,15 @@ import { MapPin, Briefcase, Plus } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { toast } from "react-toastify";
+import UploadDocumentPopup from "./UploadDocumentPopup ";
 
 const CandidateDashboard = () => {
 
   const [jobs, setJobs] = useState([]);
   const [hasPendingDocuments, setHasPendingDocuments] = useState(false);
   const [pendingJAId, setPendingJAId] = useState(null);
+  const [pendingList, setPendingList] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
 
   // Fetch Jobs
   const fetchJobs = async () => {
@@ -34,11 +37,16 @@ const CandidateDashboard = () => {
 
       if (res.data && res.data.length > 0) {
         setHasPendingDocuments(true);
-        setPendingJAId(res.data[0].jaId);
+        setPendingList(res.data);
+
+        if (res.data.length === 1) {
+          setPendingJAId(res.data[0].jaId);
+        } else {
+          setPendingJAId(null);
+        }
       }
-    }
-    catch (err) {
-      console.log("Error fetching pending documents");
+    } catch (err) {
+      toast.error("Error fetching pending documents!");
     }
   };
 
@@ -83,7 +91,8 @@ const CandidateDashboard = () => {
 
   return <div className="min-h-screen flex flex-col bg-neutral-950">
     {/* Navbar */}
-    <CommonNavbar hasPendingDocuments={hasPendingDocuments} pendingJAId={pendingJAId} />
+    <CommonNavbar hasPendingDocuments={hasPendingDocuments} pendingJAId={pendingJAId} openUploadPopup={() => setShowPopup(true)} />
+
 
     {/* Main Layout */}
     <main className="flex-1 py-8 px-4">
@@ -173,6 +182,17 @@ const CandidateDashboard = () => {
         </div>
       </div>
     </main>
+
+    {/* Show Pop up */}
+    {showPopup && (
+      <UploadDocumentPopup
+        pendingList={pendingList}
+        onClose={() => setShowPopup(false)}
+        onSelect={(item) => {
+          setShowPopup(false);
+          navigate(`/upload-documents/${item.jaId}`);
+        }} />
+    )}
 
     {/* Footer */}
     <Footer />

@@ -18,6 +18,8 @@ namespace server.Data
         public DbSet<TechnicalInterview> TechnicalInterviews { get; set; }
         public DbSet<HRInterview> HRInterviews { get; set; }
         public DbSet<DocumentList> DocumentLists { get; set; }
+        public DbSet<OfferLetter> OfferLetters { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -129,6 +131,32 @@ namespace server.Data
 
             modelBuilder.Entity<DocumentList>()
                 .HasIndex(d => new { d.UserId, d.JAId })
+                .IsUnique();
+
+            modelBuilder.Entity<OfferLetter>()
+                .HasOne(o => o.User)
+                .WithMany()
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OfferLetter>()
+                .HasOne(o => o.JobOpening)
+                .WithMany()
+                .HasForeignKey(o => o.JOId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<OfferLetter>()
+                .HasOne(o => o.JobApplication)
+                .WithMany()
+                .HasForeignKey(o => o.JAId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OfferLetter>()
+                .Property(o => o.Salary)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<OfferLetter>()
+                .HasIndex(o => new { o.UserId, o.JAId })
                 .IsUnique();
         }
     }

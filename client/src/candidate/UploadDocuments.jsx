@@ -3,6 +3,8 @@ import CommonNavbar from "../components/CommonNavbar";
 import Footer from "../components/Footer";
 import { Upload, CreditCard, Building, Hash } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import Navbar from "../admin/Navbar";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -10,7 +12,11 @@ const UploadDocuments = () => {
 
   const { jaId } = useParams();
   const navigate = useNavigate();
+  const [jaIdFinal, setJaIdFinal] = useState(jaId || "");
+  const { userId } = useAuth();
+  const { role } = useAuth();
 
+  // Form Data
   const [formData, setFormData] = useState({
     userId: "",
     joId: "",
@@ -30,51 +36,91 @@ const UploadDocuments = () => {
     aadharFile: "",
     panFile: ""
   });
-  const [selectedJAId, setSelectedJAId] = useState("");
 
-
-  // Fetch Data if already Exists
-  const fetchExistingData = async () => {
+  // Fetch Data if Already Exists
+  const fetchExistingData = async (finalJAId) => {
+    if (!finalJAId) {
+      console.warn("⚠ fetchExistingData called with empty JAId — skipping fetch");
+      return;
+    }
+    // console.log("Running fetchExistingData with JAId:", finalJAId);
     try {
-      // Get Pending JAId of Candidate
-      const pendingRes = await axios.get("https://localhost:7119/api/Candidate/pending", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+      const res = await axios.get(`https://localhost:7119/api/DocumentList/${finalJAId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
 
-      if (!pendingRes.data || pendingRes.data.length === 0) {
-        return;
-      }
-
-      const first = pendingRes.data[0];
-      setSelectedJAId(first.jaId);
-
-      // Store JOId
-      setFormData(prev => ({
-        ...prev,
-        joId: first.joId
-      }));
-
-      // Now Fetch Existing Document if Pending
-      const res = await axios.get(`https://localhost:7119/api/DocumentList/${selectedJAId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      });
+      // console.log("Fetched document response:", res.data);
 
       if (res.data) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
+          userId: res.data.userId || prev.userId,
+          joId: res.data.joId || prev.joId,
           bankName: res.data.bankName || "",
           bankAccNo: res.data.bankAccNo || "",
-          bankIFSC: res.data.bankIFSC || ""
+          bankIFSC: res.data.bankIFSC || "",
+          aadharFile: res.data.aadharCard ? { name: res.data.aadharCard } : null,
+          panFile: res.data.panCard ? { name: res.data.panCard } : null,
+          expFile: res.data.experienceLetter ? { name: res.data.experienceLetter } : null,
         }));
       }
     } catch (err) {
-      // do nothing
+      console.error("Error fetching existing document:", err.response?.data || err);
     }
   };
 
+
+  // 
   useEffect(() => {
-    fetchExistingData();
-  }, []);
+    if (!role) return;
+
+    // console.log("Inside useEffect → jaId:", jaId, "role:", role);
+
+    // Ftech Existing Data Based on Role
+    const runFetch = async () => {
+      
+      if (!jaId && role === "Candidate") {
+        try {
+          const pendingRes = await axios.get("https://localhost:7119/api/Candidate/pending", {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          });
+
+          // console.log("Fetched pending response:", pendingRes.data);
+
+          if (pendingRes.data?.length > 0) {
+            const first = pendingRes.data[0];
+            setJaIdFinal(first.jaId);
+            setFormData((prev) => ({
+              ...prev,
+              joId: first.joId,
+              userId: first.userId,
+            }));
+
+            // fetch using this new jaId
+            await fetchExistingData(first.jaId);
+          } else {
+            console.warn("No pending candidate data found.");
+          }
+        } catch (err) {
+          console.error("Error fetching candidate pending:", err);
+        }
+      }
+
+      else if (jaId) {
+        // console.log("Fetching document for JAId:", jaId);
+        await fetchExistingData(jaId);
+      }
+
+      // If no JAId Found
+      else {
+        console.warn("No JAId found to fetch documents.");
+      }
+    };
+
+    runFetch();
+  }, [jaId, role]);
+
+
 
   // Handle Submit
   const handleSubmit = async (e) => {
@@ -107,37 +153,38 @@ const UploadDocuments = () => {
       newErrors.bankIFSC = "";
     }
 
-    if (!formData.aadharFile && !formData.userId) {
-      newErrors.aadharFile = "Aadhar Card is required.";
+    const hasOldAadhar = formData.aadharFile && formData.aadharFile.name && !(formData.aadharFile instanceof File);
+    const hasOldPAN = formData.panFile && formData.panFile.name && !(formData.panFile instanceof File);
+
+    if ((!formData.aadharFile || !(formData.aadharFile instanceof File)) && !hasOldAadhar) {
+      newErrors.aadharFile = "Aadhar Card is frontend required.";
       hasError = true;
-    }
-    else {
-      newErrors.aadharFile = "";
     }
 
-    if (!formData.panFile && !formData.userId) {
-      newErrors.panFile = "PAN Card is required.";
+    if ((!formData.panFile || !(formData.panFile instanceof File)) && !hasOldPAN) {
+      newErrors.panFile = "PAN Card is frontend required.";
       hasError = true;
     }
-    else {
-      newErrors.panFile = "";
-    }
+
 
     setErrors(newErrors);
     if (hasError) return;
 
     // FormData Logic
     const data = new FormData();
-    data.append("UserId", formData.userId);
+    data.append("UserId", userId);
     if (formData.joId) data.append("JOId", formData.joId);
-    data.append("JAId", selectedJAId);
+    data.append("JAId", jaIdFinal);
     data.append("BankAccNo", formData.bankAccNo);
     data.append("BankIFSC", formData.bankIFSC);
     data.append("BankName", formData.bankName);
 
-    if (formData.aadharFile) data.append("AadharFile", formData.aadharFile);
-    if (formData.panFile) data.append("PANFile", formData.panFile);
-    if (formData.expFile) data.append("ExperienceFile", formData.expFile);
+    if (formData.aadharFile instanceof File)
+      data.append("AadharFile", formData.aadharFile);
+    if (formData.panFile instanceof File)
+      data.append("PANFile", formData.panFile);
+    if (formData.expFile instanceof File)
+      data.append("ExperienceFile", formData.expFile);
 
     try {
       const res = await axios.post(`https://localhost:7119/api/DocumentList`, data, {
@@ -148,11 +195,12 @@ const UploadDocuments = () => {
       });
 
       toast.success("Documents uploaded successfully!");
-      setTimeout(() => navigate("/candidate/dashboard"), 800);
+      navigate(-1);
 
     }
     catch (err) {
-      // console.log("Upload Error: ", err.response.data.errors);
+     // console.log(err);
+     // console.log(err.response.data);
       toast.error(err.response.data || "Failed to upload documents.");
     }
   };
@@ -160,13 +208,20 @@ const UploadDocuments = () => {
   return <div className="min-h-screen flex flex-col bg-neutral-950">
 
     {/* Navbar */}
-    <CommonNavbar hasPendingDocuments={true} />
+    {role === "Admin" ? (
+      <Navbar />
+    ) : (
+      <CommonNavbar hasPendingDocuments={true} />
+    )}
 
     {/* Main Layout */}
     <main className="flex-1 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">Upload Documents</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">
+            {role === "Admin" ? "Upload Candidate Documents" : "Upload Your Documents"}
+          </h1>
+
           <p className="text-neutral-400">Please upload the required documents</p>
         </div>
 
@@ -194,7 +249,7 @@ const UploadDocuments = () => {
                     <p className="text-xs text-neutral-500">PDF Only</p>
                   </label>
                 </div>
-                {formData.aadharFile && <p className="text-xs text-green-400 mt-1">{formData.aadharFile.name}</p>}
+                {formData.aadharFile instanceof File && (<p className="text-xs text-green-400 mt-1">{formData.aadharFile.name}</p>)}
                 {errors.aadharFile && (<p className="text-rose-500 text-sm mt-1">{errors.aadharFile}</p>)}
               </div>
 
@@ -214,7 +269,7 @@ const UploadDocuments = () => {
                     <p className="text-xs text-neutral-500">PDF Only</p>
                   </label>
                 </div>
-                {formData.panFile && <p className="text-xs text-green-400 mt-1">{formData.panFile.name}</p>}
+                {formData.panFile instanceof File && (<p className="text-xs text-green-400 mt-1">{formData.panFile.name}</p>)}
                 {errors.panFile && (<p className="text-rose-500 text-sm mt-1">{errors.panFile}</p>)}
               </div>
 
@@ -234,6 +289,7 @@ const UploadDocuments = () => {
                     <p className="text-xs text-neutral-500">PDF, DOC, DOCX</p>
                   </label>
                 </div>
+                {formData.expFile instanceof File && (<p className="text-xs text-green-400 mt-1">{formData.expFile.name}</p>)}
               </div>
             </div>
           </div>
@@ -254,7 +310,7 @@ const UploadDocuments = () => {
                   value={formData.bankName}
                   onChange={e => setFormData({ ...formData, bankName: e.target.value })}
                   placeholder="Enter Bank Name"
-                  className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                  className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-300" />
                 {errors.bankName && (<p className="text-rose-500 text-sm mt-1">{errors.bankName}</p>)}
               </div>
 
@@ -268,7 +324,7 @@ const UploadDocuments = () => {
                   value={formData.bankAccNo}
                   onChange={e => setFormData({ ...formData, bankAccNo: e.target.value })}
                   placeholder="Enter Account Number"
-                  className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                  className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-300" />
                 {errors.bankAccNo && (<p className="text-rose-500 text-sm mt-1">{errors.bankAccNo}</p>)}
               </div>
 
@@ -282,7 +338,7 @@ const UploadDocuments = () => {
                   value={formData.bankIFSC}
                   onChange={e => setFormData({ ...formData, bankIFSC: e.target.value })}
                   placeholder="Enter IFSC Code"
-                  className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                  className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-white placeholder-neutral-300" />
                 {errors.bankIFSC && (<p className="text-rose-500 text-sm mt-1">{errors.bankIFSC}</p>)}
               </div>
             </div>

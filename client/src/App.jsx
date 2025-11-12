@@ -112,7 +112,7 @@ function App() {
           <Route path='/admin-update-selection' element={<AdminUpdateSelection />} />
           <Route path='/admin-document' element={<AdminDocuments />} />
           <Route path='/admin-add-document' element={<AdminAddDocuments />} />
-          <Route path='/admin-update-document' element={<AdminUpdateDocuments />} />
+          <Route path='/admin-add-update-candidate-documents/:jaId' element={<UploadDocuments />} />
           <Route path='/admin-campusdrive' element={<AdminCampusDrive />} />
           <Route path='/admin-add-campusdrive' element={<AdminAddCampusDrive />} />
           <Route path='/admin-update-campusdrive/:id' element={<AdminUpdateCampusDrive />} />

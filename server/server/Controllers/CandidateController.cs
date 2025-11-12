@@ -20,6 +20,7 @@ namespace server.Controllers
             this.dbContext = dbContext;
         }
 
+        // Apply for Job
         [Authorize]
         [HttpPost("apply")]
         public async Task<IActionResult> CandidateApplyForJob(JobApplyCandidateDto jaDto)
@@ -85,7 +86,7 @@ namespace server.Controllers
         }
 
         // Get pending document list for candidates
-        [Authorize(Roles = "Candidate")]
+        [Authorize(Roles = "Admin,Candidate")]
         [HttpGet("pending")]
         public async Task<IActionResult> GetPendingForCandidate()
         {

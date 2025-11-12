@@ -1,21 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
+import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const AdminAddDocuments = () => {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
 
-    const [document, setDocument] = useState({
-        DLId: "1203M590-NOB8-94P5-QR78-21STUV3QWX86",
-        AadharCard: "",
-        PANCard: "",
-        BankAccNo: "",
-        BankIFSC: "",
-        BankName: "",
-        ExperienceLetter: "",
-        Status: "",
-    })
+    const [document, setDocument] = useState([]);
+    const navigate = useNavigate();
+
+    // Fetch Pending Candidates
+    const fetchPending = async () => {
+        try {
+            const res = await axios.get("https://localhost:7119/api/DocumentList/pending", {
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            });
+            setDocument(res.data || []);
+        } catch (err) {
+            toast.error("Failed to fetch pending candidates.");
+        }
+    };
+
+    useEffect(() => {
+        fetchPending();
+    }, []);
 
     return <div className="flex flex-col h-screen bg-neutral-950 text-neutral-100">
         {/* Navbar */}
@@ -26,118 +38,47 @@ const AdminAddDocuments = () => {
             <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
             {/* Main Layout */}
-            <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-white mb-4">Add Documents</h1>
+                    <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Add Candidates Documents</h1>
                 </div>
 
-                <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
-                    {/* Document List Id */}
-                    <div className="md:col-span-2">
-                        <label className="block mb-1 text-sm font-medium text-neutral-300">
-                            Document List Id
-                        </label>
-                        <input
-                            type="text"
-                            defaultValue={document.DLId}
-                            disabled
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-300 cursor-not-allowed" />
-                    </div>
+                {/* Candidates Details */}
+                <div className="space-y-4">
+                    {document.length === 0 && (
+                        <div className="text-center py-6 text-neutral-300 border border-neutral-700 rounded-md bg-neutral-900">
+                            No pending candidates found.
+                        </div>
+                    )}
+                    {document.map((doc) => (
+                        <div
+                            key={doc.jaId}
+                            className="bg-neutral-900 border border-neutral-700 rounded-md p-3 md:p-4 shadow-sm hover:shadow-md transition flex flex-col md:flex-row md:items-center md:justify-between text-sm gap-4">
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-3 flex-1">
+                                <img
+                                    src={doc.photo}
+                                    alt={doc.fullName}
+                                    className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 flex-1 text-xs md:text-sm">
+                                    <p><span className="font-medium text-purple-300">JaId:</span> {doc.jaId}</p>
+                                    <p><span className="font-medium text-purple-300">Full Name:</span> {doc.fullName}</p>
+                                    <p><span className="font-medium text-purple-300">Title:</span> {doc.title}</p>
+                                    <p><span className="font-medium text-purple-300">Email:</span> {doc.email}</p>
+                                </div>
+                            </div>
 
-                    {/* Aadhar Card */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            Aadhar Card <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="file"
-                            className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                       file:h-8.5 file:px-3 file:rounded file:border-0 
-                                     file:bg-neutral-600 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
-                    </div>
-
-                    {/* PAN Card */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            PAN Card <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="file"
-                            className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                       file:h-8.5 file:px-3 file:rounded file:border-0 
-                                     file:bg-neutral-600 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
-                    </div>
-
-                    {/* Bank Name */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            Bank Name <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="Bank Name"
-                            defaultValue={document.BankName}
-                            placeholder="Enter Bank Name"
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
-                    </div>
-
-                    {/* Bank Acc No */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            Bank Acc No <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="Bank Acc No"
-                            defaultValue={document.BankAccNo}
-                            placeholder="Enter Bank Acc No"
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
-                    </div>
-
-                    {/* Bank IFSC Code */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            Bank IFSC Code <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="Bank IFSC Code"
-                            defaultValue={document.BankIFSC}
-                            placeholder="Enter Bank IFSC Code"
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
-                    </div>
-
-                    {/* Experience Letter */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            Experience Letter <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="file"
-                            className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                       file:h-8.5 file:px-3 file:rounded file:border-0 
-                                     file:bg-neutral-600 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
-                    </div>
-
-                    {/* Status */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">Status</label>
-                        <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700">
-                            <option value="Pending">Pending</option>
-                            <option value="Completed">Completed</option>
-                        </select>
-                    </div>
-
-                    {/* Submit */}
-                    <div className="md:col-span-2">
-                        <button
-                            type="button"
-                            className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                            Add Documents
-                        </button>
-                    </div>
-                </form>
-            </main>
+                            {/* Schedule Button */}
+                            <div className="flex gap-2 mt-3 md:mt-0 md:ml-4 flex-shrink-0">
+                                <button
+                                    className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs w-full md:w-auto justify-center"
+                                    onClick={() => navigate(`/admin-add-update-candidate-documents/${doc.jaId}`)}>
+                                    <Plus size={14} /> Add Documents
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     </div>;
 };

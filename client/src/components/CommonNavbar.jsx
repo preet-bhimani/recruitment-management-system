@@ -4,7 +4,7 @@ import { Search, User, FileText, Key, Bell, Briefcase, LogOut, ChevronDown, Uplo
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const CommonNavbar = ({ hasPendingDocuments = false, openUploadPopup }) => {
+const CommonNavbar = ({ hasPendingDocuments = false, pendingJAId = null, openUploadPopup }) => {
 
     const [ProfileDropdown, setProfileDropdown] = useState(false);
     const { isLoggedIn, role, logout } = useAuth();
@@ -44,10 +44,12 @@ const CommonNavbar = ({ hasPendingDocuments = false, openUploadPopup }) => {
                 {isLoggedIn ? (
                     <div className="flex items-center gap-4">
 
-                        {/* Upload Documents Button*/}
                         {role === "Candidate" && hasPendingDocuments && (
                             <button
-                                onClick={() => navigate(`/upload-documents/${pendingJAId}`)}
+                                onClick={() => {
+                                    if (openUploadPopup) openUploadPopup();
+                                    else if (pendingJAId) navigate(`/upload-documents/${pendingJAId}`);
+                                }}
                                 className="flex items-center gap-2 px-3 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg text-sm font-medium transition">
                                 <Upload className="w-4 h-4" />
                                 Upload Documents
