@@ -68,7 +68,7 @@ namespace server.Services
             doc.Save(fullPath);
             doc.Close();
 
-            return fullPath;
+            return storedFileName;
         }
     }
 }

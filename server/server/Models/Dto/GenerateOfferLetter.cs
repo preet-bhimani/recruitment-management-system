@@ -27,5 +27,9 @@ namespace server.Models.Dto
         public decimal Salary { get; set; }
         [Required]
         public string TemplateType { get; set; }
+
+        public string OfferLetterStatus { get; set; }
+
+        public string? OfferLetterFilePath { get; set; }
     }
 }

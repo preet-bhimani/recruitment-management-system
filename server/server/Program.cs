@@ -24,6 +24,12 @@ builder.Services.AddScoped<EmailService>();
 // Add Email template service
 builder.Services.AddScoped<EmailTemplateService>();
 
+// Add Generate offer letter service
+builder.Services.AddScoped<OfferLetterGenerateService>();
+
+// Add offer letter template service
+builder.Services.AddScoped<OfferLetterTemplateService>();
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("ConStr")));
@@ -80,6 +86,13 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(
         Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Resumes")),
     RequestPath = "/User_Upload_Resumes"
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_OfferLetters")),
+    RequestPath = "/User_Upload_Offer_Letters"
 });
 
 app.MapScalarApiReference();

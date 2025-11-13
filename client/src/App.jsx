@@ -80,11 +80,15 @@ import AdminAddSkill from './admin/Skill/AdminAddSkill';
 import AdminUpdateSkill from './admin/Skill/AdminUpdateSkill';
 import ViewerSkill from './viewer/ViewerSkill';
 import { ToastContainer } from 'react-toastify';
+import AdminAddOfferLetter from './admin/Offer Letter/AdminAddOfferLetter';
+import AdminSentOfferLetter from './admin/Offer Letter/AdminSentOfferLetter';
+import AdminOfferLetter from './admin/Offer Letter/AdminOfferLetter';
+import AdminUpdateOfferLetter from './admin/Offer Letter/AdminUpdateOfferLetter';
 
 function App() {
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2000} theme="colored"/>
+      <ToastContainer position="top-right" autoClose={2000} theme="colored" />
 
       <Router>
         <Routes>
@@ -113,6 +117,10 @@ function App() {
           <Route path='/admin-document' element={<AdminDocuments />} />
           <Route path='/admin-add-document' element={<AdminAddDocuments />} />
           <Route path='/admin-add-update-candidate-documents/:jaId' element={<UploadDocuments />} />
+          <Route path='/admin-offer-letter' element={<AdminOfferLetter />} />
+          <Route path='/admin-add-offerletter' element={<AdminAddOfferLetter />} />
+          <Route path='/admin-sent-offerletter/:id' element={<AdminSentOfferLetter />} />
+          <Route path='/admin-update-offerletter/:id' element={<AdminUpdateOfferLetter />} />
           <Route path='/admin-campusdrive' element={<AdminCampusDrive />} />
           <Route path='/admin-add-campusdrive' element={<AdminAddCampusDrive />} />
           <Route path='/admin-update-campusdrive/:id' element={<AdminUpdateCampusDrive />} />

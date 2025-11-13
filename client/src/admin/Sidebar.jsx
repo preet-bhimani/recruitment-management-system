@@ -9,6 +9,7 @@ import {
   BriefcaseBusiness,
   FileUser,
   HatGlasses,
+  HandCoins,
   Speech,
   BadgeCheck,
   DockIcon,
@@ -62,14 +63,22 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       ],
     },
     {
-      title: "Selection",
-      icon: <BadgeCheck size={20} />,
-      children: [{ name: "Admin Selection", path: "/admin-selection" }],
-    },
-    {
       title: "Document List",
       icon: <DockIcon size={20} />,
       children: [{ name: "Admin Document List", path: "/admin-document" }],
+    },
+    {
+      title: "Offer Letter",
+      icon: <HandCoins size={20} />,
+      children: [
+        { name: "Admin Offer Letter", path: "/admin-offer-letter" },
+        { name: "Sent Offer Letter", path: "/admin-add-offerletter" },
+      ],
+    },
+    {
+      title: "Selection",
+      icon: <BadgeCheck size={20} />,
+      children: [{ name: "Admin Selection", path: "/admin-selection" }],
     },
     {
       title: "Campus Drive",
@@ -89,7 +98,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     },
     {
       title: "Skill",
-      icon: <GraduationCap  size={20} />,
+      icon: <GraduationCap size={20} />,
       children: [
         { name: "Admin Skill", path: "/admin-skill" },
         { name: "Add Skill ", path: "/admin-add-skill" },

@@ -209,7 +209,6 @@ namespace server.Controllers
         public async Task<IActionResult> GetPendingForAdmin()
         {
             var result = await dbContext.JobApplications
-                .AsNoTracking()
                 .Where(ja => ja.OverallStatus == "Document Pending")
                 .Select(ja => new
                 {
