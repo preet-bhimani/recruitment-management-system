@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import Footer from "../components/Footer";
 import { Calendar, Briefcase, CheckCircle, XCircle, Clock, Eye } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../contexts/AuthContext";
+import axios from "axios";
 
 const MyJobs = () => {
+
     const [statusFilter, setStatusFilter] = useState("");
 
     const statusOptions = [
@@ -14,51 +17,31 @@ const MyJobs = () => {
         "Rejected"
     ];
 
-    const appliedJobs = [
-        {
-            joid: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
-            title: "Sr. Software Engineer",
-            dateApplied: "2025-09-15",
-            status: "Selected",
-            city: "Ahmedabad",
-            jobType: "Full time"
-        },
-        {
-            joid: "9CF256C4-7ECA-4469-8CCE-08DD70ACE5C1",
-            title: "Jr. AI Developer",
-            dateApplied: "2025-09-10",
-            status: "Under Review",
-            city: "Mumbai",
-            jobType: "Full time"
-        },
-        {
-            joid: "4091FDD1-2D1F-44F5-00BB-08DDB922600D",
-            title: "Data Scientist",
-            dateApplied: "2025-09-08",
-            status: "Under Review",
-            city: "Mumbai",
-            jobType: "Full time"
-        },
-        {
-            joid: "8723C287-DDD3-46E9-BF23-08FFCE2HGE35",
-            title: "Frontend Developer",
-            dateApplied: "2025-09-05",
-            status: "Rejected",
-            city: "Ahmedabad",
-            jobType: "Full time"
-        },
-        {
-            joid: "5091GDD1-3D1F-55F5-11BB-08DDB933700E",
-            title: "Full Stack Developer",
-            dateApplied: "2025-08-28",
-            status: "Under Review",
-            city: "Ahmedabad",
-            jobType: "Full time"
-        }
-    ];
+    const [appliedJobs, setAppliedJobs] = useState([]);
+    const { token } = useAuth();
 
     const navigate = useNavigate();
 
+    // Fetch Prevoius Applied Jobs
+    const fetchMyJobs = async () => {
+        try {
+            const res = await axios.get("https://localhost:7119/api/Candidate/myjobs", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setAppliedJobs(res.data);
+        }
+        catch (err) {
+            console.error("Error fetching jobs:", err);
+        }
+    };
+
+    useEffect(() => {
+        if (token) {
+            fetchMyJobs();
+        }
+    }, [token]);
+
+    // Status Icon Mapping
     const getStatusIcon = (status) => {
         switch (status) {
             case "Selected":
@@ -72,6 +55,7 @@ const MyJobs = () => {
         }
     };
 
+    // Status Color Mapping
     const getStatusColor = (status) => {
         switch (status) {
             case "Selected":
@@ -97,7 +81,7 @@ const MyJobs = () => {
     return (
         <div className="min-h-screen flex flex-col bg-neutral-950">
             {/* Navbar */}
-            <CommonNavbar isLoggedIn role="Candidates"/>
+            <CommonNavbar isLoggedIn role="Candidates" />
 
             {/* Main Layout */}
             <main className="flex-1 py-8 px-4">
@@ -133,7 +117,7 @@ const MyJobs = () => {
                     {/* Applied Jobs List */}
                     <div className="space-y-6">
                         {appliedJobs.map(job => (
-                            <div key={job.id} className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-neutral-600 transition">
+                            <div key={job.joId} className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-neutral-600 transition">
                                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
 
                                     {/* Job Information */}
@@ -166,7 +150,7 @@ const MyJobs = () => {
                                         </div>
 
                                         <button
-                                            onClick={() => navigate('/job-description')}
+                                            onClick={() => navigate(`/job-description/${job.joId}`)}
                                             className="flex items-center gap-2 px-4 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-medium transition">
                                             <Eye className="w-4 h-4" />
                                             View Details

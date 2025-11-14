@@ -16,7 +16,7 @@ const AdminAddJobApplication = () => {
       examDate: null,
       feedback: "",
       status: "",
-      overallStatus: ""
+      overallStatus: "Applied",
     });
 
   const [errors, setErrors] = useState(
@@ -64,7 +64,7 @@ const AdminAddJobApplication = () => {
     try {
       const res = await axios.post(`https://localhost:7119/api/JobApplication`, formData);
       toast.success(res.data.message || "Job application submitted successfully!");
-    } 
+    }
     catch (err) {
       toast.error(err.response.data || "Failed to submit job application!");
     }

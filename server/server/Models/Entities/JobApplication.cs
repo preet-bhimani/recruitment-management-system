@@ -28,7 +28,6 @@ namespace server.Models.Entities
         [Required]
         public string OverallStatus { get; set; } = "Applied";
         public string? HoldOverallStatus { get; set; }
-
         public User? User { get; set; }
         public JobOpening? JobOpening { get; set; }
 

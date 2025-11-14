@@ -1,103 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Bell, CheckCircle, XCircle, Clock, Calendar, Users, FileCheck, Target, MessageSquare, ChevronDown, ChevronUp, Video } from "lucide-react";
 import CommonNavbar from "../components/CommonNavbar";
+import { useAuth } from "../contexts/AuthContext";
+import axios from "axios";
 import Footer from "../components/Footer";
+import { toast } from "react-toastify";
 
 const Notifications = () => {
+
   const [expandedJobs, setExpandedJobs] = useState({});
 
-  const jobNotifications = {
-    "Data Scientist": [
-      {
-        jobID: "4091FDD1-2D1F-44F5-00BB-08DDB922600D",
-        jobTitle: "Data Scientist",
-        notificationType: "Application",
-        status: "Shortlisted",
-        date: "2025-09-18T10:30:00",
-        interviewerName: null,
-        meetingLink: null,
-        feedback: "Congratulations You have been Shotlisted. You Recieve Exam Date very soon."
-      },
-      {
-        jobID: "4091FDD1-2D1F-44F5-00BB-08DDB922600D",
-        jobTitle: "Data Scientist",
-        notificationType: "Exam",
-        status: "Fail",
-        date: "2025-09-20T14:15:00",
-        interviewerName: null,
-        meetingLink: null,
-        feedback: "Unfortunately You haven't cleared the exam.."
-      }
-    ],
-    "Jr. AI Developer": [
-      {
-        jobID: "9CF256C4-7ECA-4469-8CCE-08DD70ACE5C1",
-        jobTitle: "Jr. AI Developer",
-        notificationType: "Application",
-        status: "Shortlisted",
-        date: "2025-09-15T11:45:00",
-        interviewerName: null,
-        meetingLink: null,
-        feedback: "Congratulations, you have been shortlisted. You will receive the technical interview link very soon."
-      },
-      {
-        jobID: "9CF256C4-7ECA-4469-8CCE-08DD70ACE5C1",
-        jobTitle: "Jr. AI Developer",
-        notificationType: "Tech Interview Round 1",
-        status: "Cleared",
-        date: "2025-09-17T15:00:00",
-        meetingLink: "/",
-        feedback: "Congratulations, you have been cleared for the first round of interviews. You get the next link very soon."
-      },
-      {
-        jobID: "9CF256C4-7ECA-4469-8CCE-08DD70ACE5C1",
-        jobTitle: "Jr. AI Developer",
-        notificationType: "Tech Interview Round 2",
-        status: "Cleared",
-        date: "2025-09-19T10:00:00",
-        meetingLink: "/",
-        feedback: "You have very good knowledge about AI technologies and their applications. Ready for final round."
-      },
-      {
-        jobID: "9CF256C4-7ECA-4469-8CCE-08DD70ACE5C1",
-        jobTitle: "Jr. AI Developer",
-        notificationType: "HR Interview",
-        status: "Scheduled",
-        date: "2025-09-22T14:30:00",
-        meetingLink: "/",
-        feedback: null
-      }
-    ],
-    "Sr. Software Engineer": [
-      {
-        jobID: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
-        jobTitle: "Sr. Software Engineer",
-        notificationType: "Application",
-        status: "Shortlisted",
-        date: "2025-09-14T09:20:00",
-        meetingLink: null,
-        feedback: "Congratulations You have been Shotlisted. You Recieve Exam Date very soon."
-      },
-      {
-        jobID: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
-        jobTitle: "Sr. Software Engineer",
-        notificationType: "Exam",
-        status: "Pass",
-        date: "2025-09-16T16:30:00",
-        meetingLink: null,
-        feedback: "Congratulations You have passed the exam. You will recieve Technical Interview Link very soon."
-      },
-      {
-        jobID: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
-        jobTitle: "Sr. Software Engineer",
-        notificationType: "Tech Interview Round 1",
-        status: "Cleared",
-        date: "2025-09-18T11:15:00",
-        meetingLink: "/",
-        feedback: "Congratulations, you have been cleared for the Techincal round of interviews. You get the next HR round link very soon."
-      }
-    ]
+  const [jobNotifications, setJobNotifications] = useState({});
+  const { userId, token } = useAuth();
+
+  // Fetch Notifications
+  const fetchNotifications = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7119/api/Candidate/notification`, {
+        headers: { Authorization: `Bearer ${token}`, }
+      });
+      setJobNotifications(res.data);
+    }
+    catch (err) {
+      toast.error("Error fetching notifications:", err);
+    }
   };
+
+  useEffect(() => {
+    if (userId) {
+      fetchNotifications();
+    }
+  }, [userId]);
 
   const toggleJobExpansion = (jobTitle) => {
     setExpandedJobs(prev => ({
@@ -106,6 +39,7 @@ const Notifications = () => {
     }));
   };
 
+  // Notification Type Icons
   const getTypeIcon = (type) => {
     if (type.includes('Application')) return <Target className="w-5 h-5 text-white" />;
     if (type.includes('Exam')) return <FileCheck className="w-5 h-5 text-white" />;
@@ -114,6 +48,7 @@ const Notifications = () => {
     return <Bell className="w-5 h-5 text-neutral-400" />;
   };
 
+  // Notification Status Icon
   const getStatusIcon = (status) => {
     if (!status) return <Clock className="w-4 h-4 text-yellow-400" />;
 
@@ -127,6 +62,7 @@ const Notifications = () => {
     return <Clock className="w-4 h-4 text-yellow-400" />;
   };
 
+  // Notification Status Color
   const getStatusColor = (status) => {
     if (!status) return 'text-yellow-400';
 
@@ -226,7 +162,7 @@ const Notifications = () => {
                               </div>
                             </div>
 
-                            <div className="ml-13 space-y-3">
+                            <div className="ml-12 space-y-3">
                               {/* Meeting Link */}
                               {notification.meetingLink && isPendingInterview(notification.status) && (
                                 <div>
@@ -236,6 +172,20 @@ const Notifications = () => {
                                     Join Interview
                                   </a>
                                 </div>
+                              )}
+
+                              {/* Meeting Date + Time */}
+                              {notification.meetingDate && (
+                                <p className="text-xs text-neutral-400">Meeting Date: {notification.meetingDate}</p>
+                              )}
+
+                              {notification.meetingTime && (
+                                <p className="text-xs text-neutral-400">Meeting Time: {notification.meetingTime}</p>
+                              )}
+
+                              {/* Exam Date */}
+                              {notification.examDate && (
+                                <p className="text-xs text-neutral-400">Exam Date: {notification.examDate}</p>
                               )}
 
                               {/* Feedback */}
