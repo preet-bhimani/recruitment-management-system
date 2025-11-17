@@ -80,6 +80,11 @@ namespace server.Models.Entities
 
         public DateTime? RefreshTokenExpiryTime { get; set; }
 
+        public string? ResetOtp { get; set; }
+        public DateTime? ResetOtpExpiry { get; set; }
+        public string? ResetToken { get; set; }
+        public DateTime? ResetTokenExpiry { get; set; }
+
         public ICollection<Skill> Skills { get; set; } = new List<Skill>();
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

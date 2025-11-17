@@ -97,5 +97,21 @@
                 <p>Please evaluate the candidate and submit your HR feedback.</p>
                 <p><i>Regards,<br/>Roima Team</i></p>";
         }
+
+        // Reset password OTP send template
+        public string PasswordResetOtpTemplate(string name, string otp)
+        {
+            return $@"
+                <h2>Password Reset Request</h2>
+
+                <p>Hi {name},</p>
+
+                <p>Your OTP for resetting your password is:</p>
+                <h1 style='letter-spacing: 4px; color:#6a0dad;'>{otp}</h1>
+                <p>This OTP is valid for <b>5 minutes</b>. Do NOT share this code with anyone.</p>
+                <p>If you didn’t request this, please ignore this email.</p>
+
+                <p><i>Regards,<br/>Roima Recruitment Team</i></p>";
+        }
     }
 }

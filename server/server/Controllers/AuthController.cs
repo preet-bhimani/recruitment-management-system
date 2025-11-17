@@ -9,6 +9,7 @@ using server.Data;
 using server.Models;
 using server.Models.Dto;
 using server.Models.Entities;
+using server.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -23,13 +24,17 @@ namespace server.Controllers
         // File must be less then 5 MB and .jpg, .jpeg, .png formate
         private readonly AppDbContext dbContext;
         private readonly IConfiguration config;
+        private readonly EmailService emailService;
+        private readonly EmailTemplateService templateService;
         private const long MaxFileBytes = 5 * 1024 * 1024; 
         private static readonly string[] AllowedExt = new[] { ".jpg", ".jpeg", ".png" };
 
-        public AuthController(AppDbContext dbContext, IConfiguration configuration)
+        public AuthController(AppDbContext dbContext, IConfiguration configuration, EmailService emailService, EmailTemplateService templateService)
         {
             this.dbContext = dbContext;
             config = configuration;
+            this.emailService = emailService;
+            this.templateService = templateService;
         }
 
         [HttpPost("register")]
@@ -235,6 +240,107 @@ namespace server.Controllers
                 token = newAccessToken,
                 refreshToken = newRefreshToken,
             });
+        }
+
+        // Send OTP
+        [HttpPost("send-otp")]
+        public async Task<IActionResult> SendOtp([FromBody] ResetPasswordRequestDto rprDto)
+        {
+            // Model Validation
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var email = rprDto.Email.Trim().ToLower();
+            var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email);
+
+            if (user == null)
+                return NotFound("No account found with this email.");
+
+            // Generate OTP
+            var otp = new Random().Next(100000, 999999).ToString();
+
+            // Save OTP
+            user.ResetOtp = otp;
+            user.ResetOtpExpiry = DateTime.UtcNow.AddMinutes(5);
+
+            await dbContext.SaveChangesAsync();
+
+            // Prepare email
+            string subject = "Your OTP for Password Reset";
+            string body = templateService.PasswordResetOtpTemplate(user.FullName, otp);
+
+            // Send email using EmailService
+            await emailService.SendEmail(user.Email, subject, body);
+
+            return Ok(new { message = "OTP has been sent to your email." });
+        }
+
+        // Verify OTP
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyResetOtp(VerifyOtpDto voDto)
+        {
+            // Model Validation
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var email = voDto.Email;
+
+            var user = await dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == email);
+
+            if (user == null)
+                return NotFound("No account found with this email");
+
+            // Check if OTP is correct
+            if (user.ResetOtp != voDto.Otp)
+                return BadRequest("Invalid OTP.");
+
+            // Check if OTP expired
+            if (user.ResetOtpExpiry == null || user.ResetOtpExpiry < DateTime.UtcNow)
+                return BadRequest("OTP expired. Please request a new one");
+
+            return Ok("OTP verified successfully");
+        }
+
+        // Reset password
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto rpDto)
+        {
+            // Model Validation
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var email = rpDto.Email;
+
+            var user = await dbContext.Users
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == email);
+
+            if (user == null)
+                return NotFound("Account not found with this email");
+
+            // Ensure OTP was verified
+            if (string.IsNullOrEmpty(user.ResetOtp))
+                return BadRequest("OTP verification required");
+
+            // If OTP expired
+            if (user.ResetOtpExpiry == null || user.ResetOtpExpiry < DateTime.UtcNow)
+                return BadRequest("OTP expired. Please request again");
+
+            // Hash new password
+            var hasher = new PasswordHasher<User>();
+            user.Password = hasher.HashPassword(user, rpDto.NewPassword);
+
+            // Clear OTP after password reset
+            user.ResetOtp = null;
+            user.ResetOtpExpiry = null;
+
+            await dbContext.SaveChangesAsync();
+
+            return Ok("Password updated successfully");
         }
     }
 }

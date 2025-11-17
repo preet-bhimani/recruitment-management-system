@@ -400,5 +400,67 @@ namespace server.Controllers
                 userId = user.UserId
             });
         }
+
+        // Update profile for all users
+        [HttpPut("update-profile/{id:guid}")]
+        public async Task<IActionResult> UpdateProfileById(Guid id, [FromForm] UpdateProfileDto upDto, [FromForm] IFormFile? photo)
+        {
+            // Model state validation
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await dbContext.Users
+                .Include(u => u.Skills)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Handle photo upload
+            if (photo != null && photo.Length > 0)
+            {
+                if (photo.Length > MaxFileBytes)
+                    return BadRequest("File too large. Max 5 MB allowed.");
+
+                var ext = Path.GetExtension(photo.FileName).ToLowerInvariant();
+                if (!AllowedExt.Contains(ext))
+                    return BadRequest("Only JPG, JPEG, and PNG allowed.");
+
+                // Delete old photo if exists
+                if (!string.IsNullOrEmpty(user.Photo))
+                {
+                    var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Photos", user.Photo);
+                    if (System.IO.File.Exists(oldPath))
+                        System.IO.File.Delete(oldPath);
+                }
+
+                // Save new photo
+                var uploads = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_Photos");
+                Directory.CreateDirectory(uploads);
+
+                var newPhotoName = $"{Guid.NewGuid():N}-{Path.GetFileName(photo.FileName)}";
+                var newPhotoPath = Path.Combine(uploads, newPhotoName);
+
+                using (var fs = new FileStream(newPhotoPath, FileMode.Create))
+                {
+                    await photo.CopyToAsync(fs);
+                }
+
+                user.Photo = newPhotoName;
+            }
+
+            user.FullName = upDto.FullName;
+            user.PhoneNumber = upDto.PhoneNumber;
+            user.City = upDto.City;
+            user.Country = upDto.Country;
+            user.DOB = DateOnly.FromDateTime(upDto.DOB);
+
+            // Save Changes
+            await dbContext.SaveChangesAsync();
+
+            return Ok("Profile updated Scussessfully");
+        }
     }
 }
