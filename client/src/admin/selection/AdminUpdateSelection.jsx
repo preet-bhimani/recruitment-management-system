@@ -1,24 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const AdminUpdateSelection = () => {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const { id } = useParams();
+    const navigate = useNavigate();
 
-    const [sentMail, setSentMail] = useState({
+    const [selection, setSelection] = useState({
         selectionId: "1203R590-HFB8-94B5-DJ78-21URDK3QLZ86",
-        fullName: "Kush Vadodariya",
-        title: " Jr. Data Analyst",
-        email: "kush@gamil.com",
-        startdate: "2025-05-21",
-        enddate: "2025-11-20",
-        phoneNumber: "9377382731",
-        city: "Ahmedabad",
-        templateType: "Internship",
-        bond: "6",
-        salary: "15000",
+        selectionStatus: "Selected",
     })
+
+    // Fetch Selection by ID
+    const fetchSelection = async () => {
+        try {
+            const res = await axios.get(`https://localhost:7119/api/Selection/${id}`);
+            setSelection(res.data);
+        }
+        catch (err) {
+            toast.error(err.response.data || "Failed to load selection details!");
+        }
+    };
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await axios.put(`https://localhost:7119/api/Selection/update/${selection.selectionId}`, {
+                selectionStatus: selection.selectionStatus
+            });
+            toast.success(res.data.message || "Selection updated successfully!");
+            navigate(-1);
+        }
+        catch (err) {
+            toast.error(err.response.data || "Failed to update selection!");
+        }
+    };
+
+    useEffect(() => {
+        fetchSelection();
+    }, []);
+
 
     return <div className="flex flex-col h-screen bg-neutral-950 text-neutral-100">
         {/* Navbar */}
@@ -35,7 +61,7 @@ const AdminUpdateSelection = () => {
                     <h1 className="text-4xl font-bold text-white mb-4">Update Selection</h1>
                 </div>
 
-                <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
+                <form onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
                     {/* Selection Id */}
                     <div className="md:col-span-2">
                         <label className="block mb-1 text-sm font-medium text-neutral-300">
@@ -43,151 +69,32 @@ const AdminUpdateSelection = () => {
                         </label>
                         <input
                             type="text"
-                            defaultValue={sentMail.selectionId}
+                            value={selection.selectionId}
+                            onChange={(e) => setSelection({ ...selection, selectionId: e.target.value })}
                             disabled
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-300 cursor-not-allowed" />
                     </div>
-
-                    {/* Full Name */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            Full Name <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="fullName"
-                            defaultValue={sentMail.fullName}
-                            placeholder="Enter full name"
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            Email <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="email"
-                            name="email"
-                            defaultValue={sentMail.email}
-                            placeholder="Enter email"
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
-                    </div>
-
-                    {/* Phone Number */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            Phone Number <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="phoneNumber"
-                            defaultValue={sentMail.phoneNumber}
-                            placeholder="Enter phone number"
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
-                    </div>
-
-                    {/* City */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            City <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="city"
-                            defaultValue={sentMail.city}
-                            placeholder="Enter city"
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
-                    </div>
-
-                    {/* Title */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            Title <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="title"
-                            defaultValue={sentMail.title}
-                            placeholder="Enter Title"
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
-                    </div>
-
-                    {/* Start Date */}
-                    <div className="flex flex-col gap-1">
-                        <label className="text-sm font-medium text-neutral-200">
-                            Start Date <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="date"
-                            defaultValue={sentMail.startdate}
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200" />
-                    </div>
-
-                    {/* End Date */}
-                    <div className="flex flex-col gap-1">
-                        <label className="text-sm font-medium text-neutral-200">
-                            End Date
-                        </label>
-                        <input
-                            type="date"
-                            defaultValue={sentMail.enddate}
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-200" />
-                    </div>
-
-                    {/* Bond Time */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">Bond Time <span className="text-rose-500">*</span></label>
-                        <input
-                            type="number"
-                            placeholder="Enter Bond Time"
-                            min="0"
-                            defaultValue={sentMail.bond}
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-                    </div>
-
-                    {/* Salary */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">Salary <span className="text-rose-500">*</span></label>
-                        <input
-                            type="number"
-                            placeholder="Enter Salary"
-                            min="0"
-                            defaultValue={sentMail.salary}
-                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-                    </div>
-
-                    {/* Template Type */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            Template Type <span className="text-rose-500">*</span>
+                    
+                    {/* Selection Status */}
+                    <div className="md:col-span-2">
+                        <label className="block mb-1 text-sm font-medium text-neutral-300">
+                            Selection Status
                         </label>
                         <select
-                            name="Template Type"
-                            className="w-full p-2.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-100">
-                            <option value="" disabled>Select Template Type</option>
-                            <option value="Campus Drive">Internship</option>
-                            <option value="Walk in drive">Job</option>
-                            <option value="Recruitment Apps">Internship + Job</option>
+                            value={selection.selectionStatus}
+                            onChange={(e) => setSelection({ ...selection, selectionStatus: e.target.value })}
+                            className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-300">
+                            <option value="Selected" disabled>Selected</option>
+                            <option value="Joined">Joined</option>
+                            <option value="Not Joined">Not Joined</option>
+                            <option value="Hold">Hold</option>
                         </select>
-                    </div>
-
-                    {/* Offer Letter */}
-                    <div>
-                        <label className="block mb-1 text-sm font-medium">
-                            Offer Letter <span className="text-rose-500">*</span>
-                        </label>
-                        <input
-                            type="file"
-                            className="w-full p-1.5 rounded bg-neutral-800 border border-neutral-700 text-neutral-200
-                                       file:h-8.5 file:px-3 file:rounded file:border-0 
-                                     file:bg-neutral-600 file:text-white hover:file:bg-purple-800 cursor-pointer"/>
                     </div>
 
                     {/* Submit */}
                     <div className="md:col-span-2">
                         <button
-                            type="button"
+                            type="submit"
                             className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
                             Update Selection Or Sent Mail
                         </button>

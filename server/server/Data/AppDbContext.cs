@@ -19,7 +19,7 @@ namespace server.Data
         public DbSet<HRInterview> HRInterviews { get; set; }
         public DbSet<DocumentList> DocumentLists { get; set; }
         public DbSet<OfferLetter> OfferLetters { get; set; }
-
+        public DbSet<Selection> Selections { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -157,6 +157,38 @@ namespace server.Data
 
             modelBuilder.Entity<OfferLetter>()
                 .HasIndex(o => new { o.UserId, o.JAId })
+                .IsUnique();
+
+            modelBuilder.Entity<Selection>()
+                .HasOne(s => s.User)
+                .WithMany()
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Selection>()
+                .HasOne(s => s.JobOpening)
+                .WithMany()
+                .HasForeignKey(s => s.JOId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Selection>()
+                .HasOne(s => s.JobApplication)
+                .WithMany()
+                .HasForeignKey(s => s.JAId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Selection>()
+                .HasOne(s => s.OfferLetter)
+                .WithMany()
+                .HasForeignKey(s => s.OLId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Selection>()
+                .HasIndex(s => new { s.JAId, s.OLId })
+                .IsUnique();
+
+            modelBuilder.Entity<Selection>()
+                .HasIndex(s => new { s.UserId, s.JOId })
                 .IsUnique();
         }
     }

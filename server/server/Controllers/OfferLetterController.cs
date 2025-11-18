@@ -216,7 +216,27 @@ namespace server.Controllers
                     offer.JobApplication.OverallStatus = "Selected";
 
                     await dbContext.SaveChangesAsync();
-                    return Ok("Offer letter accepted successfully.");
+                    var existingSelection = await dbContext.Selections
+                        .FirstOrDefaultAsync(s => s.OLId == offer.OLId);
+                    
+                    // Add details into Selection tables
+                    if (existingSelection == null)
+                    {
+                        var newSelection = new Selection
+                        {
+                            SelectionId = Guid.NewGuid(),
+                            UserId = offer.UserId,
+                            JOId = offer.JOId,
+                            JAId = offer.JAId,
+                            OLId = offer.OLId,
+                            SelectionStatus = "Selected",
+                            CreatedAt = DateTime.UtcNow
+                        };
+
+                        dbContext.Selections.Add(newSelection);
+                        await dbContext.SaveChangesAsync();
+                    }
+                    return Ok("Offer letter accepted successfully");
 
                 // Change just OverallStatus OfferLetterStatus 
                 case "Rejected":

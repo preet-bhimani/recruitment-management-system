@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import axios from "axios";
-import { Filter, Eye, Edit, Trash2 } from "lucide-react";
+import { Filter, Eye, Edit, Trash2, Download } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -202,6 +202,9 @@ const OfferLetter = () => {
                                 })}>
                             Clear
                         </button>
+                        <button className="flex items-center gap-2 px-3 py-1 bg-purple-700 hover:bg-purple-600 rounded text-sm">
+                            <Download size={14} /> Download
+                        </button>
                     </div>
                 </div>
             )}
@@ -228,7 +231,7 @@ const OfferLetter = () => {
                                 <p><span className="font-medium text-purple-300">OLId:</span> {offer.olId}</p>
                                 <p><span className="font-medium text-purple-300">Name:</span> {offer.fullName}</p>
                                 <p><span className="font-medium text-purple-300">Title:</span> {offer.title}</p>
-                                <p><span className="font-medium text-purple-300">Email:</span> {offer.email}</p>
+                                <p><span className="font-medium text-purple-300">Email:</span> <span className="break-all">{offer.email || "-"}</span></p>
                                 <p><span className="font-medium text-purple-300">Salary:</span> {offer.salary}</p>
                                 <p><span className="font-medium text-purple-300">Joining:</span>{" "}{new Date(offer.joiningDate).toLocaleDateString("en-GB")}</p>
                                 <p><span className="font-medium text-purple-300">Template:</span>{" "}{offer.templateType}</p>
@@ -261,10 +264,10 @@ const OfferLetter = () => {
                                 <Edit size={14} /> Update
                             </button>
                             {offer.offerLetterStatus !== "Hold" && (
-                            <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
-                                onClick={() => handleDelete(offer.olId)}>
-                                <Trash2 size={14} /> Delete
-                            </button>
+                                <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                    onClick={() => handleDelete(offer.olId)}>
+                                    <Trash2 size={14} /> Delete
+                                </button>
                             )}
                         </div>
                     </div>
@@ -277,8 +280,7 @@ const OfferLetter = () => {
                     totalItems={filtered.length}
                     pageSize={pageSize}
                     currentPage={currentPage}
-                    onPageChange={setCurrentPage}
-                />
+                    onPageChange={setCurrentPage}/>
             </div>
         </div>
     );

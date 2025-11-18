@@ -113,7 +113,7 @@ function App() {
           <Route path='/admin-add-meeting' element={<AdminMeetingSchedual />} />
           <Route path='/admin-selection' element={<AdminSelection />} />
           <Route path='/admin-sentmail-selection' element={<AdminSentMailSelection />} />
-          <Route path='/admin-update-selection' element={<AdminUpdateSelection />} />
+          <Route path='/admin-update-selection/:id' element={<AdminUpdateSelection />} />
           <Route path='/admin-document' element={<AdminDocuments />} />
           <Route path='/admin-add-document' element={<AdminAddDocuments />} />
           <Route path='/admin-add-update-candidate-documents/:jaId' element={<UploadDocuments />} />
