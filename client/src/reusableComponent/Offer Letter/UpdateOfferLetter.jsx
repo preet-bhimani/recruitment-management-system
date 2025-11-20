@@ -13,7 +13,7 @@ const UpdateOfferLetter = ({ id }) => {
         joId: "",
         jaId: "",
         joiningDate: "",
-        endDate: "",
+        endDate: null,
         bondTime: "",
         salary: "",
         templateType: "",
@@ -41,7 +41,6 @@ const UpdateOfferLetter = ({ id }) => {
             const result = await axios.get(
                 `https://localhost:7119/api/OfferLetter/details/${id}`
             );
-            console.log("API RESPONSE:", result.data);
 
             if (!result.data) {
                 toast.error("Invalid Offer Letter ID");
@@ -55,7 +54,7 @@ const UpdateOfferLetter = ({ id }) => {
                 joId: data.joId,
                 jaId: data.jaId,
                 joiningDate: data.joiningDate?.split("T")[0] || "",
-                endDate: data.endDate?.split("T")[0] || "",
+                endDate: data.endDate?.split("T")[0] || null,
                 bondTime: data.bondTime || "",
                 salary: data.salary || "",
                 templateType: data.templateType || "",
@@ -63,7 +62,7 @@ const UpdateOfferLetter = ({ id }) => {
                 offerLetterFilePath: data.offerLetterFilePath || "",
             });
         }
-        catch (error) {
+        catch (err) {
             toast.error("Failed to load offer letter details.");
         }
     };
@@ -143,8 +142,9 @@ const UpdateOfferLetter = ({ id }) => {
             toast.success(res.data || "Offer letter updated successfully!");
             navigate(-1);
         }
-        catch (error) {
-            toast.error(error.response?.data || "Failed to update offer letter!");
+        catch (err) {
+            console.log(err);
+            toast.error(err.response?.data || "Failed to update offer letter!");
         }
     };
 

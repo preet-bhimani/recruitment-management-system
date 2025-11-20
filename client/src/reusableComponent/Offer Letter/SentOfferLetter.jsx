@@ -13,7 +13,7 @@ const SentOfferLetter = ({ id }) => {
         joId: "",
         jaId: id || "",
         joiningDate: "",
-        endDate: "",
+        endDate: null,
         bondTime: "",
         salary: "",
         templateType: "",
@@ -107,6 +107,7 @@ const SentOfferLetter = ({ id }) => {
         setErrors(newErrors);
         if (hasError) return;
 
+        console.log(formData);
         try {
             const res = await axios.post(`https://localhost:7119/api/OfferLetter/generate`, formData);
 
@@ -128,7 +129,7 @@ const SentOfferLetter = ({ id }) => {
                 type="date"
                 value={formData.joiningDate}
                 onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700"/>
+                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
             {errors.joiningDate && <p className="text-rose-500 text-sm mt-1">{errors.joiningDate}</p>}
         </div>
 
