@@ -20,6 +20,7 @@ namespace server.Data
         public DbSet<DocumentList> DocumentLists { get; set; }
         public DbSet<OfferLetter> OfferLetters { get; set; }
         public DbSet<Selection> Selections { get; set; }
+        public DbSet<Employee> Employees { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -190,6 +191,12 @@ namespace server.Data
             modelBuilder.Entity<Selection>()
                 .HasIndex(s => new { s.UserId, s.JOId })
                 .IsUnique();
+
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -195,7 +195,7 @@ namespace server.Controllers
             var jobApp = await dbContext.JobApplications.FirstOrDefaultAsync(j => j.JAId == dto.JAId);
             if (jobApp != null && jobApp.OverallStatus == "Document Pending")
             {
-                jobApp.OverallStatus = "Offer Letter";
+                jobApp.OverallStatus = "Offer Letter Pending";
             }
 
             await dbContext.SaveChangesAsync();
