@@ -53,29 +53,40 @@ export const CandidateProvider = ({ children }) => {
   };
   const getRoundCount = (c, type) => getRounds(c, type).length;
 
-  // Update Job Application Status via API
-  const updateStatusViaApi = async (id, payload) => {
+  // Update Job Application Status via API Endpoint
+  const updateCandidate = async (id, updated) => {
+    const c = candidates.find(x => x.jaId === id);
+    if (!c) return;
+
+    const dto = {
+      userId: c.userId,
+      joId: c.joId,
+      status: updated.status ?? c.status,
+      overallStatus: updated.overallStatus ?? c.overallStatus,
+      examDate: updated.examDate ?? c.examDate,
+      examResult: updated.examResult ?? c.examResult,
+      feedback: updated.feedback ?? c.feedback,
+      holdOverallStatus: c.holdOverallStatus
+    };
     try {
-      await axios.put(`https://localhost:7119/api/JobApplication/update/${id}`, payload);
-      toast.success("Status updated!");
-      await fetchCandidates(); // refresh after update
-    } catch (err) {
-      toast.error(err.response.data || "Failed to update status!");
+      await axios.put(`https://localhost:7119/api/JobApplication/update/${id}`, dto);
+      toast.success("Status updated successfully!");
+      await fetchCandidates();
+    }
+    catch (err) {
+      toast.error(err.response?.data || "Failed to update status!");
     }
   };
 
 
   // Exam Schedule
-  const scheduleExam = (id, payload) => {
-    let date = '';
-    let time = '';
-    if (typeof payload === 'string') {
-      date = payload;
-    } else if (payload && typeof payload === 'object') {
-      date = payload.date || payload.examDate || '';
-      time = payload.time || payload.examTime || '';
-    }
-    updateCandidate(id, c => ({ ...c, jobApplicationStatus: 'Exam', overallStatus: 'Exam', examDate: date }));
+  const scheduleExam = (id, date) => {
+    updateCandidate(id, {
+      status: "Exam",
+      overallStatus: "Exam",
+      examDate: date,
+      examResult: null
+    });
   };
 
   // If Tech/HR interview Cleared and Move to Next Stage
@@ -127,7 +138,7 @@ export const CandidateProvider = ({ children }) => {
       last.Feedback = feedback;
       last.Status = 'Not Clear';
       const newRounds = [...rounds.slice(0, -1), last];
-      const rejected = { ...setRounds(c, type, newRounds), jobApplicationStatus: 'Rejected', overallStatus: 'Rejected' };
+      const rejected = { ...setRounds(c, type, newRounds), status: 'Rejected', overallStatus: 'Rejected' };
       return rejected;
     });
   };
@@ -143,8 +154,8 @@ export const CandidateProvider = ({ children }) => {
       changes.forEach(([key, value]) => {
         const field = key.split('-').slice(1).join('-');
 
-        if (field === 'jobApplicationStatus') {
-          updated.jobApplicationStatus = value;
+        if (field === 'status') {
+          updated.status = value;
           if (value === 'Shortlisted') updated.overallStatus = 'Technical Interview';
           else if (value === 'Rejected' || value === 'Fail') updated.overallStatus = 'Rejected';
         } else if (field === 'techStatus' && latestTech) {
@@ -175,7 +186,6 @@ export const CandidateProvider = ({ children }) => {
     });
   };
 
-
   const updateTemp = (id, field, value) => {
     setTempStatuses(prev => ({ ...prev, [`${id}-${field}`]: value }));
   };
@@ -194,7 +204,7 @@ export const CandidateProvider = ({ children }) => {
     passRound,
     failRound,
     scheduleExam,
-    updateStatusViaApi
+    updateCandidate,
   };
 
   return <CandidateContext.Provider value={value}>{children}</CandidateContext.Provider>;

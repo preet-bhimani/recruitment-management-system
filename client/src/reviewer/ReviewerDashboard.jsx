@@ -14,7 +14,6 @@ const ReviewerDashboardContent = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const candidatesPerPage = 5;
   const [tempStatus, setTempStatus] = useState({});
-  const [tempOverall, setTempOverall] = useState({});
   const [tempModified, setTempModified] = useState({});
   const [messageBoxOpen, setMessageBoxOpen] = useState({});
   const [messages, setMessages] = useState({});
@@ -37,14 +36,14 @@ const ReviewerDashboardContent = () => {
 
   // Filter Job Title
   const uniqueJobs = useMemo(() => {
-    const jobs = candidates.map(c => c.jobTitle).filter(Boolean);
+    const jobs = candidates.map(c => c.title).filter(Boolean);
     return [...new Set(jobs)];
   }, [candidates]);
 
   // Filter Job Title Date To From
   const applicableCandidates = useMemo(() => {
     return candidates.filter(c => {
-      if (jobTitleFilter !== 'all' && c.jobTitle !== jobTitleFilter) return false;
+      if (jobTitleFilter !== 'all' && c.title !== jobTitleFilter) return false;
       if (fromDate && new Date(c.appliedDate) < new Date(fromDate)) return false;
       if (toDate && new Date(c.appliedDate) > new Date(toDate)) return false;
 
@@ -80,42 +79,15 @@ const ReviewerDashboardContent = () => {
   // Status Change Handling
   const onStatusChange = (id, value) => {
     setTempStatus(s => ({ ...s, [id]: value }));
-    if (value === 'Exam') {
-      setTempOverall(o => ({ ...o, [id]: 'Exam' }));
-    } else if (value === 'Shortlisted') {
-      setTempOverall(o => ({ ...o, [id]: 'Technical Interview' }));
-    } else if (value === 'Rejected') {
-      setTempOverall(o => ({ ...o, [id]: 'Rejected' }));
-    } else if (value === 'Selected') {
-      setTempOverall(o => ({ ...o, [id]: 'Technical Interview' }));
-    } else if (value === 'Applied') {
-      setTempOverall(o => ({ ...o, [id]: 'Applied' }));
-    }
-    setTempModified(m => ({ ...m, [id]: true }));
-  };
-
-  // OverAllStatus Change
-  const onOverallChange = (id, value) => {
-    setTempOverall(o => ({ ...o, [id]: value }));
-    if (value === 'Technical Interview') {
-      setTempStatus(s => ({ ...s, [id]: (s[id] === 'Selected' ? 'Selected' : 'Shortlisted') }));
-    } else if (value === 'Rejected') {
-      setTempStatus(s => ({ ...s, [id]: 'Rejected' }));
-    } else if (value === 'Exam') {
-      setTempStatus(s => ({ ...s, [id]: 'Exam' }));
-    } else if (value === 'Applied') {
-      setTempStatus(s => ({ ...s, [id]: 'Applied' }));
-    }
     setTempModified(m => ({ ...m, [id]: true }));
   };
 
   // DropDown Change
   const onSaveStatus = (id) => {
-    const candidate = candidates.find(c => c.id === id);
+    const candidate = candidates.find(c => c.jaId === id);
     if (!candidate) return;
     updateCandidate(id, {
-      jobApplicationStatus: tempStatus[id] ?? candidate.jobApplicationStatus,
-      overallStatus: tempOverall[id] ?? candidate.overallStatus,
+      status: tempStatus[id] ?? candidate.status
     });
     setTempModified(m => ({ ...m, [id]: false }));
   };
@@ -141,20 +113,39 @@ const ReviewerDashboardContent = () => {
   // Send Message According to Different Buttons
   const onSendMessage = (id) => {
     const msg = (messages[id] ?? '').trim();
-    const candidate = candidates.find(c => c.id === id);
+    const candidate = candidates.find(c => c.jaId === id);
     if (!candidate) return;
     const action = pendingAction[id];
 
     if (action === 'select') {
-      updateCandidate(id, { jobApplicationStatus: 'Shortlisted', overallStatus: 'Technical Interview' });
-    } else if (action === 'reject') {
-      updateCandidate(id, { jobApplicationStatus: 'Rejected', overallStatus: 'Rejected' });
-    } else if (action === 'pass') {
-      updateCandidate(id, { jobApplicationStatus: 'Selected', overallStatus: 'Technical Interview' });
-    } else if (action === 'fail') {
-      updateCandidate(id, { jobApplicationStatus: 'Rejected', overallStatus: 'Rejected' });
-    } else {
-      let newStatus = candidate.jobApplicationStatus;
+      updateCandidate(id, {
+        status: 'Shortlisted',
+        examDate: null,
+        examResult: null
+      });
+
+    }
+    else if (action === 'reject') {
+      updateCandidate(id, {
+        status: 'Rejected',
+        examDate: null,
+        examResult: null
+      });
+    }
+    else if (action === 'pass') {
+      updateCandidate(id, {
+        status: 'Shortlisted',
+        examResult: 'Pass'
+      });
+    }
+    else if (action === 'fail') {
+      updateCandidate(id, {
+        status: 'Rejected',
+        examResult: 'Fail'
+      });
+    }
+    else {
+      let newStatus = candidate.status;
       let newOverall = candidate.overallStatus;
 
       // Change Status After Message Sent
@@ -172,7 +163,7 @@ const ReviewerDashboardContent = () => {
         newStatus = 'Rejected';
         newOverall = 'Rejected';
       }
-      updateCandidate(id, { jobApplicationStatus: newStatus, overallStatus: newOverall });
+      updateCandidate(id, { status: newStatus });
     }
     closeActionModal(id);
   };
@@ -180,7 +171,7 @@ const ReviewerDashboardContent = () => {
   // Exam Schedule
   const toggleExamScheduling = (id) => {
     setExamScheduleOpen(es => ({ ...es, [id]: !es[id] }));
-    const candidate = candidates.find(c => c.id === id);
+    const candidate = candidates.find(c => c.jaId === id);
     setExamDates(ed => ({ ...ed, [id]: candidate?.examDate ?? '' }));
   };
   const setExamDateForCandidate = (id, date) => {
@@ -189,9 +180,8 @@ const ReviewerDashboardContent = () => {
   const confirmScheduleExamForCandidate = (id) => {
     const date = examDates[id];
     if (!date) return alert('Pick a date');
-    const time = '11:00 AM'; 
-    scheduleExam(id, { date, time }); 
-    updateCandidate(id, { jobApplicationStatus: 'Exam', overallStatus: 'Exam', examDate: date, examTime: time });
+    const time = '11:00 AM';
+    scheduleExam(id, date);
     setExamScheduleOpen(es => ({ ...es, [id]: false }));
     setExamDates(ed => ({ ...ed, [id]: '' }));
   };
@@ -259,7 +249,7 @@ const ReviewerDashboardContent = () => {
           {paginated.length === 0 ? (
             <div className="text-neutral-400">No candidates match for current filters.</div>
           ) : paginated.map(c => (
-            <div key={c.id} className="bg-neutral-900 border border-neutral-700 rounded-lg p-4">
+            <div key={c.jaId} className="bg-neutral-900 border border-neutral-700 rounded-lg p-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-4 min-w-0">
                   <img src={c.photo} alt={c.fullName} className="w-12 h-12 rounded-full border border-neutral-600" />
@@ -270,9 +260,16 @@ const ReviewerDashboardContent = () => {
                     </div>
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-neutral-400">
                       <span className="truncate"><span className="text-purple-200">Email:</span> {c.email}</span>
-                      <span className="truncate"><span className="text-purple-200">Job:</span> {c.jobTitle}</span>
-                      <span className="truncate"><span className="text-purple-200">Phone:</span> {c.phone}</span>
+                      <span className="truncate"><span className="text-purple-200">Job:</span> {c.title}</span>
+                      <span className="truncate"><span className="text-purple-200">Phone:</span> {c.phoneNumber}</span>
                       <span className="truncate"><span className="text-purple-200">Applied:</span> {c.appliedDate}</span>
+                      {c.rejectionStage && (
+                        <div className="col-span-full">
+                          <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-red-900/70 text-red-200 border border-red-700">
+                            Failed At: {c.rejectionStage}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -289,56 +286,41 @@ const ReviewerDashboardContent = () => {
 
                   {/* Status */}
                   <select
-                    value={tempStatus[c.id] ?? c.jobApplicationStatus}
-                    onChange={e => onStatusChange(c.id, e.target.value)}
+                    value={tempStatus[c.jaId] ?? c.status}
+                    onChange={e => onStatusChange(c.jaId, e.target.value)}
                     className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
                     <option>Applied</option>
                     <option>Exam</option>
                     <option>Shortlisted</option>
-                    <option>Selected</option>
                     <option>Rejected</option>
-                  </select>
-
-                  {/* Overall Status */}
-                  <select
-                    value={tempOverall[c.id] ?? c.overallStatus}
-                    onChange={e => onOverallChange(c.id, e.target.value)}
-                    className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
-                    <option>Applied</option>
-                    <option>Exam</option>
-                    <option>Technical Interview</option>
-                    <option>HR Interview</option>
-                    <option>Selected</option>
-                    <option>Rejected</option>
-                    <option>Hold</option>
                   </select>
 
                   {/* Save Changes After DropDown */}
-                  {tempModified[c.id] && (
+                  {tempModified[c.jaId] && (
                     <button
-                      onClick={() => onSaveStatus(c.id)}
+                      onClick={() => onSaveStatus(c.jaId)}
                       className="px-2 py-1 bg-green-600 rounded text-xs text-white">
                       Save
                     </button>
                   )}
 
                   {/* Applied Status Candidate */}
-                  {c.jobApplicationStatus.toLowerCase() === 'applied' && (
+                  {c.status.toLowerCase() === 'applied' && (
                     <>
                       <button
-                        onClick={() => openActionModalFor(c.id, 'select')}
+                        onClick={() => openActionModalFor(c.jaId, 'select')}
                         className="px-3 py-1 bg-emerald-700 rounded text-xs text-white flex items-center gap-1">
                         <CheckCircle size={14} /> Right
                       </button>
                       <button
-                        onClick={() => openActionModalFor(c.id, 'reject')}
+                        onClick={() => openActionModalFor(c.jaId, 'reject')}
                         className="px-3 py-1 bg-red-800 rounded text-xs text-white flex items-center gap-1">
                         <XCircle size={14} /> Cancel
                       </button>
                       <button
-                        onClick={() => toggleExamScheduling(c.id)}
+                        onClick={() => toggleExamScheduling(c.jaId)}
                         className={`px-2 py-1 rounded text-xs bg-neutral-800 border border-neutral-600 flex items-center gap-1`}
-                        aria-expanded={!!examScheduleOpen[c.id]}
+                        aria-expanded={!!examScheduleOpen[c.jaId]}
                         title="Schedule exam">
                         <Calendar size={16} />
                       </button>
@@ -346,15 +328,15 @@ const ReviewerDashboardContent = () => {
                   )}
 
                   {/* Exam Status Candidate */}
-                  {c.jobApplicationStatus.toLowerCase() === 'exam' && (
+                  {c.status.toLowerCase() === 'exam' && (
                     <>
                       <button
-                        onClick={() => openActionModalFor(c.id, 'pass')}
+                        onClick={() => openActionModalFor(c.jaId, 'pass')}
                         className="px-3 py-1 bg-emerald-700 rounded text-xs text-white flex items-center gap-1">
                         <CheckCircle size={14} /> Pass
                       </button>
                       <button
-                        onClick={() => openActionModalFor(c.id, 'fail')}
+                        onClick={() => openActionModalFor(c.jaId, 'fail')}
                         className="px-3 py-1 bg-red-800 rounded text-xs text-white flex items-center gap-1">
                         <XCircle size={14} /> Fail
                       </button>
@@ -364,13 +346,13 @@ const ReviewerDashboardContent = () => {
               </div>
 
               {/* Schedule Pannel for Exam */}
-              {examScheduleOpen[c.id] && (
+              {examScheduleOpen[c.jaId] && (
                 <div className="mt-4 bg-neutral-800 border border-neutral-700 rounded-lg p-3 flex flex-wrap items-center gap-3">
                   <label className="text-sm text-neutral-300 whitespace-nowrap">Exam Date:</label>
                   <input
                     type="date"
-                    value={examDates[c.id] ?? ''}
-                    onChange={e => setExamDateForCandidate(c.id, e.target.value)}
+                    value={examDates[c.jaId] ?? ''}
+                    onChange={e => setExamDateForCandidate(c.jaId, e.target.value)}
                     className="px-3 py-2 bg-neutral-700 border border-neutral-600 rounded text-sm text-white" />
                   <div className="px-3 py-2 bg-neutral-700 border border-neutral-600 rounded text-sm text-white whitespace-nowrap">
                     11:00 AM
@@ -378,12 +360,12 @@ const ReviewerDashboardContent = () => {
 
                   <div className="ml-auto flex gap-2">
                     <button
-                      onClick={() => toggleExamScheduling(c.id)}
+                      onClick={() => toggleExamScheduling(c.jaId)}
                       className="px-3 py-1 bg-neutral-600 rounded text-sm text-white flex items-center gap-2">
                       <X size={14} /> Cancel
                     </button>
                     <button
-                      onClick={() => confirmScheduleExamForCandidate(c.id)}
+                      onClick={() => confirmScheduleExamForCandidate(c.jaId)}
                       className="px-3 py-1 bg-blue-600 rounded text-sm text-white">
                       Schedule
                     </button>
@@ -392,21 +374,21 @@ const ReviewerDashboardContent = () => {
               )}
 
               {/* Message Box */}
-              {messageBoxOpen[c.id] && (
+              {messageBoxOpen[c.jaId] && (
                 <div className="bg-neutral-800 border border-neutral-600 rounded-lg p-4 mt-4 w-full">
                   <textarea
-                    value={messages[c.id] ?? ''}
-                    onChange={e => setMessages(m => ({ ...m, [c.id]: e.target.value }))}
+                    value={messages[c.jaId] ?? ''}
+                    onChange={e => setMessages(m => ({ ...m, [c.jaId]: e.target.value }))}
                     className="w-full bg-neutral-700 border border-neutral-600 rounded text-white p-3 resize-none h-20"
                     placeholder="Write message..." />
                   <div className="flex justify-end gap-3 mt-3">
                     <button
-                      onClick={() => closeActionModal(c.id)}
+                      onClick={() => closeActionModal(c.jaId)}
                       className="px-4 py-2 bg-neutral-600 rounded text-sm text-white flex items-center gap-2">
                       <X size={14} /> Cancel
                     </button>
                     <button
-                      onClick={() => onSendMessage(c.id)}
+                      onClick={() => onSendMessage(c.jaId)}
                       className="px-4 py-2 bg-emerald-700 rounded text-sm text-white flex items-center gap-2">
                       <Send size={14} /> Send
                     </button>

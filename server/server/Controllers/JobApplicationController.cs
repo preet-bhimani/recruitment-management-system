@@ -80,9 +80,17 @@ namespace server.Controllers
             var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
 
             var jobapplication = await dbContext.JobApplications
+                .Include(ja => ja.User)
+                .Include(ja => ja.JobOpening)
                 .Select(ja => new
                 {
                     ja.JAId,
+                    ja.UserId,
+                    ja.JOId,
+                    ja.ExamDate,
+                    ja.ExamResult,
+                    ja.Feedback,
+                    ja.RejectionStage,
                     AppliedDate = ja.CreatedAt.ToString("yyyy-MM-dd"),
                     ja.OverallStatus,
                     ja.HoldOverallStatus,
@@ -90,6 +98,7 @@ namespace server.Controllers
                     Photo = !string.IsNullOrEmpty(ja.User.Photo) ? baseUrl + ja.User.Photo : null,
                     ja.User.FullName,
                     ja.User.Email,
+                    ja.User.PhoneNumber,
                     ja.JobOpening.Title,
                 })
                 .ToListAsync();
@@ -113,7 +122,7 @@ namespace server.Controllers
 
         // Update job application based on its status
         [HttpPut("update/{id:guid}")]
-        public async Task<IActionResult> UpdateJobApplicationBasedItsStatus(JobApplicationDto jaDto, Guid id)
+        public async Task<IActionResult> UpdateJobApplicationBasedItsStatus(Guid id, JobApplicationDto jaDto)
         {
             // Model Validation
             if (!ModelState.IsValid)
@@ -191,6 +200,7 @@ namespace server.Controllers
                             jobapp.ExamDate = jaDto.ExamDate;
                             jobapp.ExamResult = null;
                         }
+                        jobapp.RejectionStage = null;
                         break;
                     }
 
@@ -228,10 +238,16 @@ namespace server.Controllers
                             jobapp.ExamResult = "Fail";
                             jobapp.Status = "Rejected";
                             jobapp.OverallStatus = "Rejected";
+                            jobapp.RejectionStage = "Exam";
                         }
                         else
                         {
                             return BadRequest("Invalid exam result.");
+                        }
+
+                        if (jaDto.ExamResult != "Fail")
+                        {
+                            jobapp.RejectionStage = null;
                         }
 
                         break;
@@ -270,6 +286,7 @@ namespace server.Controllers
                             jobapp.ExamResult = "Pass";
                         }
 
+                        jobapp.RejectionStage = null;
                         break;
                     }
 
@@ -292,6 +309,7 @@ namespace server.Controllers
                         // Accept direct reject
                         jobapp.Status = "Rejected";
                         jobapp.OverallStatus = "Rejected";
+                        jobapp.RejectionStage = (jaDto.ExamResult == "Fail") ? "Exam" : "Reviewer";
 
                         // Check if both date and result is not null then result must be fail
                         if (jaDto.ExamDate is not null && !string.IsNullOrEmpty(jaDto.ExamResult))
@@ -309,7 +327,7 @@ namespace server.Controllers
                         break;
                     }
             }
-
+            jobapp.Feedback = jaDto.Feedback;
             jobapp.UpdatedAt = DateTime.UtcNow;
             await dbContext.SaveChangesAsync();
 

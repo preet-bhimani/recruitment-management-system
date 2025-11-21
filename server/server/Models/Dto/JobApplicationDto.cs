@@ -16,6 +16,8 @@ namespace server.Models.Dto
 
         public string? Feedback { get; set; }
 
+        public string? RejectionStage { get; set; }
+
         [Required]
         public string Status { get; set; } = "Applied";
 

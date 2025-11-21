@@ -25,7 +25,7 @@ export const FilterProvider = ({ children }) => {
 
   // Advanced Filters
   const [advancedFilters, setAdvancedFilters] = useState({
-    jobApplicationStatus: 'all',
+    status: 'all',
     techInterviewStatus: 'all',
     techInterviewIsClear: 'all',
     hrInterviewStatus: 'all',
@@ -64,7 +64,7 @@ export const FilterProvider = ({ children }) => {
       let adv = true;
       if (showAdvancedFilters) {
         adv =
-          (advancedFilters.jobApplicationStatus === 'all' || c.jobApplicationStatus === advancedFilters.jobApplicationStatus) &&
+          (advancedFilters.status === 'all' || c.status === advancedFilters.status) &&
           (advancedFilters.techInterviewStatus === 'all' || c.techInterviewStatus === advancedFilters.techInterviewStatus) &&
           (advancedFilters.techInterviewIsClear === 'all' || c.techInterviewIsClear === advancedFilters.techInterviewIsClear) &&
           (advancedFilters.hrInterviewStatus === 'all' || c.hrInterviewStatus === advancedFilters.hrInterviewStatus) &&
@@ -84,7 +84,7 @@ export const FilterProvider = ({ children }) => {
   // Clear All Filters
   const clearAllFilters = () => {
     setFilters({ overallStatus: 'all', jobTitle: 'all', dateType: 'applied', fromDate: '', toDate: '' });
-    setAdvancedFilters({ jobApplicationStatus: 'all', techInterviewStatus: 'all', techInterviewIsClear: 'all', hrInterviewStatus: 'all', hrInterviewIsClear: 'all' });
+    setAdvancedFilters({ status: 'all', techInterviewStatus: 'all', techInterviewIsClear: 'all', hrInterviewStatus: 'all', hrInterviewIsClear: 'all' });
     setShowAdvancedFilters(false);
     setCurrentPage(1);
   };

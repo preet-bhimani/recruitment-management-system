@@ -28,7 +28,7 @@ const AddUser = ({ role = "admin" }) => {
         photo: null,
         role: role && role.trim() !== "" ? role : "Candidate",
         selectedSkillIds: [],
-        isActive: "Active",
+        isActive: true,
     });
 
     // Error Messages for Each Fields
@@ -285,7 +285,7 @@ const AddUser = ({ role = "admin" }) => {
         submitData.append("Reference", formData.reference);
         submitData.append("Role", "Candidate");
         submitData.append("photo", formData.photo);
-        submitData.append("IsActive", formData.isActive || "Active");
+        submitData.append("IsActive", formData.isActive ? "true" : "false");
 
         if (formData.reference === "Campus Drive" && formData.cdid)
             submitData.append("CDID", formData.cdid);
@@ -663,8 +663,8 @@ const AddUser = ({ role = "admin" }) => {
                             value={formData.isActive}
                             onChange={(e) => setFormData({ ...formData, isActive: e.target.value })}
                             className="w-full p-2 rounded bg-neutral-800 border border-neutral-700">
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
+                            <option value={true}>Active</option>
+                            <option value={false}>Inactive</option>
                         </select>
                     </div>
                 </>

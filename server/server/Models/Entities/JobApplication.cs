@@ -22,6 +22,8 @@ namespace server.Models.Entities
 
         public string? Feedback { get; set; }
 
+        public string? RejectionStage { get; set; }
+
         [Required]
         public string Status { get; set; } = "Applied";
 
