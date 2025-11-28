@@ -44,13 +44,23 @@ export const CandidateProvider = ({ children }) => {
   }, []);
 
 
-  // Round Details helpers
-  const getRounds = (c, type) => type === 'tech' ? c.techRounds : c.hrRounds;
-  const setRounds = (c, type, rounds) => type === 'tech' ? { ...c, techRounds: rounds } : { ...c, hrRounds: rounds };
+  // Round Details 
+  const getRounds = (c, type) => {
+    if (type === 'tech') {
+      if (c.technicalInterview) return [c.technicalInterview];
+      return c.techRounds ?? [];
+    }
+    return c.hrRounds ?? [];
+  };
+
+  // Latest Round Logic
   const getLatestRound = (c, type) => {
     const rounds = getRounds(c, type);
-    return rounds.length ? rounds[rounds.length - 1] : null;
+    if (!Array.isArray(rounds) || rounds.length === 0) return null;
+    return rounds[rounds.length - 1];
   };
+
+  const setRounds = (c, type, rounds) => type === 'tech' ? { ...c, techRounds: rounds } : { ...c, hrRounds: rounds };
   const getRoundCount = (c, type) => getRounds(c, type).length;
 
   // Update Job Application Status via API Endpoint
@@ -143,6 +153,52 @@ export const CandidateProvider = ({ children }) => {
     });
   };
 
+  // Fetch All Interviews Assigned to the Interviewer
+  const fetchAssignedInterviews = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7119/api/TechnicalInterview/interviewer`,
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
+
+      const assigned = res.data || [];
+      setCandidates(prev =>
+        prev.map(c => ({
+          ...c, isAssignedToInterviewer: assigned.some(i => i.userId === c.userId)
+        })));
+    }
+    catch (err) {
+      toast.error("Failed to fetch interviewer assignments!");
+    }
+  };
+
+  // Update Technical Result
+  const updateTechnicalResult = async (tiId, payload) => {
+    try {
+      await axios.put(`https://localhost:7119/api/TechnicalInterview/update/${tiId}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      toast.success("Technical Interview result updated!");
+      await fetchCandidates();
+    }
+    catch (err) {
+      toast.error(err.response?.data || "Failed to update technical result!");
+    }
+  };
+
+  // Load Interviewer Data
+  const loadInterviewerData = async () => {
+    await fetchCandidates();
+    await fetchAssignedInterviews();
+  };
+
+
   // Save Changes
   const saveTempChanges = (id) => {
     const changes = Object.entries(tempStatuses).filter(([k]) => k.startsWith(`${id}-`));
@@ -205,6 +261,9 @@ export const CandidateProvider = ({ children }) => {
     failRound,
     scheduleExam,
     updateCandidate,
+    fetchAssignedInterviews,
+    updateTechnicalResult,
+    loadInterviewerData,
   };
 
   return <CandidateContext.Provider value={value}>{children}</CandidateContext.Provider>;

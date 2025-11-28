@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 
 const ITEMS_PER_PAGE = 5;
 
-// Make UI Code Simpler No more Lines of Code Needed
 const Star = ({ filled, onClick, onMouseEnter, onMouseLeave, size = 20 }) => (
     <button
         type="button"
@@ -32,17 +31,15 @@ const Star = ({ filled, onClick, onMouseEnter, onMouseLeave, size = 20 }) => (
     </button>
 );
 
-
 // All States
 const InterviewerFeedbackContent = () => {
-    const { candidates, getLatestRound, getRoundCount, updateCandidate } = useCandidates();
+    const { candidates, getLatestRound, getRoundCount, updateCandidate, updateTechnicalResult } = useCandidates();
     const { getDefaultMessage } = useUI();
     const navigate = useNavigate();
     const [jobTitleFilter, setJobTitleFilter] = useState('all');
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [tempOverall, setTempOverall] = useState({});
     const [tempTechStatus, setTempTechStatus] = useState({});
     const [tempTechIsClear, setTempTechIsClear] = useState({});
     const [tempModified, setTempModified] = useState({});
@@ -84,32 +81,37 @@ const InterviewerFeedbackContent = () => {
     const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE);
     useEffect(() => setCurrentPage(1), [jobTitleFilter, fromDate, toDate]);
 
-    const onOverallChange = (id, value) => { setTempOverall(s => ({ ...s, [id]: value })); setTempModified(s => ({ ...s, [id]: true })); };
-    const onTechStatusChange = (id, value) => { setTempTechStatus(s => ({ ...s, [id]: value })); setTempModified(s => ({ ...s, [id]: true })); };
-    const onTechIsClearChange = (id, value) => { setTempTechIsClear(s => ({ ...s, [id]: value })); setTempModified(s => ({ ...s, [id]: true })); };
+    const onTechStatusChange = (id, value) => {
+        setTempTechStatus(s => ({ ...s, [id]: value }));
+        setTempModified(m => ({ ...m, [id]: true }));
+    };
+
+    const onTechIsClearChange = (id, value) => {
+        setTempTechIsClear(s => ({ ...s, [id]: value }));
+        setTempModified(m => ({ ...m, [id]: true }));
+    };
 
     // Save DropDown Status
-    const onSave = (id) => {
+    const onSave = async (id) => {
         const candidate = candidates.find(c => c.id === id);
         if (!candidate) return;
+
         const latest = getLatestRound(candidate, 'tech');
-        updateCandidate(id, c => {
-            let updated = { ...c };
-            if (tempOverall[id] !== undefined) updated.overallStatus = tempOverall[id];
-            if (latest) {
-                const rounds = [...(updated.techRounds || [])];
-                const last = { ...rounds[rounds.length - 1] };
-                if (tempTechStatus[id] !== undefined) last.Status = tempTechStatus[id];
-                if (tempTechIsClear[id] !== undefined) last.IsClear = tempTechIsClear[id];
-                rounds[rounds.length - 1] = last;
-                updated.techRounds = rounds;
-            }
-            return updated;
-        });
-        setTempModified(s => ({ ...s, [id]: false }));
-        setTempOverall(p => { const out = { ...p }; delete out[id]; return out; });
-        setTempTechStatus(p => { const out = { ...p }; delete out[id]; return out; });
-        setTempTechIsClear(p => { const out = { ...p }; delete out[id]; return out; });
+        if (!latest) return;
+
+        const tiId = latest?.tiId || latest?.TIId;
+
+        const payload = {
+            techStatus: tempTechStatus[id] ?? latest.Status,
+            techIsClear: tempTechIsClear[id] ?? latest.IsClear
+        };
+
+        await updateTechnicalResult(tiId, payload);
+
+        // Clear temp
+        setTempTechStatus(s => { const o = { ...s }; delete o[id]; return o; });
+        setTempTechIsClear(s => { const o = { ...s }; delete o[id]; return o; });
+        setTempModified(m => ({ ...m, [id]: false }));
     };
 
     // MessageBox
@@ -132,19 +134,17 @@ const InterviewerFeedbackContent = () => {
     };
 
     // Send Message
-    const onSendMessage = (id) => {
+    const onSendMessage = async (id) => {
         const msg = (messages[id] ?? '').trim();
-        const candidate = candidates.find(c => c.id === id);
+        const candidate = candidates.find(c => c.jaId === id);
         if (!candidate) return;
 
         const latest = getLatestRound(candidate, 'tech');
         if (latest) {
-            updateCandidate(id, c => {
-                const rounds = [...(c.techRounds || [])];
-                const last = { ...rounds[rounds.length - 1], Feedback: msg };
-                rounds[rounds.length - 1] = last;
-                return { ...c, techRounds: rounds };
+            await updateTechnicalResult(latest?.tiId || latest?.TIId, {
+                feedback: msg
             });
+
         }
         setMessages(prev => ({ ...prev, [id]: '' }));
         setMessageBoxOpen(prev => ({ ...prev, [id]: false }));
@@ -156,33 +156,34 @@ const InterviewerFeedbackContent = () => {
     const onClickStar = (id, num) => setRatings(r => ({ ...r, [id]: num }));
 
     // Submit Rating
-    const onSubmitRating = (id) => {
+    const onSubmitRating = async (id) => {
         const r = ratings[id] ?? 0;
         const action = pendingAction[id];
-        const candidate = candidates.find(c => c.id === id);
+
+        const candidate = candidates.find(c => c.jaId === id);
         if (!candidate) return;
+
         const latest = getLatestRound(candidate, 'tech');
         if (!latest) return;
 
-        if (action === 'pass') {
-            updateCandidate(id, c => {
-                const rounds = [...(c.techRounds || [])];
-                rounds[rounds.length - 1] = { ...rounds[rounds.length - 1], Rating: r, IsClear: 'Clear' };
-                return { ...c, techRounds: rounds };
-            });
-        } else if (action === 'fail') {
-            updateCandidate(id, c => {
-                const rounds = [...(c.techRounds || [])];
-                rounds[rounds.length - 1] = { ...rounds[rounds.length - 1], Rating: r, IsClear: 'Not Clear', Status: 'Not Clear' };
-                return { ...c, techRounds: rounds, overallStatus: 'Rejected', jobApplicationStatus: 'Rejected' };
-            });
-        }
+        const tiId = latest?.tiId || latest?.TIId;
+
+        const payload = {
+            rating: r,
+            feedback: messages[id] ?? "",
+            techStatus: action === "pass" ? "Clear" : "Not Clear",
+            techIsClear: action === "pass" ? "Clear" : "Not Clear"
+        };
+
+        await updateTechnicalResult(tiId, payload);
+
+        // Close Model
         setRatingOpen(r => ({ ...r, [id]: false }));
-        setPendingAction(p => { const out = { ...p }; delete out[id]; return out; });
-        setMessages(m => ({ ...m, [id]: '' }));
+        setPendingAction(p => { const o = { ...p }; delete o[id]; return o; });
+        setMessages(m => ({ ...m, [id]: "" }));
         setMessageBoxOpen(m => ({ ...m, [id]: false }));
-        setRatings(r => { const out = { ...r }; delete out[id]; return out; });
-        setHoverRating(h => { const out = { ...h }; delete out[id]; return out; });
+        setRatings(r => { const o = { ...r }; delete o[id]; return o; });
+        setHoverRating(h => { const o = { ...h }; delete o[id]; return o; });
     };
 
     const goToPage = (p) => setCurrentPage(Math.min(Math.max(1, p), totalPages));
@@ -222,7 +223,6 @@ const InterviewerFeedbackContent = () => {
                         const roundCount = getRoundCount(c, 'tech');
                         const techStatus = tempTechStatus[c.id] ?? (latest?.Status ?? 'In Progress');
                         const techIsClear = tempTechIsClear[c.id] ?? (latest?.IsClear ?? 'In Progress');
-                        const overallSel = tempOverall[c.id] ?? c.overallStatus;
 
                         return (
                             <div key={c.id} className="bg-neutral-900 border border-neutral-700 rounded-lg p-4">
@@ -249,17 +249,6 @@ const InterviewerFeedbackContent = () => {
                                         <button disabled className="px-2 py-1 bg-neutral-800 text-neutral-500 border border-neutral-700 rounded text-xs flex items-center gap-1">
                                             <FileText size={14} /> CV
                                         </button>
-
-                                        {/* Overall Status DropDown */}
-                                        <select value={overallSel} onChange={e => onOverallChange(c.id, e.target.value)} className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
-                                            <option>Applied</option>
-                                            <option>Exam</option>
-                                            <option>Technical Interview</option>
-                                            <option>HR Interview</option>
-                                            <option>Selected</option>
-                                            <option>Rejected</option>
-                                            <option>Hold</option>
-                                        </select>
 
                                         {latest ? (
                                             <>

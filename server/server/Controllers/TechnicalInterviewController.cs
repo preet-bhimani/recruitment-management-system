@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 
@@ -553,6 +555,54 @@ namespace server.Controllers
             return Ok("Technical interview updated.");
         }
 
+        // Get all technical interviews assigned to the logged-in interviewer
+        [Authorize(Roles = "Interviewer")]
+        [HttpGet("interviewer")]
+        public async Task<IActionResult> GetInterviewsForInterviewer()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found.");
+            }
+
+            var userId = Guid.Parse(userIdClaim);
+
+            // Find the interviewer in User table
+            var interviewer = await dbContext.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (interviewer == null)
+            {
+                return Unauthorized("Interviewer record not found.");
+            }
+
+            var interviewerEmail = interviewer.Email;
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+
+            // Fetch all interviews assigned to this interviewer
+            var interviews = await dbContext.TechnicalInterviews
+                .Include(t => t.User)
+                .Include(t => t.JobOpening)
+                .Where(t => t.InterviewerEmail == interviewerEmail)
+                .OrderBy(t => t.TechDate)
+                .ThenBy(t => t.TechTime)
+                .Select(t => new
+                {
+                    t.TIId,
+                    t.NoOfRound,
+                    t.TechDate,
+                    t.TechTime,
+                    t.MeetingLink,
+                    t.TechIsClear,
+                    t.TechStatus,
+                    FullName = t.User.FullName,
+                    Email = t.User.Email,
+                    Photo = !string.IsNullOrWhiteSpace(t.User.Photo) ? baseUrl + t.User.Photo : null,
+                    Title = t.JobOpening.Title
+                })
+                .ToListAsync();
+
+            return Ok(interviews);
+        }
 
         // Get token response
         public class GoogleTokenResponse
