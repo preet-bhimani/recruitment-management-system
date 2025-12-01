@@ -41,24 +41,52 @@ export const CandidateProvider = ({ children }) => {
 
   useEffect(() => {
     fetchCandidates();
+    fetchAssignedInterviews();
   }, []);
 
 
   // Round Details 
   const getRounds = (c, type) => {
-    if (type === 'tech') {
-      if (c.technicalInterview) return [c.technicalInterview];
-      return c.techRounds ?? [];
+    if (type !== "tech") return [];
+
+    const out = [];
+    if (Array.isArray(c.techRounds)) {
+      out.push(...c.techRounds);
     }
-    return c.hrRounds ?? [];
+
+    const possibleRounds = [
+      c.technicalInterview,
+      c.lastRound,
+      c.techRound
+    ];
+
+    possibleRounds.forEach(round => {
+      if (round && typeof round === "object") {
+        out.push(round);
+      }
+    });
+
+    return out;
   };
 
-  // Latest Round Logic
   const getLatestRound = (c, type) => {
-    const rounds = getRounds(c, type);
-    if (!Array.isArray(rounds) || rounds.length === 0) return null;
-    return rounds[rounds.length - 1];
+    if (type !== "tech") return null;
+
+    const rounds = getRounds(c, "tech");
+    if (!rounds.length) return null;
+
+    const r = rounds[rounds.length - 1];
+
+    return {
+      ...r,
+      Status: r.techStatus ?? r.TechStatus ?? r.Status,
+      IsClear: r.techIsClear ?? r.TechIsClear ?? r.IsClear,
+      Rating: r.techRating ?? r.TechRating ?? r.Rating ?? 0,
+      Feedback: r.techFeedback ?? r.TechFeedback ?? r.Feedback ?? "",
+      tiId: r.tiId ?? r.TIId ?? r.id
+    };
   };
+
 
   const setRounds = (c, type, rounds) => type === 'tech' ? { ...c, techRounds: rounds } : { ...c, hrRounds: rounds };
   const getRoundCount = (c, type) => getRounds(c, type).length;
@@ -162,9 +190,17 @@ export const CandidateProvider = ({ children }) => {
 
       const assigned = res.data || [];
       setCandidates(prev =>
-        prev.map(c => ({
-          ...c, isAssignedToInterviewer: assigned.some(i => i.userId === c.userId)
-        })));
+        prev.map(c => {
+          const rounds = assigned.filter(i => String(i.userId) === String(c.userId));
+
+          return {
+            ...c,
+            isAssignedToInterviewer: rounds.length > 0,
+            techRounds: rounds
+          };
+        })
+      );
+
     }
     catch (err) {
       toast.error("Failed to fetch interviewer assignments!");
@@ -255,6 +291,7 @@ export const CandidateProvider = ({ children }) => {
     candidates,
     setCandidates,
     getLatestRound,
+    getRounds,
     getRoundCount,
     createRound,
     passRound,

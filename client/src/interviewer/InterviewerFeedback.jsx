@@ -33,7 +33,7 @@ const Star = ({ filled, onClick, onMouseEnter, onMouseLeave, size = 20 }) => (
 
 // All States
 const InterviewerFeedbackContent = () => {
-    const { candidates, getLatestRound, getRoundCount, updateCandidate, updateTechnicalResult } = useCandidates();
+    const { candidates, getLatestRound, getRoundCount, updateCandidate, updateTechnicalResult, loadInterviewerData, getRounds } = useCandidates();
     const { getDefaultMessage } = useUI();
     const navigate = useNavigate();
     const [jobTitleFilter, setJobTitleFilter] = useState('all');
@@ -62,20 +62,35 @@ const InterviewerFeedbackContent = () => {
         Hold: 'bg-gray-600'
     }[s] || 'bg-yellow-600');
 
-    const uniqueJobs = useMemo(() => [...new Set(candidates.map(c => c.jobTitle).filter(Boolean))], [candidates]);
+    const uniqueJobs = useMemo(() => [...new Set(candidates.map(c => c.title).filter(Boolean))], [candidates]);
 
-    // Whole Filter State
+    // Filter Logic
     const filtered = useMemo(() => {
         return candidates.filter(c => {
-            if (jobTitleFilter !== 'all' && c.jobTitle !== jobTitleFilter) return false;
+
+            // Only Show Assigned Candidates
+            if (!c.isAssignedToInterviewer) return false;
+
+            // OverallStatus is Technical Interview
+            if (c.overallStatus !== "Technical Interview") return false;
+
+            const latest = getLatestRound(c, "tech");
+            if (!latest) return false;
+
+            // Check Latest Round Status
+            if (latest.Status !== "In Progress") return false;
+            if (latest.IsClear !== "In Progress") return false;
+
+            // Job filter
+            if (jobTitleFilter !== "all" && c.title !== jobTitleFilter) return false;
+
+            // Date filter
             if (fromDate && new Date(c.appliedDate) < new Date(fromDate)) return false;
             if (toDate && new Date(c.appliedDate) > new Date(toDate)) return false;
-            if (c.overallStatus !== 'Technical Interview') return false;
-            const latest = getLatestRound(c, 'tech');
-            if (!latest) return false;
-            return (latest.Status ?? '') === 'In Progress' && (latest.IsClear ?? '') === 'In Progress';
+
+            return true;
         });
-    }, [candidates, jobTitleFilter, fromDate, toDate, getLatestRound]);
+    }, [candidates, jobTitleFilter, fromDate, toDate]);
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
     const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE);
@@ -93,7 +108,7 @@ const InterviewerFeedbackContent = () => {
 
     // Save DropDown Status
     const onSave = async (id) => {
-        const candidate = candidates.find(c => c.id === id);
+        const candidate = candidates.find(c => c.jaId === id);
         if (!candidate) return;
 
         const latest = getLatestRound(candidate, 'tech');
@@ -102,8 +117,8 @@ const InterviewerFeedbackContent = () => {
         const tiId = latest?.tiId || latest?.TIId;
 
         const payload = {
-            techStatus: tempTechStatus[id] ?? latest.Status,
-            techIsClear: tempTechIsClear[id] ?? latest.IsClear
+            TechStatus: tempTechStatus[id] ?? latest.Status,
+            TechIsClear: tempTechIsClear[id] ?? latest.IsClear
         };
 
         await updateTechnicalResult(tiId, payload);
@@ -136,20 +151,16 @@ const InterviewerFeedbackContent = () => {
     // Send Message
     const onSendMessage = async (id) => {
         const msg = (messages[id] ?? '').trim();
-        const candidate = candidates.find(c => c.jaId === id);
-        if (!candidate) return;
-
-        const latest = getLatestRound(candidate, 'tech');
-        if (latest) {
-            await updateTechnicalResult(latest?.tiId || latest?.TIId, {
-                feedback: msg
-            });
-
+        if (!msg) {
+            toast.error("Please write feedback first!");
+            return;
         }
-        setMessages(prev => ({ ...prev, [id]: '' }));
+
+        // Store Temporary Feedback
         setMessageBoxOpen(prev => ({ ...prev, [id]: false }));
         setRatingOpen(prev => ({ ...prev, [id]: true }));
     };
+
 
     const onStarHover = (id, num) => setHoverRating(h => ({ ...h, [id]: num }));
     const onStarLeave = (id) => setHoverRating(h => ({ ...h, [id]: 0 }));
@@ -159,6 +170,12 @@ const InterviewerFeedbackContent = () => {
     const onSubmitRating = async (id) => {
         const r = ratings[id] ?? 0;
         const action = pendingAction[id];
+        const feedback = (messages[id] ?? '').trim();
+
+        if (!feedback) {
+            toast.error("Please send feedback first!");
+            return;
+        }
 
         const candidate = candidates.find(c => c.jaId === id);
         if (!candidate) return;
@@ -166,18 +183,28 @@ const InterviewerFeedbackContent = () => {
         const latest = getLatestRound(candidate, 'tech');
         if (!latest) return;
 
-        const tiId = latest?.tiId || latest?.TIId;
+        const tiId = latest.tiId || latest.TIId;
 
         const payload = {
-            rating: r,
-            feedback: messages[id] ?? "",
-            techStatus: action === "pass" ? "Clear" : "Not Clear",
-            techIsClear: action === "pass" ? "Clear" : "Not Clear"
+            TIId: tiId,
+            JAId: candidate.jaId,
+            TechDate: latest.techDate,
+            TechTime: latest.techTime,
+            MeetingSubject: latest.meetingSubject || '',
+            InterviewerName: latest.interviewerName || '',
+            InterviewerEmail: latest.interviewerEmail || '',
+            TechRating: r > 0 ? r : null,
+            TechFeedback: feedback,
+            TechStatus: latest.Status,
+            TechIsClear: action === "pass" ? "Clear" : "Not Clear"
         };
 
-        await updateTechnicalResult(tiId, payload);
+        try {
+            await updateTechnicalResult(tiId, payload);
+        } catch (error) {
+            return;
+        }
 
-        // Close Model
         setRatingOpen(r => ({ ...r, [id]: false }));
         setPendingAction(p => { const o = { ...p }; delete o[id]; return o; });
         setMessages(m => ({ ...m, [id]: "" }));
@@ -189,6 +216,11 @@ const InterviewerFeedbackContent = () => {
     const goToPage = (p) => setCurrentPage(Math.min(Math.max(1, p), totalPages));
     const goToMeetings = () => navigate('/interview-meeting-details', { state: { role: 'Interviewer' } });
 
+    useEffect(() => {
+        if (typeof loadInterviewerData === "function") {
+            loadInterviewerData();
+        }
+    }, []);
 
     return (
         <div className="min-h-screen flex flex-col bg-neutral-950 text-white">
@@ -199,7 +231,7 @@ const InterviewerFeedbackContent = () => {
             <main className="container mx-auto px-4 py-6 flex-1">
                 <div className="flex items-center justify-between mb-4">
                     <h1 className="text-2xl font-semibold">Interviewer Feedback</h1>
-                    <button onClick={goToMeetings} className="px-3 py-2 bg-blue-600 rounded text-sm text-white">View Meetings</button>
+                    <button onClick={goToMeetings} className="px-3 py-2 bg-purple-600 rounded text-sm text-white">View Meetings</button>
                 </div>
 
                 {/* Filter UI */}
@@ -221,11 +253,11 @@ const InterviewerFeedbackContent = () => {
                     ) : paginated.map(c => {
                         const latest = getLatestRound(c, 'tech');
                         const roundCount = getRoundCount(c, 'tech');
-                        const techStatus = tempTechStatus[c.id] ?? (latest?.Status ?? 'In Progress');
-                        const techIsClear = tempTechIsClear[c.id] ?? (latest?.IsClear ?? 'In Progress');
+                        const techStatus = tempTechStatus[c.jaId] ?? (latest?.Status ?? 'In Progress');
+                        const techIsClear = tempTechIsClear[c.jaId] ?? (latest?.IsClear ?? 'In Progress');
 
                         return (
-                            <div key={c.id} className="bg-neutral-900 border border-neutral-700 rounded-lg p-4">
+                            <div key={c.jaId} className="bg-neutral-900 border border-neutral-700 rounded-lg p-4">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div className="flex items-center gap-4 min-w-0">
                                         <img src={c.photo} alt={c.fullName} className="w-12 h-12 rounded-full border border-neutral-600" />
@@ -238,8 +270,8 @@ const InterviewerFeedbackContent = () => {
 
                                             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-neutral-400">
                                                 <span className="truncate"><span className="text-purple-200">Email:</span> {c.email}</span>
-                                                <span className="truncate"><span className="text-purple-200">Job:</span> {c.jobTitle}</span>
-                                                <span className="truncate"><span className="text-purple-200">Phone:</span> {c.phone}</span>
+                                                <span className="truncate"><span className="text-purple-200">Job:</span> {c.title}</span>
+                                                <span className="truncate"><span className="text-purple-200">Phone:</span> {c.phoneNumber}</span>
                                                 <span className="truncate"><span className="text-purple-200">Applied:</span> {c.appliedDate}</span>
                                             </div>
                                         </div>
@@ -253,14 +285,14 @@ const InterviewerFeedbackContent = () => {
                                         {latest ? (
                                             <>
                                                 {/* Technical Interview Status */}
-                                                <select value={techStatus} onChange={e => onTechStatusChange(c.id, e.target.value)} className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
+                                                <select value={techStatus} onChange={e => onTechStatusChange(c.jaId, e.target.value)} className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
                                                     <option>In Progress</option>
                                                     <option>Clear</option>
                                                     <option>Not Clear</option>
                                                 </select>
 
                                                 {/* Technical Interview IsClear */}
-                                                <select value={techIsClear} onChange={e => onTechIsClearChange(c.id, e.target.value)} className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
+                                                <select value={techIsClear} onChange={e => onTechIsClearChange(c.jaId, e.target.value)} className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
                                                     <option>Pending</option>
                                                     <option>In Progress</option>
                                                     <option>Clear</option>
@@ -271,35 +303,35 @@ const InterviewerFeedbackContent = () => {
                                             <div className="text-xs text-neutral-400 px-2">No tech rounds</div>
                                         )}
 
-                                        {tempModified[c.id] && (
-                                            <button onClick={() => onSave(c.id)} className="px-2 py-1 bg-green-600 rounded text-xs text-white">Save</button>
+                                        {tempModified[c.jaId] && (
+                                            <button onClick={() => onSave(c.jaId)} className="px-2 py-1 bg-green-600 rounded text-xs text-white">Save</button>
                                         )}
 
-                                        <button onClick={() => openMessageBox(c.id, 'pass')} className="px-3 py-1 bg-emerald-700 rounded text-xs text-white flex items-center gap-1">
+                                        <button onClick={() => openMessageBox(c.jaId, 'pass')} className="px-3 py-1 bg-emerald-700 rounded text-xs text-white flex items-center gap-1">
                                             <CheckCircle size={14} /> Pass
                                         </button>
-                                        <button onClick={() => openMessageBox(c.id, 'fail')} className="px-3 py-1 bg-red-800 rounded text-xs text-white flex items-center gap-1">
+                                        <button onClick={() => openMessageBox(c.jaId, 'fail')} className="px-3 py-1 bg-red-800 rounded text-xs text-white flex items-center gap-1">
                                             <XCircle size={14} /> Fail
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Messagebox UI */}
-                                {messageBoxOpen[c.id] && (
+                                {messageBoxOpen[c.jaId] && (
                                     <div className="bg-neutral-800 border border-neutral-600 rounded-lg p-3 mt-4">
                                         <textarea
-                                            value={messages[c.id] ?? ''}
-                                            onChange={e => setMessages(m => ({ ...m, [c.id]: e.target.value }))}
+                                            value={messages[c.jaId] ?? ''}
+                                            onChange={e => setMessages(m => ({ ...m, [c.jaId]: e.target.value }))}
                                             className="w-full bg-neutral-700 border border-neutral-600 rounded text-white p-2 resize-none h-12"
                                             placeholder="Write feedback message..." />
                                         <div className="flex justify-end gap-2 mt-2">
                                             <button
-                                                onClick={() => closeMessageBox(c.id)}
+                                                onClick={() => closeMessageBox(c.jaId)}
                                                 className="px-3 py-1 bg-neutral-600 rounded text-sm text-white">
                                                 Cancel
                                             </button>
                                             <button
-                                                onClick={() => onSendMessage(c.id)}
+                                                onClick={() => onSendMessage(c.jaId)}
                                                 className="px-3 py-1 bg-amber-500 rounded text-sm text-white">
                                                 Send
                                             </button>
@@ -308,24 +340,24 @@ const InterviewerFeedbackContent = () => {
                                 )}
 
                                 {/* Rating */}
-                                {ratingOpen[c.id] && (
+                                {ratingOpen[c.jaId] && (
                                     <div className="bg-neutral-800 border border-neutral-700 rounded-lg p-3 mt-4">
-                                        <h3 className="text-lg font-semibold">Technical Interview Rating {pendingAction[c.id] === 'pass' ? '(Passed)' : '(Failed)'}</h3>
+                                        <h3 className="text-lg font-semibold">Technical Interview Rating {pendingAction[c.jaId] === 'pass' ? '(Passed)' : '(Failed)'}</h3>
                                         <div className="mt-3 flex items-center gap-4">
                                             <div className="flex items-center gap-1">
                                                 {[1, 2, 3, 4, 5].map(n => {
-                                                    const currentHover = hoverRating[c.id] ?? 0;
-                                                    const current = ratings[c.id] ?? 0;
+                                                    const currentHover = hoverRating[c.jaId] ?? 0;
+                                                    const current = ratings[c.jaId] ?? 0;
                                                     const filled = currentHover ? n <= currentHover : n <= current;
                                                     return (
-                                                        <Star key={n} filled={filled} onClick={() => onClickStar(c.id, n)} onMouseEnter={() => onStarHover(c.id, n)} onMouseLeave={() => onStarLeave(c.id)} size={22} />
+                                                        <Star key={n} filled={filled} onClick={() => onClickStar(c.jaId, n)} onMouseEnter={() => onStarHover(c.jaId, n)} onMouseLeave={() => onStarLeave(c.jaId)} size={22} />
                                                     );
                                                 })}
                                             </div>
-                                            <div className="text-sm text-neutral-400">({ratings[c.id] ?? 0}/5)</div>
+                                            <div className="text-sm text-neutral-400">({ratings[c.jaId] ?? 0}/5)</div>
                                             <div className="ml-auto flex gap-3">
-                                                <button onClick={() => closeMessageBox(c.id)} className="px-3 py-1 bg-neutral-600 rounded text-sm text-white">Cancel</button>
-                                                <button onClick={() => onSubmitRating(c.id)} className="px-3 py-1 bg-yellow-600 rounded text-sm text-white">Submit Rating</button>
+                                                <button onClick={() => closeMessageBox(c.jaId)} className="px-3 py-1 bg-neutral-600 rounded text-sm text-white">Cancel</button>
+                                                <button onClick={() => onSubmitRating(c.jaId)} className="px-3 py-1 bg-yellow-600 rounded text-sm text-white">Submit Rating</button>
                                             </div>
                                         </div>
                                     </div>

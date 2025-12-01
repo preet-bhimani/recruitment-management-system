@@ -9,13 +9,13 @@ const TechnicalInterview = ({ role = "admin" }) => {
 
   const navigate = useNavigate();
 
-  const [techin, setTechin] = useState([]); 
+  const [techin, setTechin] = useState([]);
 
-  const fetchTechin = async () =>{
+  const fetchTechin = async () => {
     try {
       const res = await axios.get(`https://localhost:7119/api/TechnicalInterview`);
       setTechin(res.data || []);
-    } 
+    }
     catch (err) {
       toast.error("Error fetching data!");
     }
@@ -63,7 +63,10 @@ const TechnicalInterview = ({ role = "admin" }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 5;
   const pageItems = useMemo(() => paginate(filtered, currentPage, pageSize), [filtered, currentPage, pageSize]);
-  useEffect(() => setCurrentPage(1), fetchTechin(), [filters]);
+  useEffect(() => {
+    fetchTechin();
+    setCurrentPage(1);
+  }, [filters]);
 
   return (
     <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
@@ -267,8 +270,8 @@ const TechnicalInterview = ({ role = "admin" }) => {
 
               {role === "admin" && (
                 <>
-                  <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs" 
-                  onClick={() => navigate(`/admin-update-techinterview/${tech.tiId}`)}>
+                  <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                    onClick={() => navigate(`/admin-update-techinterview/${tech.tiId}`)}>
                     <Edit size={14} /> Update
                   </button>
                   <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">

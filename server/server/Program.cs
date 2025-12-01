@@ -30,6 +30,8 @@ builder.Services.AddScoped<OfferLetterGenerateService>();
 // Add offer letter template service
 builder.Services.AddScoped<OfferLetterTemplateService>();
 
+// Add technical interview update service
+builder.Services.AddHostedService<TechInterviewStatusScheduler>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("ConStr")));

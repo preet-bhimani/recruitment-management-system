@@ -25,14 +25,15 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
         return t;
     };
 
-    const uniqueJobs = useMemo(() => [...new Set(candidates.map(c => c.jobTitle).filter(Boolean))], [candidates]);
+    const uniqueJobs = useMemo(() => [...new Set(candidates.map(c => c.title).filter(Boolean))], [candidates]);
 
     // Filter Meetings Based on Role
     const upcomingMeetings = useMemo(() => {
         const out = [];
         candidates.forEach(c => {
+            // Filter Assign Candidate to Interviewer
+            if (role === 'Interviewer' && !c.isAssignedToInterviewer) return;
             if (role === 'Interviewer' && c.overallStatus !== 'Technical Interview') return;
-            if (role === 'HR' && c.overallStatus !== 'HR Interview') return;
 
             // Interviewer Role Logic
             const rounds = role === 'Interviewer'
@@ -41,8 +42,8 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
 
             // Round Count
             const futureRounds = rounds
-                .filter(r => r && (r.IsClear === 'In Progress' || r.Status === 'In Progress'))
-                .map(r => ({ ...r, __dateObj: new Date(r.Date) }));
+                .filter(r => r && r.techIsClear === "Pending")
+                .map(r => ({ ...r, __dateObj: new Date(r.techDate) }));
             if (futureRounds.length === 0 && rounds.length === 0) {
                 out.push({ candidate: c, nextRound: null });
                 return;
@@ -70,7 +71,7 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
 
         return upcomingMeetings.filter(item => {
             const { candidate: c, nextRound: r } = item;
-            if (jobTitleFilter !== 'all' && c.jobTitle !== jobTitleFilter) return false;
+            if (jobTitleFilter !== 'all' && c.title !== jobTitleFilter) return false;
 
             if (r) {
                 const rd = new Date(r.Date);
@@ -95,9 +96,8 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
             type="button"
             title={link ? "Open meeting" : "No meeting link"}
             onClick={() => link && window.open(link, '_blank')}
-            className={`px-3 py-1 rounded text-xs flex items-center gap-2 transition ${
-                link ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-neutral-700 text-neutral-400 cursor-not-allowed'
-            }`}>
+            className={`px-3 py-1 rounded text-xs flex items-center gap-2 transition ${link ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-neutral-700 text-neutral-400 cursor-not-allowed'
+                }`}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M21 16V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8" />
                 <rect x="3" y="16" width="18" height="6" rx="2" ry="2" />
@@ -153,7 +153,7 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
                     {paginated.length === 0 ? (
                         <div className="text-neutral-400">No upcoming meetings match the selected filters.</div>
                     ) : paginated.map(({ candidate: c, nextRound: r }) => (
-                        
+
                         // Candidated Details
                         <div key={c.id} className="bg-neutral-900 border border-neutral-700 rounded-lg p-4 flex flex-col md:flex-row justify-between gap-4">
                             <div className="flex items-center gap-4 min-w-0">
@@ -162,12 +162,12 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
                                     <div className="flex flex-wrap items-center gap-2 mb-1">
                                         <h3 className="text-sm font-medium text-white truncate">{c.fullName}</h3>
                                         <span className="px-2 py-0.5 rounded-full text-xs bg-purple-600 font-medium text-white">{c.overallStatus}</span>
-                                        <span className="bg-orange-600 text-white px-2 py-0.5 rounded-full text-xs">Round: {r?.RoundNo ?? '-'}</span>
+                                        <span className="bg-orange-600 text-white px-2 py-0.5 rounded-full text-xs">Round: {r?.noOfRound ?? '-'}</span>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-neutral-400">
                                         <span className="truncate"><span className="text-purple-200">Email:</span> {c.email}</span>
-                                        <span className="truncate"><span className="text-purple-200">Job:</span> {c.jobTitle}</span>
-                                        <span className="truncate"><span className="text-purple-200">Phone:</span> {c.phone}</span>
+                                        <span className="truncate"><span className="text-purple-200">Job:</span> {c.title}</span>
+                                        <span className="truncate"><span className="text-purple-200">Phone:</span> {c.phoneNumber}</span>
                                         <span className="truncate"><span className="text-purple-200">Applied:</span> {c.appliedDate}</span>
                                     </div>
                                 </div>
@@ -176,11 +176,11 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
                             {/* Date & Meeting Buttons */}
                             <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-end">
                                 <div className="flex flex-col sm:flex-row gap-4 text-white">
-                                    <span className="flex items-center gap-1 text-green-300">Date: <strong>{r?.Date ?? '-'}</strong></span>
-                                    <span className="flex items-center gap-1 text-green-300">Time: <strong>{r?.Time ?? '-'}</strong></span>
+                                    <span className="flex items-center gap-1 text-green-300">Date: <strong>{r?.techDate ?? '-'}</strong></span>
+                                    <span className="flex items-center gap-1 text-green-300">Time: <strong>{r?.techTime ?? '-'}</strong></span>
                                 </div>
                                 <div className="flex items-center gap-2 mt-2 sm:mt-0">
-                                    <MeetingButton link={r?.MeetingLink} />
+                                    <MeetingButton link={r?.meetingLink} />
                                     <button
                                         className="px-2 py-1 bg-neutral-800 text-neutral-300 border border-neutral-700 rounded text-xs flex items-center gap-1"
                                         disabled
@@ -220,7 +220,7 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
                     </button>
                 </div>
             </main>
-            
+
             {/* Footer */}
             <Footer />
         </div>

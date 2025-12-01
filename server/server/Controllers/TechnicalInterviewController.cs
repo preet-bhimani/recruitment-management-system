@@ -275,8 +275,7 @@ namespace server.Controllers
                     Email = user?.Email,
                     Title = job?.Title,
                     Photo = !string.IsNullOrEmpty(user.Photo) ? baseUrl + user.Photo : null,
-                    lastRound,
-                    Feedback = lastRound?.TechFeedback
+                   LastRound = lastRound?.NoOfRound,
                 });
             }
 
@@ -588,12 +587,15 @@ namespace server.Controllers
                 .Select(t => new
                 {
                     t.TIId,
+                    t.UserId,
                     t.NoOfRound,
                     t.TechDate,
                     t.TechTime,
                     t.MeetingLink,
                     t.TechIsClear,
                     t.TechStatus,
+                    t.TechRating,
+                    t.TechFeedback,
                     FullName = t.User.FullName,
                     Email = t.User.Email,
                     Photo = !string.IsNullOrWhiteSpace(t.User.Photo) ? baseUrl + t.User.Photo : null,
