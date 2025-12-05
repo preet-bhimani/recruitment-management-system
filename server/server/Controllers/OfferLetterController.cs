@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Models.Dto;
 using server.Models.Entities;
 using server.Services;
+using System.Security.Claims;
 
 namespace server.Controllers
 {
@@ -214,6 +216,7 @@ namespace server.Controllers
                 case "Accepted":
                     offer.OfferLetterStatus = "Accepted";
                     offer.JobApplication.OverallStatus = "Selected";
+                    offer.JobApplication.RejectionStage = null;
 
                     await dbContext.SaveChangesAsync();
                     var existingSelection = await dbContext.Selections
@@ -242,6 +245,8 @@ namespace server.Controllers
                 case "Rejected":
                     offer.OfferLetterStatus = "Rejected";
                     offer.JobApplication.OverallStatus = "Offer Letter Rejected";
+                    offer.JobApplication.RejectionStage = "Offer Letter Rejected";
+                    offer.JobApplication.UpdatedAt = DateTime.UtcNow;
 
                     await dbContext.SaveChangesAsync();
                     return Ok("Offer letter rejected successfully.");
@@ -323,5 +328,60 @@ namespace server.Controllers
             return Ok("Offer letter moved to Hold successfully.");
         }
 
+        // Fetch candidate only for assign HR
+        [Authorize(Roles = "HR")]
+        [HttpGet("hr")]
+        public async Task<IActionResult> GetCandidatesAssignedToHR()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found.");
+            }
+
+            var userId = Guid.Parse(userIdClaim);
+
+            // Get HR user email
+            var hrUser = await dbContext.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (hrUser == null)
+            {
+                return Unauthorized("HR user not found.");
+            }
+
+            var hrEmail = hrUser.Email;
+
+            // Get all JAIds assigned to this HR from HRInterview table
+            var assignedJAIds = await dbContext.HRInterviews
+                .Where(h => h.InterviewerEmail == hrEmail)
+                .Select(h => h.JAId)
+                .Distinct()
+                .ToListAsync();
+
+            // Fetch full candidate details from JobApplication
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+
+            var list = await dbContext.JobApplications
+                .Where(j => assignedJAIds.Contains(j.JAId))
+                .Select(j => new
+                {
+                    jaId = j.JAId,
+                    joId = j.JOId,
+                    userId = j.UserId,
+                    overallStatus = j.OverallStatus,
+                    rejectionStage = j.RejectionStage,
+                    offerLetterStatus = dbContext.OfferLetters
+                        .Where(o => o.JAId == j.JAId)
+                        .OrderByDescending(o => o.CreatedAt)
+                        .Select(o => o.OfferLetterStatus)
+                        .FirstOrDefault(),
+                    fullName = j.User.FullName,
+                    email = j.User.Email,
+                    title = j.JobOpening.Title,
+                    photo = !string.IsNullOrEmpty(j.User.Photo) ? baseUrl + j.User.Photo : null
+                })
+                .ToListAsync();
+
+            return Ok(list);
+        }
     }
 }

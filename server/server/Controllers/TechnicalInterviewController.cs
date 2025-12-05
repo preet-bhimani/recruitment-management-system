@@ -588,6 +588,7 @@ namespace server.Controllers
                 {
                     t.TIId,
                     t.UserId,
+                    t.JAId,
                     t.NoOfRound,
                     t.TechDate,
                     t.TechTime,
@@ -596,6 +597,7 @@ namespace server.Controllers
                     t.TechStatus,
                     t.TechRating,
                     t.TechFeedback,
+                    t.InterviewerEmail,
                     FullName = t.User.FullName,
                     Email = t.User.Email,
                     Photo = !string.IsNullOrWhiteSpace(t.User.Photo) ? baseUrl + t.User.Photo : null,

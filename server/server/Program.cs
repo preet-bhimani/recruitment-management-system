@@ -33,6 +33,9 @@ builder.Services.AddScoped<OfferLetterTemplateService>();
 // Add technical interview update service
 builder.Services.AddHostedService<TechInterviewStatusScheduler>();
 
+// Add HR interview status update service
+builder.Services.AddHostedService<HRInterviewStatusScheduler>();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("ConStr")));
 
@@ -95,6 +98,13 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(
         Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "User_Upload_OfferLetters")),
     RequestPath = "/User_Upload_Offer_Letters"
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
+    RequestPath = "/Uploads"
 });
 
 app.MapScalarApiReference();

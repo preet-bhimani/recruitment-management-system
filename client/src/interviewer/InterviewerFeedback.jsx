@@ -33,7 +33,7 @@ const Star = ({ filled, onClick, onMouseEnter, onMouseLeave, size = 20 }) => (
 
 // All States
 const InterviewerFeedbackContent = () => {
-    const { candidates, getLatestRound, getRoundCount, updateCandidate, updateTechnicalResult, loadInterviewerData, getRounds } = useCandidates();
+    const { candidates, getLatestRound, getRoundCount, updateTechnicalResult, loadInterviewerData } = useCandidates();
     const { getDefaultMessage } = useUI();
     const navigate = useNavigate();
     const [jobTitleFilter, setJobTitleFilter] = useState('all');
@@ -161,7 +161,6 @@ const InterviewerFeedbackContent = () => {
         setRatingOpen(prev => ({ ...prev, [id]: true }));
     };
 
-
     const onStarHover = (id, num) => setHoverRating(h => ({ ...h, [id]: num }));
     const onStarLeave = (id) => setHoverRating(h => ({ ...h, [id]: 0 }));
     const onClickStar = (id, num) => setRatings(r => ({ ...r, [id]: num }));
@@ -185,6 +184,7 @@ const InterviewerFeedbackContent = () => {
 
         const tiId = latest.tiId || latest.TIId;
 
+        // Payload
         const payload = {
             TIId: tiId,
             JAId: candidate.jaId,
@@ -201,7 +201,8 @@ const InterviewerFeedbackContent = () => {
 
         try {
             await updateTechnicalResult(tiId, payload);
-        } catch (error) {
+        } 
+        catch (err) {
             return;
         }
 

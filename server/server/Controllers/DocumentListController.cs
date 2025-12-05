@@ -195,7 +195,7 @@ namespace server.Controllers
             var jobApp = await dbContext.JobApplications.FirstOrDefaultAsync(j => j.JAId == dto.JAId);
             if (jobApp != null && jobApp.OverallStatus == "Document Pending")
             {
-                jobApp.OverallStatus = "Offer Letter Pending";
+                jobApp.OverallStatus = "Document Verification";
             }
 
             await dbContext.SaveChangesAsync();
@@ -228,7 +228,7 @@ namespace server.Controllers
         }
 
         // Get Document list by ID
-        [Authorize(Roles = "Admin,Candidate")]
+        [Authorize(Roles = "Admin,Candidate, HR")]
         [HttpGet("{jaId:guid}")]
         public async Task<IActionResult> GetDocumentListByJAId(Guid jaId)
         {
@@ -242,6 +242,8 @@ namespace server.Controllers
             bool isCandidate = User.IsInRole("Candidate");
             bool isAdmin = User.IsInRole("Admin");
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/Uploads/";
+
             var doc = await dbContext.DocumentLists
                 .Where(d => d.JAId == jaId)
                 .Select(d => new
@@ -252,9 +254,17 @@ namespace server.Controllers
                     bankAccNo = d.BankAccNo,
                     bankIFSC = d.BankIFSC,
                     bankName = d.BankName,
-                    aadharCard = d.AadharCard,
-                    panCard = d.PANCard,
-                    experienceLetter = d.ExperienceLetter
+                    aadharCard = d.AadharCard != null
+                    ? baseUrl + "User_Upload_Aadhar/" + d.AadharCard
+                    : null,
+
+                    panCard = d.PANCard != null
+                    ? baseUrl + "User_Upload_Pan/" + d.PANCard
+                    : null,
+
+                    experienceLetter = d.ExperienceLetter != null
+                    ? baseUrl + "User_Upload_Experience/" + d.ExperienceLetter
+                    : null
                 })
                 .FirstOrDefaultAsync();
 
@@ -293,6 +303,51 @@ namespace server.Controllers
                 .ToListAsync();
 
             return Ok(docs);
+        }
+
+        // HR can approve and reject document verification
+        [Authorize(Roles = "Admin, HR")]
+        [HttpPut("review/{jaId:guid}")]
+        public async Task<IActionResult> ReviewDocuments(Guid jaId, DocumentReviewDto drDto)
+        {
+            var jobApp = await dbContext.JobApplications
+                .Include(j => j.User)
+                .FirstOrDefaultAsync(j => j.JAId == jaId);
+
+            if (jobApp == null)
+            {
+                return NotFound("Job Application not found.");
+            }
+
+            // Only allowed when candidate already submitted documents
+            if (jobApp.OverallStatus != "Document Verification")
+            {
+                return BadRequest("Candidate documents not submitted yet.");
+            }
+
+            // Approve documets
+            if (drDto.Status == "Approved")
+            {
+                jobApp.OverallStatus = "Offer Letter Pending";
+                jobApp.RejectionStage = null;
+                jobApp.UpdatedAt = DateTime.UtcNow;
+
+                await dbContext.SaveChangesAsync();
+                return Ok("Documents approved successfully.");
+            }
+
+            // Reject document
+            else if (drDto.Status == "Rejected")
+            {
+                jobApp.OverallStatus = "Rejected";
+                jobApp.RejectionStage = "Rejected Background Verification";
+                jobApp.UpdatedAt = DateTime.UtcNow;
+
+                await dbContext.SaveChangesAsync();
+                return Ok("Documents rejected successfully.");
+            }
+
+            return BadRequest("Something went wrong.");
         }
     }
 }

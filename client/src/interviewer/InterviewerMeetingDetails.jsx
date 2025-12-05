@@ -4,7 +4,7 @@ import { CandidateProvider, useCandidates } from '../contexts/CandidateContext';
 import { UIProvider } from '../contexts/UIContext';
 import CommonNavbar from '../components/CommonNavbar';
 import Footer from '../components/Footer';
-import { useLocation } from 'react-router-dom';
+import { useAuth } from "../contexts/AuthContext";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -14,8 +14,7 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const location = useLocation();
-    const role = location.state?.role ?? initialRole;
+    const { userId, role } = useAuth();
 
     // Parse Date
     const parseDate = (d) => {
@@ -35,6 +34,8 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
             if (role === 'Interviewer' && !c.isAssignedToInterviewer) return;
             if (role === 'Interviewer' && c.overallStatus !== 'Technical Interview') return;
 
+            if (role === 'HR' && (!c.hrRounds || c.hrRounds.length === 0)) return;
+
             // Interviewer Role Logic
             const rounds = role === 'Interviewer'
                 ? (c.techRounds || [])
@@ -42,12 +43,20 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
 
             // Round Count
             const futureRounds = rounds
-                .filter(r => r && r.techIsClear === "Pending")
-                .map(r => ({ ...r, __dateObj: new Date(r.techDate) }));
-            if (futureRounds.length === 0 && rounds.length === 0) {
-                out.push({ candidate: c, nextRound: null });
+                .filter(r => {
+                    if (role === "Interviewer") return r.techIsClear === "Pending";
+                    if (role === "HR") return r.hrIsClear === "Pending";
+                    return false;
+                })
+                .map(r => ({
+                    ...r,
+                    __dateObj: new Date(role === "Interviewer" ? r.techDate : r.hrDate)
+                }));
+
+            if (futureRounds.length === 0) {
                 return;
             }
+
             // Sort Date
             futureRounds.sort((a, b) => a.__dateObj - b.__dateObj);
             const nextRound = futureRounds[0];
@@ -58,9 +67,13 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
         out.sort((a, b) => {
             if (!a.nextRound) return 1;
             if (!b.nextRound) return -1;
-            return new Date(a.nextRound.Date) - new Date(b.nextRound.Date);
-        });
 
+            const aDate = new Date(role === "HR" ? a.nextRound.hrDate : (role === "Interviewer" ? a.nextRound.techDate : a.nextRound.Date));
+            const bDate = new Date(role === "HR" ? b.nextRound.hrDate : (role === "Interviewer" ? b.nextRound.techDate : b.nextRound.Date));
+
+            return aDate - bDate;
+        });
+        
         return out;
     }, [candidates, role]);
 
@@ -74,7 +87,7 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
             if (jobTitleFilter !== 'all' && c.title !== jobTitleFilter) return false;
 
             if (r) {
-                const rd = new Date(r.Date);
+                const rd = new Date(role === "HR" ? r.hrDate : r.Date);
                 rd.setHours(0, 0, 0, 0);
                 if (from && rd < from) return false;
                 if (to && rd > to) return false;
@@ -155,14 +168,16 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
                     ) : paginated.map(({ candidate: c, nextRound: r }) => (
 
                         // Candidated Details
-                        <div key={c.id} className="bg-neutral-900 border border-neutral-700 rounded-lg p-4 flex flex-col md:flex-row justify-between gap-4">
+                        <div key={c.jaId} className="bg-neutral-900 border border-neutral-700 rounded-lg p-4 flex flex-col md:flex-row justify-between gap-4">
                             <div className="flex items-center gap-4 min-w-0">
                                 <img src={c.photo} alt={c.fullName} className="w-12 h-12 rounded-full border border-neutral-600 flex-shrink-0" />
                                 <div className="min-w-0">
                                     <div className="flex flex-wrap items-center gap-2 mb-1">
                                         <h3 className="text-sm font-medium text-white truncate">{c.fullName}</h3>
                                         <span className="px-2 py-0.5 rounded-full text-xs bg-purple-600 font-medium text-white">{c.overallStatus}</span>
-                                        <span className="bg-orange-600 text-white px-2 py-0.5 rounded-full text-xs">Round: {r?.noOfRound ?? '-'}</span>
+                                        <span className="bg-orange-600 text-white px-2 py-0.5 rounded-full text-xs">
+                                            Round: {role === "HR" ? r?.noOfRound : r?.noOfRound ?? r?.RoundNo}
+                                        </span>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-neutral-400">
                                         <span className="truncate"><span className="text-purple-200">Email:</span> {c.email}</span>
@@ -175,10 +190,22 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
 
                             {/* Date & Meeting Buttons */}
                             <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-end">
-                                <div className="flex flex-col sm:flex-row gap-4 text-white">
-                                    <span className="flex items-center gap-1 text-green-300">Date: <strong>{r?.techDate ?? '-'}</strong></span>
-                                    <span className="flex items-center gap-1 text-green-300">Time: <strong>{r?.techTime ?? '-'}</strong></span>
+                                <div className="flex flex-col sm:flex-row gap-4 text-sm">
+                                    <div className="bg-neutral-800 border border-neutral-700 px-3 py-2 rounded-lg shadow-sm">
+                                        <span className="text-neutral-400 text-xs">Date</span>
+                                        <div className="text-purple-300 font-semibold text-sm">
+                                            {role === "HR" ? r?.hrDate : r?.techDate}
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-neutral-800 border border-neutral-700 px-3 py-2 rounded-lg shadow-sm">
+                                        <span className="text-neutral-400 text-xs">Time</span>
+                                        <div className="text-purple-300 font-semibold text-sm">
+                                            {role === "HR" ? r?.hrTime : r?.techTime}
+                                        </div>
+                                    </div>
                                 </div>
+
                                 <div className="flex items-center gap-2 mt-2 sm:mt-0">
                                     <MeetingButton link={r?.meetingLink} />
                                     <button
@@ -220,7 +247,6 @@ const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' })
                     </button>
                 </div>
             </main>
-
             {/* Footer */}
             <Footer />
         </div>

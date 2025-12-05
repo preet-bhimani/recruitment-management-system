@@ -1,9 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CandidateProvider, useCandidates } from '../contexts/CandidateContext';
 import { UIProvider } from '../contexts/UIContext';
 import CommonNavbar from '../components/CommonNavbar';
 import Footer from '../components/Footer';
+import { useAuth } from '../contexts/AuthContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 // Find File Type
 const getFileType = (url) => {
@@ -67,8 +70,51 @@ const HRDocumentsCheckContent = () => {
     const { candidates } = useCandidates();
     const candidate = useMemo(() => {
         if (!candidateId) return null;
-        return candidates.find(c => String(c.id) === String(candidateId)) ?? null;
+        return candidates.find(c => String(c.jaId) === String(candidateId)) ?? null;
     }, [candidates, candidateId]);
+
+    const { token } = useAuth();
+
+    // Document Review Handlers 
+    const handleApproveClick = async () => {
+        try {
+            await axios.put(
+                `https://localhost:7119/api/DocumentList/review/${candidate.jaId}`,
+                { status: "Approved" },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            toast.success("Documents approved successfully.");
+            navigate("/hr-feedback");
+        }
+        catch (err) {
+            console.error(err);
+            toast.error(err.response?.data || "Failed to approve documents!");
+        }
+    };
+
+    const handleRejectClick = async () => {
+        try {
+            await axios.put(
+                `https://localhost:7119/api/DocumentList/review/${candidate.jaId}`,
+                { status: "Rejected" },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            toast.success("Documents rejected successfully!");
+            navigate("/hr-feedback");
+        }
+        catch (err) {
+            console.error(err);
+            toast.error(err.response?.data || "Failed to reject documents!");
+        }
+    };
+
+    const { fetchCandidateDocuments } = useCandidates();
+    useEffect(() => {
+        if (candidateId) {
+            fetchCandidateDocuments(candidateId);
+        }
+    }, [candidateId]);
 
     return (
         <div className="min-h-screen flex flex-col bg-neutral-950 text-white">
@@ -94,12 +140,13 @@ const HRDocumentsCheckContent = () => {
                         {/* If Candidate Found */}
                         <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-4 mb-6">
                             <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+
                                 {/* Candidate Details Name, Email, Phone and Status*/}
                                 <div className="flex items-start gap-4">
                                     <img src={candidate.photo} alt={candidate.fullName} className="w-14 h-14 rounded-full border border-neutral-700 object-cover" />
                                     <div className="min-w-0">
                                         <h1 className="text-2xl font-semibold truncate">{candidate.fullName}</h1>
-                                        <div className="text-sm text-neutral-400 mt-1">{candidate.email} • {candidate.phone}</div>
+                                        <div className="text-sm text-neutral-400 mt-1">{candidate.email} • {candidate.phoneNumber}</div>
                                         <div className="mt-2 flex items-center gap-2">
                                             <span className={`px-2 py-0.5 rounded-full text-xs text-white ${(() => {
                                                 const s = candidate.overallStatus;
@@ -121,39 +168,53 @@ const HRDocumentsCheckContent = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
                             {/* Document Card View */}
-                            <DocCard label="Aadhar Card" url={(candidate.documents && candidate.documents.aadhar) || null} />
-                            <DocCard label="PAN Card" url={(candidate.documents && candidate.documents.pan) || null} />
+                            <DocCard label="Aadhar Card" url={(candidate.documents && candidate.documents.aadharCard) || null} />
+                            <DocCard label="PAN Card" url={(candidate.documents && candidate.documents.panCard) || null} />
                             <DocCard label="Experience Letter" url={(candidate.documents && candidate.documents.experienceLetter) || null} />
                         </div>
 
                         {/* Bank Details */}
                         <div className="mt-6 bg-neutral-900 border border-neutral-700 rounded-lg p-4">
-                            <h3 className="text-sm text-xl font-semibold mb-3">Bank Details</h3>
+                            <h3 className="text-xl font-semibold mb-3">Bank Details</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-neutral-300">
 
                                 {/* Bank Name */}
                                 <div>
                                     <div className="text-purple-300 text-xs">Bank Name</div>
-                                    <div className="text-white text-2xl mt-1">{candidate.documents.bankName || <span className="text-neutral-500">Not provided</span>}</div>
+                                    <div className="text-white text-2xl mt-1">{candidate.documents?.bankName || <span className="text-neutral-500">Not provided</span>}</div>
                                 </div>
 
                                 {/* Account Number */}
                                 <div>
                                     <div className="text-purple-300 text-xs">Account Number</div>
-                                    <div className="text-white text-2xl mt-1">{candidate.documents.bankAccount || <span className="text-neutral-500">Not provided</span>}</div>
+                                    <div className="text-white text-2xl mt-1">{candidate.documents?.bankAccNo || <span className="text-neutral-500">Not provided</span>}</div>
                                 </div>
 
                                 {/* IFSC Code */}
                                 <div>
                                     <div className="text-purple-300 text-xs">IFSC Code</div>
-                                    <div className="text-white text-2xl  mt-1">{candidate.documents.bankIFSC || <span className="text-neutral-500">Not provided</span>}</div>
+                                    <div className="text-white text-2xl  mt-1">{candidate.documents?.bankIFSC || <span className="text-neutral-500">Not provided</span>}</div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Back Button */}
-                        <div className="mt-6 flex gap-3 items-center">
-                            <button onClick={() => navigate('/hr-feedback')} className="px-3 py-2 rounded text-sm text-white bg-purple-600">Back to HR Dashboard</button>
+                        {/* Action Buttons */}
+                        <div className="mt-8 flex flex-wrap gap-3 items-center">
+
+                            {/* Back Button */}
+                            <button
+                                onClick={() => navigate('/hr-feedback')}
+                                className="px-3 py-2 rounded text-sm text-white bg-purple-600">
+                                Back to HR Dashboard
+                            </button>
+
+                            {/* Approve & Reject */}
+                            {candidate?.overallStatus === "Document Verification" && (
+                                <>
+                                    <button onClick={handleApproveClick} className="px-3 py-2 rounded text-sm text-white bg-emerald-600"> Approve </button>
+                                    <button onClick={handleRejectClick} className="px-3 py-2 rounded text-sm text-white bg-red-600"> Reject </button>
+                                </>
+                            )}
                         </div>
                     </>
                 )}

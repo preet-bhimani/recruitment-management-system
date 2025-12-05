@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
@@ -6,6 +7,7 @@ using server.Models.Dto;
 using server.Models.Entities;
 using server.Services;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 
@@ -283,6 +285,7 @@ namespace server.Controllers
                 .Select(h => new
                 {
                     h.HIId,
+                    h.JAId,
                     h.HRDate,
                     h.HRRating,
                     h.NoOfRound,
@@ -461,6 +464,7 @@ namespace server.Controllers
                         // Change HRStatus and OverallStatus
                         entity.HRStatus = "In Progress";
                         ja.OverallStatus = "HR Interview";
+                        ja.RejectionStage = null;
                     }
                     else return BadRequest("Meeting is not completed yet.");
                     break;
@@ -483,6 +487,7 @@ namespace server.Controllers
                         // Change HRStatus and OverallStatus
                         entity.HRStatus = "Not Clear";
                         ja.OverallStatus = "Rejected";
+                        ja.RejectionStage = "HR";
                     }
                     else return BadRequest("Meeting is not completed yet.");
                     break;
@@ -512,6 +517,7 @@ namespace server.Controllers
 
                         entity.HRStatus = "Clear";
                         ja.OverallStatus = "Document Pending";
+                        ja.RejectionStage = null;
                     }
                     else return BadRequest("Meeting is not completed yet.");
                     break;
@@ -527,6 +533,60 @@ namespace server.Controllers
 
             await dbContext.SaveChangesAsync();
             return Ok("HR interview updated.");
+        }
+
+        // Fetch candidates form assingned HR
+        [Authorize(Roles = "HR")]
+        [HttpGet("hr")]
+        public async Task<IActionResult> GetInterviewsForHR()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found.");
+            }
+
+            var userId = Guid.Parse(userIdClaim);
+
+            var hrUser = await dbContext.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (hrUser == null)
+            {
+                return Unauthorized("HR user record not found.");
+            }
+
+            var hrEmail = hrUser.Email;
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+
+            // Fetch all HR interviews assigned to this HR user
+            var interviews = await dbContext.HRInterviews
+                .Include(h => h.User)
+                .Include(h => h.JobOpening)
+                .Include(h => h.JobApplication)
+                .Where(h => h.InterviewerEmail == hrEmail)
+                .OrderBy(h => h.HRDate)
+                .ThenBy(h => h.HRTime)
+                .Select(h => new
+                {
+                    h.HIId,
+                    h.NoOfRound,
+                    h.HRDate,
+                    h.HRTime,
+                    h.MeetingLink,
+                    h.HRIsClear,
+                    h.HRStatus,
+                    h.HRRating,
+                    h.HRFeedback,
+                    Photo = !string.IsNullOrWhiteSpace(h.User.Photo) ? baseUrl + h.User.Photo : null,
+                    UserId = h.User.UserId,
+                    JAId = h.JobApplication.JAId,
+                    FullName = h.User.FullName,
+                    Email = h.User.Email,
+                    Title = h.JobOpening.Title,
+                    OverallStatus = h.JobApplication.OverallStatus
+                })
+                .ToListAsync();
+
+            return Ok(interviews);
         }
 
         // Get token response

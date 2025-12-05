@@ -33,7 +33,7 @@ const Star = ({ filled, onClick, onMouseEnter, onMouseLeave, size = 20 }) => (
 );
 
 const HRFeedbackContent = () => {
-  const { candidates, updateCandidate, getLatestRound, getRoundCount } = useCandidates();
+  const { candidates, getLatestRound, getRoundCount, updateHRInterview } = useCandidates();
   const { getDefaultMessage } = useUI();
   const navigate = useNavigate();
   const [jobTitleFilter, setJobTitleFilter] = useState('all');
@@ -41,12 +41,6 @@ const HRFeedbackContent = () => {
   const [toDate, setToDate] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
-  const [tempOverall, setTempOverall] = useState({});
-  const [tempHRStatus, setTempHRStatus] = useState({});
-  const [tempHRIsClear, setTempHRIsClear] = useState({});
-  const [tempSelectionStatus, setTempSelectionStatus] = useState({});
-  const [tempModified, setTempModified] = useState({});
-  const [collapseOpen, setCollapseOpen] = useState({});
   const [messageBoxOpen, setMessageBoxOpen] = useState({});
   const [messages, setMessages] = useState({});
   const [pendingAction, setPendingAction] = useState({});
@@ -66,22 +60,52 @@ const HRFeedbackContent = () => {
     Hold: 'bg-gray-600'
   }[s] || 'bg-yellow-600');
 
-  const uniqueJobs = useMemo(() => [...new Set(candidates.map(c => c.jobTitle).filter(Boolean))], [candidates]);
+  const uniqueJobs = useMemo(() => [...new Set(candidates.map(c => c.title).filter(Boolean))], [candidates]);
 
   // Filter by Overall Status
   const filtered = useMemo(() => {
     return candidates.filter(c => {
-      if (jobTitleFilter !== 'all' && c.jobTitle !== jobTitleFilter) return false;
+      if (jobTitleFilter !== 'all' && c.title !== jobTitleFilter) return false;
       if (fromDate && new Date(c.appliedDate) < new Date(fromDate)) return false;
       if (toDate && new Date(c.appliedDate) > new Date(toDate)) return false;
 
+      const latestHR = getLatestRound(c, 'hr');
       const overall = c.overallStatus;
       if (selectedFilter === 'All') {
-        return ['HR Interview', 'Selected', 'Hold', 'Rejected'].includes(overall);
+        return [
+          'HR Interview',
+          'Selected',
+          'Hold',
+          'Rejected',
+          'Document Pending',
+          'Document Verification',
+          "Rejected Background Verification",
+          'Clear',
+          'HR Reject'
+        ].includes(overall);
       }
-      if (selectedFilter === 'HR Interview') return overall === 'HR Interview';
-      if (selectedFilter === 'Selected') return overall === 'Selected';
-      if (selectedFilter === 'Hold') return overall === 'Hold';
+
+      if (selectedFilter === 'HR Interview')
+        return latestHR?.IsClear === "In Progress" && overall === 'HR Interview';
+
+      if (selectedFilter === 'Clear')
+        return latestHR?.IsClear === "Clear" && latestHR?.Status === "In Progress";
+
+      if (selectedFilter === 'HR Reject')
+        return latestHR?.Status === "Not Clear";
+
+      if (selectedFilter === 'Document Pending')
+        return overall === "Document Pending";
+
+      if (selectedFilter === 'Document Verification')
+        return overall === "Document Verification";
+
+      if (selectedFilter === 'Rejected Background Verification')
+        return overall === "Rejected" && c.rejectionStage === "Background Verification";
+
+      if (selectedFilter === 'Hold')
+        return overall === "Hold";
+
       return false;
     });
   }, [candidates, jobTitleFilter, fromDate, toDate, selectedFilter]);
@@ -90,75 +114,41 @@ const HRFeedbackContent = () => {
   const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE);
   useEffect(() => setCurrentPage(1), [jobTitleFilter, fromDate, toDate, selectedFilter]);
 
-  // DropDown Handling
-  const onOverallChange = (id, value) => { setTempOverall(p => ({ ...p, [id]: value })); setTempModified(m => ({ ...m, [id]: true })); };
-  const onHRStatusChange = (id, value) => { setTempHRStatus(p => ({ ...p, [id]: value })); setTempModified(m => ({ ...m, [id]: true })); };
-  const onHRIsClearChange = (id, value) => { setTempHRIsClear(p => ({ ...p, [id]: value })); setTempModified(m => ({ ...m, [id]: true })); };
-  const onSelectionStatusChange = (id, value) => { setTempSelectionStatus(p => ({ ...p, [id]: value })); setTempModified(m => ({ ...m, [id]: true })); };
-
-  // Save DropDown
-  const onSave = (id) => {
-    const candidate = candidates.find(c => c.id === id); if (!candidate) return;
-    const latestHR = getLatestRound(candidate, 'hr');
-
-    updateCandidate(id, c => {
-      let updated = { ...c };
-      if (tempOverall[id] !== undefined) updated.overallStatus = tempOverall[id];
-      if (tempSelectionStatus[id] !== undefined) updated.selectionStatus = tempSelectionStatus[id];
-      if (latestHR) {
-        const rounds = [...(updated.hrRounds || [])];
-        const last = { ...rounds[rounds.length - 1] };
-        if (tempHRStatus[id] !== undefined) last.Status = tempHRStatus[id];
-        if (tempHRIsClear[id] !== undefined) last.IsClear = tempHRIsClear[id];
-        rounds[rounds.length - 1] = last;
-        updated.hrRounds = rounds;
-
-        const effectiveStatus = tempHRStatus[id] !== undefined ? tempHRStatus[id] : last.Status;
-        if (effectiveStatus === 'Clear') {
-          updated.overallStatus = 'Selected';
-        }
-      }
-      return updated;
-    });
-
-    // Clear Temp Values
-    setTempModified(m => ({ ...m, [id]: false }));
-    setTempOverall(p => { const o = { ...p }; delete o[id]; return o; });
-    setTempHRStatus(p => { const o = { ...p }; delete o[id]; return o; });
-    setTempHRIsClear(p => { const o = { ...p }; delete o[id]; return o; });
-    setTempSelectionStatus(p => { const o = { ...p }; delete o[id]; return o; });
-  };
-
   // Message Logic
   const openMessageBox = (id, actionType) => {
-    setMessages(m => ({ ...m, [id]: getDefaultMessage(actionType) ?? '' }));
-    setMessageBoxOpen(m => ({ ...m, [id]: true }));
     setPendingAction(p => ({ ...p, [id]: actionType }));
-    setRatingOpen(r => ({ ...r, [id]: false }));
+    setMessageBoxOpen(m => ({ ...m, [id]: true }));
+    setMessages(m => ({ ...m, [id]: getDefaultMessage(actionType) ?? '' }));
     setRatings(r => ({ ...r, [id]: 0 }));
   };
+
   const closeMessageBox = (id) => {
     setMessageBoxOpen(m => ({ ...m, [id]: false }));
     setMessages(m => ({ ...m, [id]: '' }));
-    setPendingAction(p => { const out = { ...p }; delete out[id]; return out; });
     setRatingOpen(r => ({ ...r, [id]: false }));
     setRatings(r => { const out = { ...r }; delete out[id]; return out; });
     setHoverRating(h => { const out = { ...h }; delete out[id]; return out; });
   };
 
+  const cleanup = (id) => {
+    setPendingAction(p => {
+      const out = { ...p };
+      delete out[id];
+      return out;
+    });
+
+    setMessages(m => {
+      const out = { ...m };
+      delete out[id];
+      return out;
+    });
+
+    setRatingOpen(r => ({ ...r, [id]: false }));
+    setHoverRating(h => ({ ...h, [id]: 0 }));
+  };
+
   // Send Message
   const onSendMessage = (id) => {
-    const msg = (messages[id] ?? '').trim();
-    const candidate = candidates.find(c => c.id === id); if (!candidate) return;
-    const latestHR = getLatestRound(candidate, 'hr');
-    if (latestHR) {
-      updateCandidate(id, c => {
-        const rounds = [...(c.hrRounds || [])];
-        rounds[rounds.length - 1] = { ...rounds[rounds.length - 1], Feedback: msg };
-        return { ...c, hrRounds: rounds };
-      });
-    }
-    setMessages(m => ({ ...m, [id]: '' }));
     setMessageBoxOpen(m => ({ ...m, [id]: false }));
     setRatingOpen(r => ({ ...r, [id]: true }));
   };
@@ -171,44 +161,33 @@ const HRFeedbackContent = () => {
   const onSubmitRating = (id) => {
     const r = ratings[id] ?? 0;
     const action = pendingAction[id];
-    const candidate = candidates.find(c => c.id === id); if (!candidate) return;
-    const latestHR = getLatestRound(candidate, 'hr'); if (!latestHR) return;
+    const candidate = candidates.find(c => c.jaId === id);
+    if (!candidate) return;
 
-    if (action === 'pass') {
-      updateCandidate(id, c => {
-        const rounds = [...(c.hrRounds || [])];
-        rounds[rounds.length - 1] = { ...rounds[rounds.length - 1], Rating: r, IsClear: 'Clear' };
-        const nextNo = rounds.length + 1;
-        const newRound = { RoundNo: nextNo, MeetingLink: '', Date: '', Time: '', Feedback: '', Rating: 0, IsClear: 'Pending', Status: 'In Progress' };
-        return { ...c, hrRounds: [...rounds, newRound] };
-      });
-    } else if (action === 'fail') {
-      updateCandidate(id, c => {
-        const rounds = [...(c.hrRounds || [])];
-        rounds[rounds.length - 1] = { ...rounds[rounds.length - 1], Rating: r, IsClear: 'Not Clear', Status: 'Not Clear' };
-        return { ...c, hrRounds: rounds, overallStatus: 'Rejected', jobApplicationStatus: 'Rejected' };
-      });
-    }
+    const latestHR = getLatestRound(candidate, "hr");
+    if (!latestHR) return;
 
-    setRatingOpen(r => ({ ...r, [id]: false }));
-    setPendingAction(p => { const out = { ...p }; delete out[id]; return out; });
-    setMessages(m => ({ ...m, [id]: '' }));
-    setMessageBoxOpen(m => ({ ...m, [id]: false }));
-    setRatings(r => { const out = { ...r }; delete out[id]; return out; });
-    setHoverRating(h => { const out = { ...h }; delete out[id]; return out; });
-  };
+    const hiId = latestHR.hiId;
+    const feedback = messages[id] ?? "";
 
-  // Schedule Meeting
-  const scheduleMeeting = (id, date, time, link) => {
-    updateCandidate(id, c => {
-      const rounds = [...(c.hrRounds || [])];
-      if (!rounds.length) return c;
-      rounds[rounds.length - 1] = { ...rounds[rounds.length - 1], Date: date, Time: time, MeetingLink: link };
-      return { ...c, hrRounds: rounds };
+    const payload = {
+      HIId: hiId,
+      JAId: candidate.jaId,
+      HRDate: latestHR.hrDate,
+      HRTime: latestHR.hrTime,
+      MeetingSubject: latestHR.meetingSubject || "",
+      InterviewerName: latestHR.interviewerName || "",
+      InterviewerEmail: latestHR.interviewerEmail || "",
+      HRRating: r > 0 ? r : null,
+      HRFeedback: feedback,
+      HRStatus: latestHR.Status,
+      HRIsClear: action === "pass" ? "Clear" : "Not Clear"
+    };
+
+    updateHRInterview(hiId, payload).then(() => {
+      cleanup(id);
     });
   };
-
-  const toggleCollapse = (id) => setCollapseOpen(s => ({ ...s, [id]: !s[id] }));
 
   const goToPage = (p) => setCurrentPage(Math.min(Math.max(1, p), totalPages));
 
@@ -221,7 +200,7 @@ const HRFeedbackContent = () => {
       <main className="container mx-auto px-4 py-6 flex-1">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-semibold">HR Feedback</h1>
-          <button onClick={() => navigate('/interview-meeting-details', { state: { role: 'HR' } })} className="px-3 py-2 bg-blue-600 rounded text-sm text-white">Meeting Details</button>
+          <button onClick={() => navigate('/interview-meeting-details', { state: { role: 'HR' } })} className="px-3 py-2 bg-purple-600 rounded text-sm text-white">Meeting Details</button>
         </div>
 
         {/* Filters */}
@@ -238,9 +217,30 @@ const HRFeedbackContent = () => {
             <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="px-3 py-2 bg-neutral-800 border border-neutral-600 rounded text-sm text-white" />
             <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="px-3 py-2 bg-neutral-800 border border-neutral-600 rounded text-sm text-white" />
 
-            <div className="flex gap-2 ml-auto">
-              {['All', 'HR Interview', 'Selected', 'Hold'].map(s => (
-                <button key={s} onClick={() => setSelectedFilter(s)} className={`px-3 py-1 rounded text-xs ${selectedFilter === s ? 'bg-purple-600 text-white' : 'bg-neutral-800 text-white'}`}>{s}</button>
+            {/* Status */}
+            <div className="w-full flex items-center justify-start gap-2 mt-2 overflow-x-auto no-scrollbar py-1">
+              {[
+                'All',
+                'HR Interview',
+                'Clear',
+                'HR Reject',
+                'Document Pending',
+                'Document Verification',
+                'Rejected Background Verification',
+                'Hold'
+              ].map(s => (
+                <button
+                  key={s}
+                  onClick={() => setSelectedFilter(s)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium whitespace-nowrap transition-all flex items-center justify-center ${selectedFilter === s
+                    ? "bg-purple-600 text-white shadow-md scale-105"
+                    : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"}`}
+                  style={{
+                    minHeight: "34px",
+                    display: "flex"
+                  }}>
+                  {s}
+                </button>
               ))}
             </div>
           </div>
@@ -255,18 +255,15 @@ const HRFeedbackContent = () => {
           ) : paginated.map(c => {
             const latestHR = getLatestRound(c, 'hr');
             const hrRoundsCount = getRoundCount(c, 'hr');
-            const hrStatus = tempHRStatus[c.id] ?? (latestHR?.Status ?? 'In Progress');
-            const hrIsClear = tempHRIsClear[c.id] ?? (latestHR?.IsClear ?? 'In Progress');
-            const overallSel = tempOverall[c.id] ?? c.overallStatus;
-            const selectionStatus = tempSelectionStatus[c.id] ?? (c.selectionStatus ?? 'Document Pending');
+            const hrStatus = latestHR?.Status ?? "In Progress";
+            const hrIsClear = latestHR?.IsClear ?? "In Progress";
 
             return (
-              <div key={c.id} className="bg-neutral-900 border border-neutral-700 rounded-lg p-4">
+              <div key={c.jaId} className="bg-neutral-900 border border-neutral-700 rounded-lg p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-4 min-w-0">
                     <img src={c.photo} alt={c.fullName} className="w-12 h-12 rounded-full border border-neutral-600" />
                     <div className="min-w-0">
-
                       {/* Canddidate Details */}
                       <div className="flex items-center gap-3 mb-1">
                         <h3 className="text-sm font-medium text-white truncate">{c.fullName}</h3>
@@ -281,8 +278,8 @@ const HRFeedbackContent = () => {
                       </div>
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 text-xs text-neutral-400">
                         <span className="truncate"><span className="text-purple-200">Email:</span> {c.email}</span>
-                        <span className="truncate"><span className="text-purple-200">Job:</span> {c.jobTitle}</span>
-                        <span className="truncate"><span className="text-purple-200">Phone:</span> {c.phone}</span>
+                        <span className="truncate"><span className="text-purple-200">Job:</span> {c.title}</span>
+                        <span className="truncate"><span className="text-purple-200">Phone:</span> {c.phoneNumber}</span>
                         <span className="truncate"><span className="text-purple-200">Applied:</span> {c.appliedDate}</span>
                       </div>
                     </div>
@@ -294,128 +291,91 @@ const HRFeedbackContent = () => {
                       <FileText size={14} /> CV
                     </button>
 
-                    {/* Overall Status DropDown */}
-                    <select value={overallSel} onChange={e => onOverallChange(c.id, e.target.value)} className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
-                      <option>Applied</option>
-                      <option>Exam</option>
-                      <option>Technical Interview</option>
-                      <option>HR Interview</option>
-                      <option>Selected</option>
-                      <option>Rejected</option>
-                      <option>Hold</option>
-                    </select>
+                    {/* HR Interview Dropdowns */}
+                    {c.overallStatus === "HR Interview" && latestHR && (
+                      <>
+                        <select
+                          value={hrStatus}
+                          disabled
+                          className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
+                          <option>In Progress</option>
+                          <option>Clear</option>
+                          <option>Not Clear</option>
+                          <option>Hold</option>
+                        </select>
 
-                    {/* Selection Status DropDown */}
-                    {(c.overallStatus === 'Selected' || overallSel === 'Selected') ? (
-                      <select value={selectionStatus} onChange={e => onSelectionStatusChange(c.id, e.target.value)} className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
-                        <option>Document Pending</option>
-                        <option>Pending</option>
-                        <option>Sent</option>
-                        <option>Accepted</option>
-                        <option>Declined</option>
-                      </select>
-                    ) : (
-                      // HR Interview DropDown for IsClear and Status
-                      latestHR ? (
-                        <>
-                          <select value={hrStatus} onChange={e => onHRStatusChange(c.id, e.target.value)} className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
-                            <option>In Progress</option>
-                            <option>Clear</option>
-                            <option>Not Clear</option>
-                          </select>
-
-                          <select value={hrIsClear} onChange={e => onHRIsClearChange(c.id, e.target.value)} className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
-                            <option>Pending</option>
-                            <option>In Progress</option>
-                            <option>Clear</option>
-                            <option>Not Clear</option>
-                          </select>
-                        </>
-                      ) : null
-                    )}
-
-                    {/* Save DropDown Changes */}
-                    {tempModified[c.id] && (
-                      <button onClick={() => onSave(c.id)} className="px-2 py-1 bg-green-600 rounded text-xs text-white">Save</button>
+                        <select
+                          value={hrIsClear}
+                          disabled
+                          className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white">
+                          <option>Pending</option>
+                          <option>In Progress</option>
+                          <option>Clear</option>
+                          <option>Not Clear</option>
+                        </select>
+                      </>
                     )}
 
                     {/* Wait for Meeting Result */}
-                    {c.overallStatus === 'HR Interview' && latestHR && (latestHR.IsClear === 'In Progress') && (
-                      <>
-                        <button onClick={() => openMessageBox(c.id, 'pass')} className="px-3 py-1 bg-emerald-700 rounded text-xs text-white flex items-center gap-1">
-                          <CheckCircle size={14} /> Pass
-                        </button>
-                        <button onClick={() => openMessageBox(c.id, 'fail')} className="px-3 py-1 bg-red-800 rounded text-xs text-white flex items-center gap-1">
-                          <XCircle size={14} /> Fail
-                        </button>
-                      </>
-                    )}
+                    {c.overallStatus === "HR Interview" &&
+                      latestHR &&
+                      latestHR.IsClear === "In Progress" && (
+                        <>
+                          <button
+                            onClick={() => openMessageBox(c.jaId, "pass")}
+                            className="px-3 py-1 bg-emerald-700 rounded text-xs text-white flex items-center gap-1">
+                            <CheckCircle size={14} /> Pass
+                          </button>
 
-                    {c.overallStatus === 'HR Interview' && (
-                      ((!latestHR) || (latestHR.IsClear === 'Clear') || (latestHR.IsClear === 'Pending')) && (
-                        <button onClick={() => navigate('/admin-add-meeting')} className="px-2 py-1 bg-blue-600 rounded text-xs text-white">Create Meeting</button>
-                      )
-                    )}
+                          <button
+                            onClick={() => openMessageBox(c.jaId, "fail")}
+                            className="px-3 py-1 bg-red-800 rounded text-xs text-white flex items-center gap-1">
+                            <XCircle size={14} /> Fail
+                          </button>
+                        </>
+                      )}
 
-                    {/* Selected Status*/}
-                    {(c.overallStatus === 'Selected' || overallSel === 'Selected') && (
-                      <>
-                        {/* If Status Pending or Sent */}
-                        {(selectionStatus === 'Pending' || selectionStatus === 'Sent') && (
-                          <button onClick={() => navigate(`/hr-documents-check/${c.id}`)} className="px-2 py-1 bg-yellow-600 rounded text-xs text-white">Document</button>
-                        )}
-
-                        {/* If Status Pending */}
-                        {selectionStatus === 'Pending' && (
-                          <button onClick={() => navigate('/')} className="px-2 py-1 bg-purple-600 rounded text-xs text-white">Send</button>
-                        )}
-
-                        {/* If Status Accepted or Decliend */}
-                        {(selectionStatus === 'Accepted' || selectionStatus === 'Declined') && (
-                          <button disabled className="px-2 py-1 bg-teal-600 rounded text-xs text-white">Download Offer</button>
-                        )}
-                      </>
+                    {/* Documents Verification */}
+                    {c.overallStatus === "Document Verification" && (
+                      <button
+                        onClick={() => navigate(`/hr-documents-check/${c.jaId}`)}
+                        className="px-2 py-1 bg-yellow-600 rounded text-xs text-white">
+                        Document Review
+                      </button>
                     )}
                   </div>
                 </div>
 
-                {/* Collapsible Schedule UI  */}
-                {collapseOpen[c.id] && (
-                  <div className="ml-auto flex gap-2">
-                    <button className="px-3 py-1 bg-blue-600 rounded text-sm text-white">Schedule</button>
-                  </div>
-                )}
-
                 {/* Message Box */}
-                {messageBoxOpen[c.id] && (
+                {messageBoxOpen[c.jaId] && (
                   <div className="bg-neutral-800 border border-neutral-600 rounded-lg p-3 mt-4">
-                    <textarea value={messages[c.id] ?? ''} onChange={e => setMessages(m => ({ ...m, [c.id]: e.target.value }))} className="w-full bg-neutral-700 border border-neutral-600 rounded text-white p-2 resize-none h-16" placeholder="Write feedback message..." />
+                    <textarea value={messages[c.jaId] ?? ''} onChange={e => setMessages(m => ({ ...m, [c.jaId]: e.target.value }))} className="w-full bg-neutral-700 border border-neutral-600 rounded text-white p-2 resize-none h-16" placeholder="Write feedback message..." />
                     <div className="flex justify-end gap-2 mt-2">
-                      <button onClick={() => closeMessageBox(c.id)} className="px-3 py-1 bg-neutral-600 rounded text-sm text-white">Cancel</button>
-                      <button onClick={() => onSendMessage(c.id)} className="px-3 py-1 bg-amber-500 rounded text-sm text-white">Send</button>
+                      <button onClick={() => closeMessageBox(c.jaId)} className="px-3 py-1 bg-neutral-600 rounded text-sm text-white">Cancel</button>
+                      <button onClick={() => onSendMessage(c.jaId)} className="px-3 py-1 bg-amber-500 rounded text-sm text-white">Send</button>
                     </div>
                   </div>
                 )}
 
                 {/* Rating */}
-                {ratingOpen[c.id] && (
+                {ratingOpen[c.jaId] && (
                   <div className="bg-neutral-800 border border-neutral-700 rounded-lg p-3 mt-4">
                     <h3 className="text-lg font-semibold">HR Interview Rating</h3>
                     <div className="mt-3 flex items-center gap-4">
                       <div className="flex items-center gap-1">
                         {[1, 2, 3, 4, 5].map(n => {
-                          const currentHover = hoverRating[c.id] ?? 0;
-                          const current = ratings[c.id] ?? 0;
+                          const currentHover = hoverRating[c.jaId] ?? 0;
+                          const current = ratings[c.jaId] ?? 0;
                           const filled = currentHover ? n <= currentHover : n <= current;
                           return (
-                            <Star key={n} filled={filled} onClick={() => onClickStar(c.id, n)} onMouseEnter={() => onStarHover(c.id, n)} onMouseLeave={() => onStarLeave(c.id)} size={22} />
+                            <Star key={n} filled={filled} onClick={() => onClickStar(c.jaId, n)} onMouseEnter={() => onStarHover(c.jaId, n)} onMouseLeave={() => onStarLeave(c.jaId)} size={22} />
                           );
                         })}
                       </div>
-                      <div className="text-sm text-neutral-400">({ratings[c.id] ?? 0}/5)</div>
+                      <div className="text-sm text-neutral-400">({ratings[c.jaId] ?? 0}/5)</div>
                       <div className="ml-auto flex gap-3">
-                        <button onClick={() => closeMessageBox(c.id)} className="px-3 py-1 bg-neutral-600 rounded text-sm text-white">Cancel</button>
-                        <button onClick={() => onSubmitRating(c.id)} className="px-3 py-1 bg-yellow-600 rounded text-sm text-white">Submit Rating</button>
+                        <button onClick={() => closeMessageBox(c.jaId)} className="px-3 py-1 bg-neutral-600 rounded text-sm text-white">Cancel</button>
+                        <button onClick={() => onSubmitRating(c.jaId)} className="px-3 py-1 bg-yellow-600 rounded text-sm text-white">Submit Rating</button>
                       </div>
                     </div>
                   </div>

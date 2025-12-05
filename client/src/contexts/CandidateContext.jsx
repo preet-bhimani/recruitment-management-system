@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from "react-toastify";
+import { useAuth } from "../contexts/AuthContext";
 
 const CandidateContext = createContext();
 
@@ -25,68 +26,101 @@ const makeRound = (roundNo, link = '', date = '', time = '') => ({
 // Candidates Details
 export const CandidateProvider = ({ children }) => {
   const [candidates, setCandidates] = useState([]);
-
+  const { role, token } = useAuth();
   const [tempStatuses, setTempStatuses] = useState({});
 
   // Fetch Candidates
   const fetchCandidates = async () => {
     try {
       const res = await axios.get(`https://localhost:7119/api/JobApplication`);
-      setCandidates(res.data || []);
-    } catch (err) {
-      console.log(err);
+      setCandidates((res.data || []).map(c => ({
+        ...c,
+        rejectionStage: c.rejectionStage ?? null,
+      })));
+    }
+    catch (err) {
       toast.error("Failed to fetch candidates!");
     }
   };
 
-  useEffect(() => {
-    fetchCandidates();
-    fetchAssignedInterviews();
-  }, []);
+  // Fetch HR Interviews
+  const fetchHRInterviews = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7119/api/HRInterview/hr`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
+      const hrList = res.data || [];
+      setCandidates(prevCandidates =>
+        prevCandidates.map(c => {
+          const hrRounds = hrList
+            .filter(r => String(r.jaId) === String(c.jaId))
+            .map(r => ({
+              ...r,
+              Status: r.hrStatus,
+              IsClear: r.hrIsClear,
+              Rating: r.hrRating,
+              Feedback: r.hrFeedback,
+              hiId: r.hiId,
+              hrDate: r.hrDate,
+              hrTime: r.hrTime,
+              noOfRound: r.noOfRound,
+              meetingLink: r.meetingLink
+            }));
 
-  // Round Details 
-  const getRounds = (c, type) => {
-    if (type !== "tech") return [];
-
-    const out = [];
-    if (Array.isArray(c.techRounds)) {
-      out.push(...c.techRounds);
+          if (hrRounds.length > 0) {
+            return { ...c, hrRounds };
+          }
+          return c;
+        })
+      );
     }
-
-    const possibleRounds = [
-      c.technicalInterview,
-      c.lastRound,
-      c.techRound
-    ];
-
-    possibleRounds.forEach(round => {
-      if (round && typeof round === "object") {
-        out.push(round);
-      }
-    });
-
-    return out;
+    catch (err) {
+      toast.error("Failed to fetch HR interviews!");
+    }
   };
 
-  const getLatestRound = (c, type) => {
-    if (type !== "tech") return null;
+  useEffect(() => {
+    const load = async () => {
+      await fetchCandidates();
 
-    const rounds = getRounds(c, "tech");
+      if (role === "Interviewer") {
+        await fetchAssignedInterviews();
+      }
+
+      if (role === "HR") {
+        await fetchHRInterviews();
+        await fetchCandidatesUnderHR();
+      }
+    };
+    load();
+  }, [role]);
+
+
+  // Round Details
+  const getRounds = (c, type) => {
+    return Array.isArray(type === "tech" ? c.techRounds : c.hrRounds)
+      ? (type === "tech" ? c.techRounds : c.hrRounds)
+      : [];
+  };
+
+  // Latest Round For Tech and HR Interview
+  const getLatestRound = (c, type) => {
+    const rounds = getRounds(c, type);
     if (!rounds.length) return null;
 
-    const r = rounds[rounds.length - 1];
+    const last = rounds[rounds.length - 1];
 
     return {
-      ...r,
-      Status: r.techStatus ?? r.TechStatus ?? r.Status,
-      IsClear: r.techIsClear ?? r.TechIsClear ?? r.IsClear,
-      Rating: r.techRating ?? r.TechRating ?? r.Rating ?? 0,
-      Feedback: r.techFeedback ?? r.TechFeedback ?? r.Feedback ?? "",
-      tiId: r.tiId ?? r.TIId ?? r.id
+      ...last,
+      Status: last.Status ?? last.hrStatus ?? last.techStatus ?? "In Progress",
+      IsClear: last.IsClear ?? last.hrIsClear ?? last.techIsClear ?? "In Progress",
+      Rating: last.Rating ?? last.hrRating ?? last.techRating ?? 0,
+      Feedback: last.Feedback ?? last.hrFeedback ?? last.techFeedback ?? "",
+      tiId: last.tiId ?? last.TIId ?? last.id,
+      hiId: last.hiId ?? last.HIId ?? last.id
     };
   };
-
 
   const setRounds = (c, type, rounds) => type === 'tech' ? { ...c, techRounds: rounds } : { ...c, hrRounds: rounds };
   const getRoundCount = (c, type) => getRounds(c, type).length;
@@ -115,7 +149,6 @@ export const CandidateProvider = ({ children }) => {
       toast.error(err.response?.data || "Failed to update status!");
     }
   };
-
 
   // Exam Schedule
   const scheduleExam = (id, date) => {
@@ -184,25 +217,28 @@ export const CandidateProvider = ({ children }) => {
   // Fetch All Interviews Assigned to the Interviewer
   const fetchAssignedInterviews = async () => {
     try {
-      const res = await axios.get(`https://localhost:7119/api/TechnicalInterview/interviewer`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      const res = await axios.get(
+        "https://localhost:7119/api/TechnicalInterview/interviewer", {
+        headers: { Authorization: `Bearer ${token}` }
+      }
       );
 
       const assigned = res.data || [];
+
       setCandidates(prev =>
         prev.map(c => {
-          const rounds = assigned.filter(i => String(i.userId) === String(c.userId));
+          const techRounds = assigned.filter(i =>
+            String(i.jaId) === String(c.jaId)
+          );
 
           return {
             ...c,
-            isAssignedToInterviewer: rounds.length > 0,
-            techRounds: rounds
+            isAssignedToInterviewer: techRounds.length > 0,
+            techRounds
           };
         })
       );
-
-    }
-    catch (err) {
+    } catch (err) {
       toast.error("Failed to fetch interviewer assignments!");
     }
   };
@@ -214,8 +250,7 @@ export const CandidateProvider = ({ children }) => {
         payload,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json"
+            Authorization: `Bearer ${token}`,
           }
         }
       );
@@ -234,6 +269,56 @@ export const CandidateProvider = ({ children }) => {
     await fetchAssignedInterviews();
   };
 
+  // Update HR Round
+  const updateHRInterview = async (hiId, payload) => {
+    try {
+      await axios.put(`https://localhost:7119/api/HRInterview/update/${hiId}`, payload);
+      toast.success("HR round updated!");
+      await fetchHRInterviews();
+      await fetchCandidates();
+    }
+    catch (err) {
+      toast.error(err.response?.data?.message || err.response?.data || "Failed to update HR round");
+    }
+  };
+
+  // Fetch Candidate Documents
+  const fetchCandidateDocuments = async (jaId) => {
+    try {
+      const res = await axios.get(`https://localhost:7119/api/DocumentList/${jaId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+      );
+
+      const doc = res.data;
+
+      setCandidates(prev =>
+        prev.map(c =>
+          String(c.jaId) === String(jaId)
+            ? { ...c, documents: doc }
+            : c
+        ));
+    }
+    catch (err) {
+      toast.error("Failed to fetch candidate documents!");
+    }
+  };
+
+  // Fetch Candidates Under HR
+  const fetchCandidatesUnderHR = async () => {
+    const res = await axios.get("https://localhost:7119/api/OfferLetter/hr", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const data = res.data || [];
+
+    setCandidates(prev =>
+      prev.map(c => {
+        const found = data.find(x => String(x.jaId) === String(c.jaId));
+        return found ? { ...c, ...found } : c;
+      })
+    );
+  };
 
   // Save Changes
   const saveTempChanges = (id) => {
@@ -301,6 +386,10 @@ export const CandidateProvider = ({ children }) => {
     fetchAssignedInterviews,
     updateTechnicalResult,
     loadInterviewerData,
+    fetchHRInterviews,
+    updateHRInterview,
+    fetchCandidateDocuments,
+    fetchCandidatesUnderHR,
   };
 
   return <CandidateContext.Provider value={value}>{children}</CandidateContext.Provider>;
