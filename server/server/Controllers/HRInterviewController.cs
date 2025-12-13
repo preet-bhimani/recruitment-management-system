@@ -402,6 +402,12 @@ namespace server.Controllers
                         entity.InterviewerName = dto.InterviewerName;
                         entity.InterviewerEmail = dto.InterviewerEmail;
 
+                        if (ja.OverallStatus == "Hold")
+                        {
+                            ja.OverallStatus = ja.HoldOverallStatus ?? "HR Interview";
+                            ja.HoldOverallStatus = null;
+                        }
+
                         // Also update Google Calendar via EventId
                         if (!string.IsNullOrWhiteSpace(entity.GoogleEventId))
                         {
@@ -440,6 +446,7 @@ namespace server.Controllers
                         {
                             entity.HRIsClear = "In Progress";
                             entity.HRStatus = "In Progress";
+                            ja.HoldOverallStatus = null;
                         }
                         else return BadRequest("Result already distributed.");
                     }
@@ -488,6 +495,7 @@ namespace server.Controllers
                         entity.HRStatus = "Not Clear";
                         ja.OverallStatus = "Rejected";
                         ja.RejectionStage = "HR";
+                        ja.HoldOverallStatus = null;
                     }
                     else return BadRequest("Meeting is not completed yet.");
                     break;
@@ -518,12 +526,18 @@ namespace server.Controllers
                         entity.HRStatus = "Clear";
                         ja.OverallStatus = "Document Pending";
                         ja.RejectionStage = null;
+                        ja.HoldOverallStatus = null;
                     }
                     else return BadRequest("Meeting is not completed yet.");
                     break;
 
                 case "Hold":
 
+                    if (ja.OverallStatus != "Hold")
+                    {
+                        ja.HoldOverallStatus = ja.OverallStatus;
+                    }
+                    entity.HRStatus = "Hold";
                     ja.OverallStatus = "Hold";
                     break;
             }

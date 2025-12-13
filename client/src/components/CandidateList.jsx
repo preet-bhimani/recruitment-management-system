@@ -15,7 +15,7 @@ const CandidateList = () => {
       </div>
       <div className="space-y-4">
         {paginatedCandidates.map((candidate) => (
-          <CandidateCard key={candidate.id} candidate={candidate} />
+          <CandidateCard key={candidate.jaId} candidate={candidate} />
         ))}
       </div>
 

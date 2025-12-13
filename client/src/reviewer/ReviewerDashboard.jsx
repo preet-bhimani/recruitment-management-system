@@ -121,27 +121,36 @@ const ReviewerDashboardContent = () => {
       updateCandidate(id, {
         status: 'Shortlisted',
         examDate: null,
-        examResult: null
+        examResult: null,
+        feedback: msg
       });
-
     }
     else if (action === 'reject') {
       updateCandidate(id, {
         status: 'Rejected',
         examDate: null,
-        examResult: null
+        examResult: null,
+        feedback: msg
       });
     }
     else if (action === 'pass') {
       updateCandidate(id, {
         status: 'Shortlisted',
-        examResult: 'Pass'
+        examResult: 'Pass',
+        feedback: msg
       });
     }
     else if (action === 'fail') {
       updateCandidate(id, {
         status: 'Rejected',
-        examResult: 'Fail'
+        examResult: 'Fail',
+        feedback: msg
+      });
+    }
+    else if (action === 'hold') {
+      updateCandidate(id, {
+        status: 'Hold',
+        feedback: msg
       });
     }
     else {
@@ -163,7 +172,7 @@ const ReviewerDashboardContent = () => {
         newStatus = 'Rejected';
         newOverall = 'Rejected';
       }
-      updateCandidate(id, { status: newStatus });
+      updateCandidate(id, { status: newStatus, feedback: msg });
     }
     closeActionModal(id);
   };
@@ -293,12 +302,23 @@ const ReviewerDashboardContent = () => {
                     <option>Exam</option>
                     <option>Shortlisted</option>
                     <option>Rejected</option>
+                    <option>Hold</option>
                   </select>
 
                   {/* Save Changes After DropDown */}
                   {tempModified[c.jaId] && (
                     <button
-                      onClick={() => onSaveStatus(c.jaId)}
+                      onClick={() => {
+                        const candidate = candidates.find(x => x.jaId === c.jaId);
+                        const value = tempStatus[c.jaId] ?? candidate.status;
+
+                        if (value === 'Hold') {
+                          openActionModalFor(c.jaId, 'hold');
+                        }
+                        else {
+                          onSaveStatus(c.jaId);
+                        }
+                      }}
                       className="px-2 py-1 bg-green-600 rounded text-xs text-white">
                       Save
                     </button>

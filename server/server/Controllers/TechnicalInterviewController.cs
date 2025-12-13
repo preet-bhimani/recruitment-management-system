@@ -305,8 +305,11 @@ namespace server.Controllers
                     Photo = !string.IsNullOrEmpty(c.User.Photo) ? baseUrl + c.User.Photo : null,
                     c.User.FullName,
                     c.User.Email,
+                    c.JobApplication.JAId,
                     c.JobOpening.Title,
-                    c.JobApplication.OverallStatus
+                    c.JobApplication.OverallStatus,
+                    c.JobApplication.RejectionStage,
+                    c.JobApplication.HoldOverallStatus,
                 })
                 .ToListAsync();
 
@@ -411,6 +414,12 @@ namespace server.Controllers
                         entity.InterviewerName = utDto.InterviewerName;
                         entity.InterviewerEmail = utDto.InterviewerEmail;
 
+                        if (ja.OverallStatus == "Hold")
+                        {
+                            ja.OverallStatus = ja.HoldOverallStatus ?? "Technical Interview";
+                            ja.HoldOverallStatus = null;
+                        }
+
                         // Also update Google Calendar via EventId
                         if (!string.IsNullOrWhiteSpace(entity.GoogleEventId))
                         {
@@ -447,6 +456,8 @@ namespace server.Controllers
                         {
                             entity.TechIsClear = "In Progress";
                             entity.TechStatus = "In Progress";
+                            ja.HoldOverallStatus = null;
+                            ja.OverallStatus = "Technical Interview";
                         }
                         else
                         {
@@ -476,6 +487,7 @@ namespace server.Controllers
 
                         // Change TechStatus and OverallStatus
                         entity.TechStatus = "In Progress";
+                        ja.RejectionStage = null;
                         ja.OverallStatus = "Technical Interview";
                     }
                     else
@@ -501,12 +513,24 @@ namespace server.Controllers
 
                         // Change TechStatus and OverallStatus
                         entity.TechStatus = "Not Clear";
+                        ja.RejectionStage = "Technical Interview";
                         ja.OverallStatus = "Rejected";
+                        ja.HoldOverallStatus = null;
                     }
                     else
                     {
                         return BadRequest("Meeting is not completed yet.");
                     }
+                    break;
+
+                case "Hold":
+
+                    if (ja.OverallStatus != "Hold")
+                    {
+                        ja.HoldOverallStatus = ja.OverallStatus;
+                    }
+                    entity.TechIsClear = "Hold";
+                    ja.OverallStatus = "Hold";
                     break;
 
                 default:
@@ -531,16 +555,14 @@ namespace server.Controllers
                         if (!allClear) return BadRequest("All rounds must be Clear with rating and feedback before final Clear.");
 
                         entity.TechStatus = "Clear";
+                        ja.RejectionStage = null;
                         ja.OverallStatus = "HR Interview";
+                        ja.HoldOverallStatus = null;
                     }
                     else
                     {
                         return BadRequest("Meeting is not completed yet.");
                     }
-                    break;
-
-                case "Hold":
-                    ja.OverallStatus = "Hold";
                     break;
 
                 default:

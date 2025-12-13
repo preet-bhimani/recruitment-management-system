@@ -34,7 +34,7 @@ namespace server.Migrations
 
                     b.HasIndex("UsersUserId");
 
-                    b.ToTable("SkillUser");
+                    b.ToTable("SkillUser", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.CampusDrive", b =>
@@ -67,7 +67,7 @@ namespace server.Migrations
 
                     b.HasIndex("JOId");
 
-                    b.ToTable("CampusDrives");
+                    b.ToTable("CampusDrives", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.DocumentList", b =>
@@ -121,7 +121,7 @@ namespace server.Migrations
                     b.HasIndex("UserId", "JAId")
                         .IsUnique();
 
-                    b.ToTable("DocumentLists");
+                    b.ToTable("DocumentLists", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.Employee", b =>
@@ -205,7 +205,7 @@ namespace server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.GoogleIntegrationSettings", b =>
@@ -228,7 +228,7 @@ namespace server.Migrations
 
                     b.HasKey("GoogleSettingId");
 
-                    b.ToTable("GoogleIntegrationSettings");
+                    b.ToTable("GoogleIntegrationSettings", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.HRInterview", b =>
@@ -305,7 +305,7 @@ namespace server.Migrations
                     b.HasIndex("JAId", "NoOfRound")
                         .IsUnique();
 
-                    b.ToTable("HRInterviews");
+                    b.ToTable("HRInterviews", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.JobApplication", b =>
@@ -356,7 +356,7 @@ namespace server.Migrations
                     b.HasIndex("UserId", "JOId")
                         .IsUnique();
 
-                    b.ToTable("JobApplications");
+                    b.ToTable("JobApplications", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.JobOpening", b =>
@@ -413,7 +413,7 @@ namespace server.Migrations
 
                     b.HasKey("JOId");
 
-                    b.ToTable("JobOpenings");
+                    b.ToTable("JobOpenings", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.OfferLetter", b =>
@@ -472,7 +472,7 @@ namespace server.Migrations
                     b.HasIndex("UserId", "JAId")
                         .IsUnique();
 
-                    b.ToTable("OfferLetters");
+                    b.ToTable("OfferLetters", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.Selection", b =>
@@ -515,7 +515,7 @@ namespace server.Migrations
                     b.HasIndex("UserId", "JOId")
                         .IsUnique();
 
-                    b.ToTable("Selections");
+                    b.ToTable("Selections", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.Skill", b =>
@@ -539,7 +539,7 @@ namespace server.Migrations
                     b.HasIndex("SkillName")
                         .IsUnique();
 
-                    b.ToTable("Skills");
+                    b.ToTable("Skills", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.TechnicalInterview", b =>
@@ -616,7 +616,7 @@ namespace server.Migrations
                     b.HasIndex("JAId", "NoOfRound")
                         .IsUnique();
 
-                    b.ToTable("TechnicalInterviews");
+                    b.ToTable("TechnicalInterviews", (string)null);
                 });
 
             modelBuilder.Entity("server.Models.Entities.User", b =>
@@ -747,7 +747,7 @@ namespace server.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("SkillUser", b =>

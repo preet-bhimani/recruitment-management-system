@@ -33,6 +33,7 @@ export const UIProvider = ({ children }) => {
       reject: "Thank you for applying. Unfortunately, we cannot proceed your application.",
       pass: "Congratulations! You passed the exam and are shortlisted for technical interview.",
       fail: "Unfortunately, you did not pass the exam.",
+      hold: "This application is put on hold. We will notify you with further updates.",
       'tech-clear': "Congratulations! You cleared the technical interview. You will receive a notification shortly.",
       'tech-not-clear': "Thank you for interviewing. Unfortunately, you did not clear the interview.",
       'hr-clear': "Congratulations! You cleared the HR interview. You will receive a notification shortly.",

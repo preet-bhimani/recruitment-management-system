@@ -21,6 +21,7 @@ namespace server.Data
         public DbSet<OfferLetter> OfferLetters { get; set; }
         public DbSet<Selection> Selections { get; set; }
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<WalkInDrive> WalkInDrives { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

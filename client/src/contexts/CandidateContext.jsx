@@ -92,6 +92,10 @@ export const CandidateProvider = ({ children }) => {
         await fetchHRInterviews();
         await fetchCandidatesUnderHR();
       }
+
+      if (role === "Recruiter") {
+        await fetchTechInterviews();
+      }
     };
     load();
   }, [role]);
@@ -243,6 +247,24 @@ export const CandidateProvider = ({ children }) => {
     }
   };
 
+  // Now Recruiter Also Get All Candidates for Technical Interview
+  const fetchTechInterviews = async () => {
+    try {
+      const res = await axios.get("https://localhost:7119/api/TechnicalInterview");
+      const techList = res.data || [];
+
+      setCandidates(prev =>
+        prev.map(c => {
+          const techRounds = techList.filter(r => String(r.jaId) === String(c.jaId));
+          return { ...c, techRounds };
+        })
+      );
+    }
+    catch (err) {
+      toast.error("Failed to load technical rounds!");
+    }
+  };
+
   // Update Technical Result
   const updateTechnicalResult = async (tiId, payload) => {
     try {
@@ -257,9 +279,12 @@ export const CandidateProvider = ({ children }) => {
 
       toast.success("Technical Interview result updated!");
       await fetchCandidates();
+      await fetchTechInterviews();
     }
     catch (err) {
+      console.log('TECH ERROR RAW:', err.response?.data); 
       toast.error(err.response?.data || "Failed to update technical result!");
+      throw err;
     }
   };
 
@@ -390,6 +415,10 @@ export const CandidateProvider = ({ children }) => {
     updateHRInterview,
     fetchCandidateDocuments,
     fetchCandidatesUnderHR,
+    tempStatuses,
+    setTempStatuses,
+    updateTemp,
+    saveTempChanges,
   };
 
   return <CandidateContext.Provider value={value}>{children}</CandidateContext.Provider>;
