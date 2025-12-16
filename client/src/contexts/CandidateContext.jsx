@@ -65,7 +65,10 @@ export const CandidateProvider = ({ children }) => {
               hrDate: r.hrDate,
               hrTime: r.hrTime,
               noOfRound: r.noOfRound,
-              meetingLink: r.meetingLink
+              meetingLink: r.meetingLink,
+              meetingSubject: r.meetingSubject,
+              interviewerName: r.interviewerName,
+              interviewerEmail: r.interviewerEmail,
             }));
 
           if (hrRounds.length > 0) {
@@ -95,6 +98,7 @@ export const CandidateProvider = ({ children }) => {
 
       if (role === "Recruiter") {
         await fetchTechInterviews();
+        await fetchAllHRRounds();
       }
     };
     load();
@@ -282,7 +286,6 @@ export const CandidateProvider = ({ children }) => {
       await fetchTechInterviews();
     }
     catch (err) {
-      console.log('TECH ERROR RAW:', err.response?.data); 
       toast.error(err.response?.data || "Failed to update technical result!");
       throw err;
     }
@@ -294,16 +297,60 @@ export const CandidateProvider = ({ children }) => {
     await fetchAssignedInterviews();
   };
 
+  // Fetch ALL HR rounds for Recruiter
+  const fetchAllHRRounds = async () => {
+    try {
+      const res = await axios.get(
+        "https://localhost:7119/api/HRInterview",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const hrList = res.data || [];
+
+      setCandidates(prev =>
+        prev.map(c => {
+          const hrRounds = hrList
+            .filter(r => String(r.jaId) === String(c.jaId))
+            .map(r => ({
+              hiId: r.hiId,
+              noOfRound: r.noOfRound,
+              hrDate: r.hrDate,
+              hrTime: r.hrTime,
+              meetingLink: r.meetingLink,
+              meetingSubject: r.meetingSubject,
+              interviewerName: r.interviewerName,
+              interviewerEmail: r.interviewerEmail,
+              Status: r.hrStatus,
+              IsClear: r.hrIsClear,
+              Rating: r.hrRating,
+              Feedback: r.hrFeedback
+            }));
+
+          return hrRounds.length > 0 ? { ...c, hrRounds } : c;
+        })
+      );
+    }
+    catch (err) {
+      toast.error("Failed to fetch all HR rounds!");
+    }
+  };
+
   // Update HR Round
   const updateHRInterview = async (hiId, payload) => {
     try {
       await axios.put(`https://localhost:7119/api/HRInterview/update/${hiId}`, payload);
+
       toast.success("HR round updated!");
-      await fetchHRInterviews();
+
       await fetchCandidates();
+      await fetchAllHRRounds();
+      
+      if (role === "HR") {
+        await fetchHRInterviews();
+      }
     }
     catch (err) {
-      toast.error(err.response?.data?.message || err.response?.data || "Failed to update HR round");
+      toast.error(err.response?.data?.message || err.response?.data || "Failed to update HR round!");
     }
   };
 
@@ -419,6 +466,7 @@ export const CandidateProvider = ({ children }) => {
     setTempStatuses,
     updateTemp,
     saveTempChanges,
+    fetchAllHRRounds,
   };
 
   return <CandidateContext.Provider value={value}>{children}</CandidateContext.Provider>;

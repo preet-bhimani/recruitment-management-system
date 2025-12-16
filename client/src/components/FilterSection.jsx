@@ -17,21 +17,25 @@ const FilterSection = () => {
     { key: 'technical interview', label: 'Tech Interview' },
     { key: 'hr interview', label: 'HR Interview' },
     { key: 'selected', label: 'Selected' },
+    { key: 'document pending', label: 'Document Pending' },
+    { key: 'document verification', label: 'Document Verification' },
+    { key: 'offer letter pending', label: 'Offer Letter Pending' },
+    { key: 'offer letter sent', label: 'Offer Letter Sent' },
+    { key: 'joined', label: 'Joined' },
     { key: 'rejected', label: 'Rejected' },
     { key: 'hold', label: 'Hold' }
   ];
 
   return (
     <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-4 mb-6">
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-1.5 mb-4">
         {statusOptions.map(s => (
           <button key={s.key}
             onClick={() => setFilters({ ...filters, overallStatus: s.key })}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-              filters.overallStatus === s.key
-                ? 'bg-purple-600 text-white shadow-lg'
-                : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
-            }`}>
+            className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all ${filters.overallStatus === s.key
+              ? 'bg-purple-600 text-white shadow-md'
+              : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
+              }`}>
             {s.label} ({getStatusCount(s.key)})
           </button>
         ))}
@@ -78,7 +82,7 @@ const FilterSection = () => {
         <button
           onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
           className="flex items-center gap-2 px-3 py-2 bg-neutral-700 hover:bg-neutral-600 rounded text-sm text-white transition-colors">
-          <Filter size={16} /> Advanced Filters {showAdvancedFilters ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
+          <Filter size={16} /> Advanced Filters {showAdvancedFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
 
         {/* Clear All */}
@@ -91,7 +95,7 @@ const FilterSection = () => {
       {showAdvancedFilters && (
         <div className="mt-4 pt-4 border-t border-neutral-700">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            
+
             {/* OverallStatus */}
             <select
               value={advancedFilters.jobApplicationStatus}
@@ -148,6 +152,20 @@ const FilterSection = () => {
               <option value="In Progress">In Progress</option>
               <option value="Clear">Clear</option>
               <option value="Not Clear">Not Clear</option>
+            </select>
+
+            {/* Rejection Stage */}
+            <select
+              value={advancedFilters.rejectionStage}
+              onChange={(e) => setAdvancedFilters({ ...advancedFilters, rejectionStage: e.target.value })}
+              className="px-3 py-2 bg-neutral-800 border border-neutral-600 rounded text-sm text-white">
+              <option value="all">All Rejected</option>
+              <option value="Shortlisted">Shortlisted</option>
+              <option value="Exam">Exam</option>
+              <option value="Technical Interview">Technical Interview</option>
+              <option value="HR Interview">HR Interview</option>
+              <option value="Rejected Background Verification">Rejected Background Verification</option>
+              <option value="Offer Letter Rejected">Offer Letter Rejected</option>
             </select>
           </div>
         </div>

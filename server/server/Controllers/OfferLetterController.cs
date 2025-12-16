@@ -244,7 +244,7 @@ namespace server.Controllers
                 // Change just OverallStatus OfferLetterStatus 
                 case "Rejected":
                     offer.OfferLetterStatus = "Rejected";
-                    offer.JobApplication.OverallStatus = "Offer Letter Rejected";
+                    offer.JobApplication.OverallStatus = "Rejected";
                     offer.JobApplication.RejectionStage = "Offer Letter Rejected";
                     offer.JobApplication.UpdatedAt = DateTime.UtcNow;
 

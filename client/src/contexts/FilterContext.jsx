@@ -29,7 +29,8 @@ export const FilterProvider = ({ children }) => {
     techInterviewStatus: 'all',
     techInterviewIsClear: 'all',
     hrInterviewStatus: 'all',
-    hrInterviewIsClear: 'all'
+    hrInterviewIsClear: 'all',
+    rejectionStage: 'all'
   });
 
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -68,7 +69,8 @@ export const FilterProvider = ({ children }) => {
           (advancedFilters.techInterviewStatus === 'all' || c.techInterviewStatus === advancedFilters.techInterviewStatus) &&
           (advancedFilters.techInterviewIsClear === 'all' || c.techInterviewIsClear === advancedFilters.techInterviewIsClear) &&
           (advancedFilters.hrInterviewStatus === 'all' || c.hrInterviewStatus === advancedFilters.hrInterviewStatus) &&
-          (advancedFilters.hrInterviewIsClear === 'all' || c.hrInterviewIsClear === advancedFilters.hrInterviewIsClear);
+          (advancedFilters.hrInterviewIsClear === 'all' || c.hrInterviewIsClear === advancedFilters.hrInterviewIsClear) &&
+          (advancedFilters.rejectionStage === 'all' || ( c.overallStatus === 'Rejected' && c.rejectionStage === advancedFilters.rejectionStage));
       }
 
       return statusMatch && jobMatch && dateMatch && adv;
@@ -84,7 +86,7 @@ export const FilterProvider = ({ children }) => {
   // Clear All Filters
   const clearAllFilters = () => {
     setFilters({ overallStatus: 'all', jobTitle: 'all', dateType: 'applied', fromDate: '', toDate: '' });
-    setAdvancedFilters({ status: 'all', techInterviewStatus: 'all', techInterviewIsClear: 'all', hrInterviewStatus: 'all', hrInterviewIsClear: 'all' });
+    setAdvancedFilters({ status: 'all', techInterviewStatus: 'all', techInterviewIsClear: 'all', hrInterviewStatus: 'all', hrInterviewIsClear: 'all', rejectionStage: 'all' });
     setShowAdvancedFilters(false);
     setCurrentPage(1);
   };

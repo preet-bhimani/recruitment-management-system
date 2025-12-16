@@ -282,20 +282,31 @@ namespace server.Controllers
             var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
 
             var candidates = await dbContext.HRInterviews
+                .Include(h => h.User)
+                .Include(h => h.JobOpening)
+                .Include(h => h.JobApplication)
                 .Select(h => new
                 {
                     h.HIId,
                     h.JAId,
-                    h.HRDate,
-                    h.HRRating,
+                    h.JobApplication.UserId,
+                    h.JobApplication.JOId,
                     h.NoOfRound,
+                    h.HRDate,
+                    h.HRTime,
+                    h.MeetingLink,
+                    h.InterviewerName,
+                    h.InterviewerEmail,
                     h.HRIsClear,
                     h.HRStatus,
+                    h.HRRating,
+                    h.HRFeedback,
+                    h.MeetingSubject,
                     Photo = !string.IsNullOrEmpty(h.User.Photo) ? baseUrl + h.User.Photo : null,
-                    h.User.FullName,
-                    h.User.Email,
-                    h.JobOpening.Title,
-                    h.JobApplication.OverallStatus
+                    FullName = h.User.FullName,
+                    Email = h.User.Email,
+                    Title = h.JobOpening.Title,
+                    OverallStatus = h.JobApplication.OverallStatus
                 })
                 .ToListAsync();
 
@@ -447,6 +458,7 @@ namespace server.Controllers
                             entity.HRIsClear = "In Progress";
                             entity.HRStatus = "In Progress";
                             ja.HoldOverallStatus = null;
+                            ja.OverallStatus = "HR Interview";
                         }
                         else return BadRequest("Result already distributed.");
                     }
@@ -499,6 +511,16 @@ namespace server.Controllers
                     }
                     else return BadRequest("Meeting is not completed yet.");
                     break;
+
+                case "Hold":
+
+                    if (ja.OverallStatus != "Hold")
+                    {
+                        ja.HoldOverallStatus = ja.OverallStatus;
+                    }
+                    entity.HRIsClear = "Hold";
+                    ja.OverallStatus = "Hold";
+                    break;
             }
 
             // Update based on HRStatus
@@ -529,16 +551,6 @@ namespace server.Controllers
                         ja.HoldOverallStatus = null;
                     }
                     else return BadRequest("Meeting is not completed yet.");
-                    break;
-
-                case "Hold":
-
-                    if (ja.OverallStatus != "Hold")
-                    {
-                        ja.HoldOverallStatus = ja.OverallStatus;
-                    }
-                    entity.HRStatus = "Hold";
-                    ja.OverallStatus = "Hold";
                     break;
             }
 
@@ -602,6 +614,44 @@ namespace server.Controllers
 
             return Ok(interviews);
         }
+
+        // Fetch all candidates for Recruiter
+        [Authorize(Roles = "Recruiter")]
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllHRInterviewsForRecruiter()
+        {
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+
+            var interviews = await dbContext.HRInterviews
+                .Include(h => h.User)
+                .Include(h => h.JobOpening)
+                .Include(h => h.JobApplication)
+                .OrderBy(h => h.HRDate)
+                .ThenBy(h => h.HRTime)
+                .Select(h => new
+                {
+                    h.HIId,
+                    h.NoOfRound,
+                    h.HRDate,
+                    h.HRTime,
+                    h.MeetingLink,
+                    h.HRIsClear,
+                    h.HRStatus,
+                    h.HRRating,
+                    h.HRFeedback,
+                    Photo = !string.IsNullOrWhiteSpace(h.User.Photo) ? baseUrl + h.User.Photo : null,
+                    UserId = h.User.UserId,
+                    JAId = h.JobApplication.JAId,
+                    FullName = h.User.FullName,
+                    Email = h.User.Email,
+                    Title = h.JobOpening.Title,
+                    OverallStatus = h.JobApplication.OverallStatus
+                })
+                .ToListAsync();
+
+            return Ok(interviews);
+        }
+
 
         // Get token response
         public class GoogleTokenResponse

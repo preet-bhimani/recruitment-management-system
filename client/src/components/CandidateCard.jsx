@@ -9,8 +9,6 @@ const CandidateCard = ({ candidate }) => {
   const {
     updateCandidate,
     scheduleExam,
-    passRound,
-    failRound,
     candidates,
     getLatestRound,
     getRoundCount,
@@ -19,6 +17,7 @@ const CandidateCard = ({ candidate }) => {
     saveTempChanges,
     setTempStatuses,
     updateTechnicalResult,
+    updateHRInterview
   } = useCandidates();
 
   const {
@@ -72,6 +71,21 @@ const CandidateCard = ({ candidate }) => {
   };
 
   const latestHr = useMemo(() => getLatestRound(candidate, 'hr'), [candidate, getLatestRound]);
+
+  // Get Lastest HR Intervie Round from Table
+  const getEffectiveLatestHr = () => {
+    if (!latestHr) return null;
+
+    const hrIsClearTemp = tempStatuses[`${candidate.jaId}-hrIsClear`];
+    const hrStatusTemp = tempStatuses[`${candidate.jaId}-hrStatus`];
+
+    return {
+      ...latestHr,
+      IsClear: hrIsClearTemp ?? latestHr.IsClear,
+      Status: hrStatusTemp ?? latestHr.Status,
+    };
+  };
+
   const techRounds = useMemo(() => getRoundCount(candidate, 'tech'), [candidate, getRoundCount]);
   const hrRounds = useMemo(() => getRoundCount(candidate, 'hr'), [candidate, getRoundCount]);
 
@@ -93,11 +107,18 @@ const CandidateCard = ({ candidate }) => {
   const isInTechStageUI = () => {
     const overall = candidate.overallStatus;
     const rejectionStage = candidate.rejectionStage;
-    const hasAnyTechRound = Array.isArray(candidate.techRounds) && candidate.techRounds.length > 0;
 
     if (overall === "Technical Interview") return true;
-    if (overall === "Rejected" && rejectionStage === "Technical Interview") return true;
-    if (overall === "Hold" && hasAnyTechRound) return true;
+
+    if (
+      overall === "Rejected" &&
+      rejectionStage === "Technical Interview"
+    ) return true;
+
+    if (
+      overall === "Hold" &&
+      candidate.holdOverallStatus === "Technical Interview"
+    ) return true;
 
     return false;
   };
@@ -127,20 +148,17 @@ const CandidateCard = ({ candidate }) => {
 
   // Show Meeting HR Meeting Condition
   const shouldShowMeetingHR = () => {
+    const effectiveHr = getEffectiveLatestHr();
     if (effectiveOverall() !== 'HR Interview') return false;
     if (passFailFlowActive()) return false;
-    if (!latestHr) return true;
-    if (latestHr.Status === 'Not Clear') return false;
-    if (latestHr.IsClear === 'In Progress' && latestHr.Status === 'In Progress') return false;
-    if (latestHr.IsClear === 'Clear' && latestHr.Status === 'In Progress') return true;
-    return false;
-  };
 
-  // Show Pass or Fail for HR Condition
-  const shouldShowPassFailHR = () => {
-    if (effectiveOverall() !== 'HR Interview') return false;
-    if (!latestHr) return false;
-    return latestHr.IsClear === 'In Progress' && latestHr.Status === 'In Progress';
+    // No Round Allow
+    if (!effectiveHr) return true;
+
+    // If IsClear is Clear and Status is In Progress Show
+    if (effectiveHr.IsClear === "Clear" && effectiveHr.Status === "In Progress") return true;
+
+    return false;
   };
 
   // Technical IsClear Change Value
@@ -187,6 +205,11 @@ const CandidateCard = ({ candidate }) => {
     setShowExamCalendar(null);
   };
 
+  // Status Chaneg Modal
+  const openActionModalFor = (actionType) => {
+    setMessage(getDefaultMessage(actionType));
+    setShowMessage(`${actionType}-${candidate.jaId}`);
+  };
   // Open Exam Pass Modal
   const openExamPass = () => {
     openActionModalFor("pass");
@@ -195,15 +218,6 @@ const CandidateCard = ({ candidate }) => {
   // Open Exam Fail Modal
   const openExamFail = () => {
     openActionModalFor("fail");
-  };
-
-  const openPass = (type) => { setMessage(getDefaultMessage(type === 'tech' ? 'tech-clear' : 'hr-clear')); setShowMessage(type === 'tech' ? `tech-pass-${candidate.jaId}` : `hr-pass-${candidate.jaId}`); };
-  const openFail = (type) => { setMessage(getDefaultMessage(type === 'tech' ? 'tech-not-clear' : 'hr-not-clear')); setShowMessage(type === 'tech' ? `tech-fail-${candidate.jaId}` : `hr-fail-${candidate.jaId}`); };
-
-  // Status Chaneg Modal
-  const openActionModalFor = (actionType) => {
-    setMessage(getDefaultMessage(actionType));
-    setShowMessage(`${actionType}-${candidate.jaId}`);
   };
 
   // Open Shortlist Modal
@@ -281,14 +295,6 @@ const CandidateCard = ({ candidate }) => {
     setShowMessage(null);
   };
 
-  // Rating Logic
-  const onSubmitRating = () => {
-    if (!rating) return alert('Pick 1-5');
-    const r = showRating || '';
-    if (r === `hr-fail-${candidate.jaId}`) { failRound(candidate.jaId, 'hr', { rating, feedback: message }); setShowRating(null); setRating(0); setMessage(''); return; }
-    if (r === `hr-${candidate.jaId}`) { passRound(candidate.jaId, 'hr', { rating, feedback: message }); setShowRating(null); setRating(0); setMessage(''); return; }
-  };
-
   // Final Rating After Status Change
   const onSubmitRecruiterTechRating = async () => {
     const latest = latestTech;
@@ -324,6 +330,40 @@ const CandidateCard = ({ candidate }) => {
 
     delete tempStatuses[`${candidate.jaId}-techIsClear`];
     delete tempStatuses[`${candidate.jaId}-techStatus`];
+
+    closeAllModals();
+    setRating(0);
+    setMessage("");
+  };
+
+  // HR Rating Submit
+  const onSubmitHRRating = async () => {
+    if (!rating) return alert("Pick 1-5");
+    if (!latestHr) return;
+
+    const isPass = showRating === `hr-${candidate.jaId}`;
+
+    const payload = {
+      hrIsClear: isPass ? "Clear" : "Not Clear",
+      hrStatus: isPass ? "In Progress" : "Not Clear",
+      hrRating: rating,
+      hrFeedback: message.trim(),
+      hrDate: latestHr.hrDate,
+      hrTime: latestHr.hrTime,
+      meetingSubject: latestHr.meetingSubject ?? "",
+      interviewerName: latestHr.interviewerName ?? "",
+      interviewerEmail: latestHr.interviewerEmail ?? ""
+    };
+
+    try {
+      await updateHRInterview(latestHr.hiId, payload);
+    }
+    catch (err) {
+      toast.error("Failed to update HR result!");
+    }
+
+    delete tempStatuses[`${candidate.jaId}-hrIsClear`];
+    delete tempStatuses[`${candidate.jaId}-hrStatus`];
 
     closeAllModals();
     setRating(0);
@@ -393,18 +433,61 @@ const CandidateCard = ({ candidate }) => {
     setTempStatuses({ ...tempStatuses });
   };
 
+  // HR Interview Drop Down Save
+  const onSaveHrDropdown = async () => {
+    const isClearTemp = tempStatuses[`${candidate.jaId}-hrIsClear`];
+    const statusTemp = tempStatuses[`${candidate.jaId}-hrStatus`];
+
+    if (isClearTemp === undefined && statusTemp === undefined) return;
+    if (showMessage || showRating) return;
+
+    const latest = latestHr;
+    if (!latest) return;
+
+    if (isClearTemp === "Clear") {
+      setMessage(getDefaultMessage("hr-clear"));
+      setShowMessage(`hr-pass-${candidate.jaId}`);
+      return;
+    }
+
+    if (isClearTemp === "Not Clear") {
+      setMessage(getDefaultMessage("hr-not-clear"));
+      setShowMessage(`hr-fail-${candidate.jaId}`);
+      return;
+    }
+
+    updateHRInterview(latest.hiId, {
+      hrIsClear: isClearTemp ?? latest.IsClear,
+      hrStatus: statusTemp ?? latest.Status,
+      hrDate: latest.hrDate,
+      hrTime: latest.hrTime,
+      meetingSubject: latest.meetingSubject,
+      interviewerName: latest.interviewerName,
+      interviewerEmail: latest.interviewerEmail,
+      hrRating: latest.Rating ?? null,
+      hrFeedback: latest.Feedback ?? ""
+    });
+
+    delete tempStatuses[`${candidate.jaId}-hrIsClear`];
+    delete tempStatuses[`${candidate.jaId}-hrStatus`];
+    setTempStatuses({ ...tempStatuses });
+  };
+
   // Open Meeting Button and Navigate
   const openMeeting = (type) => {
-    const nextTechRound = (candidate.techRounds?.length ?? 0) + 1;
+    const nextRound =
+      type === 'tech'
+        ? (candidate.techRounds?.length ?? 0) + 1
+        : (candidate.hrRounds?.length ?? 0) + 1;
 
     navigate("/recruiter-meeting-scheduling", {
       state: {
-        candidateId: candidate.jaId,
-        type: "tech",
+        type,
+        overallStatus: type === 'hr' ? 'HR Interview' : 'Technical Interview',
         joId: candidate.joId,
         jaId: candidate.jaId,
         userId: candidate.userId,
-        roundNo: nextTechRound
+        roundNo: nextRound
       }
     });
   };
@@ -461,28 +544,31 @@ const CandidateCard = ({ candidate }) => {
         )}
 
         {/* Show HR DropDowns */}
-        {effectiveOverall() === 'HR Interview' && latestHr && (
-          <>
-            <select
-              value={tempStatuses[`${candidate.jaId}-hrIsClear`] ?? (latestHr?.IsClear ?? 'In Progress')}
-              onChange={(e) => handleHrIsClearChange(e.target.value)}
-              className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white appearance-none focus:outline-none">
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Clear">Clear</option>
-              <option value="Not Clear">Not Clear</option>
-            </select>
+        {(effectiveOverall() === 'HR Interview' ||
+          (effectiveOverall() === 'Hold' && candidate.holdOverallStatus === 'HR Interview')
+        ) && latestHr && (
+            <>
+              <select
+                value={tempStatuses[`${candidate.jaId}-hrIsClear`] ?? (getEffectiveLatestHr()?.IsClear ?? 'In Progress')}
+                onChange={(e) => handleHrIsClearChange(e.target.value)}
+                className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white appearance-none focus:outline-none">
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Clear">Clear</option>
+                <option value="Not Clear">Not Clear</option>
+                <option value="Hold">Hold</option>
+              </select>
 
-            <select
-              value={tempStatuses[`${candidate.jaId}-hrStatus`] ?? (latestHr?.Status ?? 'In Progress')}
-              onChange={(e) => handleHrStatusChange(e.target.value)}
-              className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white appearance-none focus:outline-none">
-              <option value="In Progress">In Progress</option>
-              <option value="Clear">Clear</option>
-              <option value="Not Clear">Not Clear</option>
-            </select>
-          </>
-        )}
+              <select
+                value={tempStatuses[`${candidate.jaId}-hrStatus`] ?? (getEffectiveLatestHr()?.Status ?? 'In Progress')}
+                onChange={(e) => handleHrStatusChange(e.target.value)}
+                className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white appearance-none focus:outline-none">
+                <option value="In Progress">In Progress</option>
+                <option value="Clear">Clear</option>
+                <option value="Not Clear">Not Clear</option>
+              </select>
+            </>
+          )}
 
         {/* Save Button Logic */}
         {pendingStatus !== candidate.status && !showExamCalendar && (
@@ -497,6 +583,18 @@ const CandidateCard = ({ candidate }) => {
           ) && !showMessage && !showRating && (
             <button onClick={onSaveTechDropdown} className="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-xs text-white"> Save </button>
           )}
+
+        {/* Save Button Logic for HR Interview */}
+        {(effectiveOverall() === 'HR Interview' ||
+          (effectiveOverall() === 'Hold' && candidate.holdOverallStatus === 'HR Interview')
+        ) &&
+          (
+            tempStatuses[`${candidate.jaId}-hrIsClear`] !== undefined ||
+            tempStatuses[`${candidate.jaId}-hrStatus`] !== undefined
+          ) && !showMessage && !showRating && (
+            <button onClick={onSaveHrDropdown} className="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-xs text-white"> Save </button>
+          )}
+
 
         {/* Selected or Rejected When Applied */}
         {effectiveOverall() === 'Applied' && (
@@ -537,14 +635,6 @@ const CandidateCard = ({ candidate }) => {
           <button onClick={() => openMeeting('hr')} className="px-2 py-1 bg-pink-700 hover:bg-pink-600 rounded text-xs text-white" title="Schedule HR Meeting">
             <Video size={14} />
           </button>
-        )}
-
-        {/* HR Pass or Fail */}
-        {effectiveOverall() === 'HR Interview' && shouldShowPassFailHR() && (
-          <>
-            <button onClick={() => openPass('hr')} className="px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-xs text-white">Pass</button>
-            <button onClick={() => openFail('hr')} className="px-2 py-1 bg-red-800 hover:bg-red-700 rounded text-xs text-white">Fail</button>
-          </>
         )}
       </div>
     );
@@ -665,7 +755,7 @@ const CandidateCard = ({ candidate }) => {
                     onSubmitRecruiterTechRating();
                   }
                   else {
-                    onSubmitRating();
+                    onSubmitHRRating();
                   }
                 }}
                 className="px-3 py-1 bg-yellow-600 rounded text-white text-xs">
