@@ -84,6 +84,7 @@ import AdminAddOfferLetter from './admin/Offer Letter/AdminAddOfferLetter';
 import AdminSentOfferLetter from './admin/Offer Letter/AdminSentOfferLetter';
 import AdminOfferLetter from './admin/Offer Letter/AdminOfferLetter';
 import AdminUpdateOfferLetter from './admin/Offer Letter/AdminUpdateOfferLetter';
+import RecruiterSentOfferLetter from './recruiter/RecruiterSentOfferLetter';
 
 function App() {
   return (
@@ -151,6 +152,7 @@ function App() {
           <Route path='/recruiter-add-jobopening' element={<RecruiterAddJobOpening />} />
           <Route path='/recruiter-update-jobopening/:id' element={<RecruiterUpdateJobOpening />} />
           <Route path='/recruiter-meeting-scheduling' element={<RecruiterMeetingScheduling />} />
+          <Route path='/recruiter-sent-offer-letter/:id' element={<RecruiterSentOfferLetter />} />
           <Route path='/reviewer-dashboard' element={<ReviewerDashboard />} />
           <Route path='/interviewer-feedback' element={<InterviewerFeedback />} />
           <Route path='/interview-meeting-details' element={<InterviewerMeetingDetails />} />

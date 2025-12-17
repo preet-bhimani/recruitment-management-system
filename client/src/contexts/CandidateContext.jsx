@@ -99,6 +99,7 @@ export const CandidateProvider = ({ children }) => {
       if (role === "Recruiter") {
         await fetchTechInterviews();
         await fetchAllHRRounds();
+        await fetchOfferLetters();
       }
     };
     load();
@@ -344,7 +345,7 @@ export const CandidateProvider = ({ children }) => {
 
       await fetchCandidates();
       await fetchAllHRRounds();
-      
+
       if (role === "HR") {
         await fetchHRInterviews();
       }
@@ -390,6 +391,53 @@ export const CandidateProvider = ({ children }) => {
         return found ? { ...c, ...found } : c;
       })
     );
+  };
+
+  // Fetch Offer Letter Details
+  const fetchOfferLetters = async () => {
+    try {
+      const res = await axios.get("https://localhost:7119/api/OfferLetter");
+      const offers = res.data || [];
+
+      setCandidates(prev =>
+        prev.map(c => {
+          const offer = offers.find(
+            o => String(o.jaId) === String(c.jaId)
+          );
+
+          return {
+            ...c,
+            olId: offer?.olId ?? null,
+            offerLetterStatus: offer?.offerLetterStatus ?? null,
+            templateType: offer?.templateType,
+            salary: offer?.salary,
+            joiningDate: offer?.joiningDate,
+            bondTime: offer?.bondTime,
+            endDate: offer?.endDate
+          };
+        })
+      );
+    }
+    catch (err) {
+      toast.error("Failed to load offer letter data!");
+    }
+  };
+
+  // Update Offer Letter Status
+  const updateOfferLetterStatus = async (olId, payload) => {
+    try {
+      const res = await axios.put(`https://localhost:7119/api/OfferLetter/update/${olId}`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      toast.success(res.data || "Offer Letter Sent Successfully!");
+      await fetchCandidates();
+      await fetchOfferLetters();
+    }
+    catch (err) {
+      toast.error(err.response?.data || "Failed to update offer letter status!");
+      throw err;
+    }
   };
 
   // Save Changes
@@ -467,6 +515,7 @@ export const CandidateProvider = ({ children }) => {
     updateTemp,
     saveTempChanges,
     fetchAllHRRounds,
+    updateOfferLetterStatus,
   };
 
   return <CandidateContext.Provider value={value}>{children}</CandidateContext.Provider>;

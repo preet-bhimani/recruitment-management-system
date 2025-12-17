@@ -17,7 +17,8 @@ const CandidateCard = ({ candidate }) => {
     saveTempChanges,
     setTempStatuses,
     updateTechnicalResult,
-    updateHRInterview
+    updateHRInterview,
+    updateOfferLetterStatus,
   } = useCandidates();
 
   const {
@@ -98,7 +99,11 @@ const CandidateCard = ({ candidate }) => {
     'HR Interview': 'bg-pink-600',
     Selected: 'bg-green-600',
     Rejected: 'bg-red-600',
-    Hold: 'bg-gray-600'
+    Hold: 'bg-gray-600',
+    'Document Pending': 'bg-orange-600',
+    'Document Submitted': 'bg-cyan-600',
+    'Offer Letter Pending': 'bg-teal-600',
+    'Offer Letter Sent': 'bg-indigo-600',
   }[s] || 'bg-yellow-600');
 
   const effectiveOverall = () => tempStatuses?.[`${candidate.jaId}-overallStatus`] ?? candidate.overallStatus;
@@ -473,6 +478,36 @@ const CandidateCard = ({ candidate }) => {
     setTempStatuses({ ...tempStatuses });
   };
 
+  // Offer Letter Drop Down Save
+  const onSaveOfferLetterDropdown = async () => {
+    const statusTemp =
+      tempStatuses[`${candidate.jaId}-offerLetterStatus`];
+
+    if (!statusTemp) return;
+
+    if (!candidate.olId) {
+      toast.error("Offer letter not synced yet. Please wait!");
+      return;
+    }
+
+    if (showMessage || showRating) return;
+
+    await updateOfferLetterStatus(candidate.olId, {
+      offerLetterStatus: statusTemp,
+      userId: candidate.userId,
+      joId: candidate.joId,
+      jaId: candidate.jaId,
+      joiningDate: candidate.joiningDate,
+      endDate: candidate.endDate,
+      bondTime: candidate.bondTime,
+      salary: candidate.salary,
+      templateType: candidate.templateType
+    });
+
+    delete tempStatuses[`${candidate.jaId}-offerLetterStatus`];
+    setTempStatuses({ ...tempStatuses });
+  };
+
   // Open Meeting Button and Navigate
   const openMeeting = (type) => {
     const nextRound =
@@ -570,6 +605,21 @@ const CandidateCard = ({ candidate }) => {
             </>
           )}
 
+        {/* Offer Letter Status Dropdown */}
+        {(effectiveOverall() === 'Offer Letter Sent' ||
+          (effectiveOverall() === 'Hold' && candidate.holdOverallStatus === 'Offer Letter Sent')
+        ) && (
+            <select
+              value={tempStatuses[`${candidate.jaId}-offerLetterStatus`] ?? candidate.offerLetterStatus ?? 'Sent'}
+              onChange={(e) => updateTemp(candidate.jaId, 'offerLetterStatus', e.target.value)}
+              className="px-2 py-1 bg-neutral-800 border border-neutral-600 rounded text-xs text-white appearance-none focus:outline-none">
+              <option value="Sent" disabled>Sent</option>
+              <option value="Accepted">Accepted</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Hold">Hold</option>
+            </select>
+          )}
+
         {/* Save Button Logic */}
         {pendingStatus !== candidate.status && !showExamCalendar && (
           <button onClick={handleSaveStatus} className="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-xs text-white"> ✓ Save </button>
@@ -594,7 +644,6 @@ const CandidateCard = ({ candidate }) => {
           ) && !showMessage && !showRating && (
             <button onClick={onSaveHrDropdown} className="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-xs text-white"> Save </button>
           )}
-
 
         {/* Selected or Rejected When Applied */}
         {effectiveOverall() === 'Applied' && (
@@ -636,6 +685,22 @@ const CandidateCard = ({ candidate }) => {
             <Video size={14} />
           </button>
         )}
+
+        {/* Send Offer Letter */}
+        {effectiveOverall() === 'Offer Letter Pending' && (
+          <button onClick={() => navigate(`/recruiter-sent-offer-letter/${candidate.jaId}`)} className="px-2 py-1 bg-purple-700 hover:bg-purple-600 rounded-md text-[11px] text-white flex items-center gap-1" title="Send Offer Letter">
+            <Send size={14} />
+            Offer Letter
+          </button>
+        )}
+
+        {/* Save Button for Offer Letter Status */}
+        {(effectiveOverall() === 'Offer Letter Sent' ||
+          (effectiveOverall() === 'Hold' && candidate.holdOverallStatus === 'Offer Letter Sent')
+        ) &&
+          tempStatuses[`${candidate.jaId}-offerLetterStatus`] !== undefined && (
+            <button onClick={onSaveOfferLetterDropdown} className="px-2 py-1 bg-green-600 hover:bg-green-500 rounded text-xs text-white"> Save </button>
+          )}
       </div>
     );
   };

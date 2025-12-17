@@ -140,10 +140,13 @@ namespace server.Controllers
                 .Select(of => new
                 {
                     of.OLId,
+                    of.JAId,
                     of.Salary,
                     of.TemplateType,
                     of.OfferLetterStatus,
                     of.JoiningDate,
+                    of.EndDate,
+                    of.BondTime,
                     of.User.FullName,
                     of.User.Email,
                     of.JobApplication.OverallStatus,
@@ -191,6 +194,7 @@ namespace server.Controllers
 
 
         // Update Offer letter and sent to mail
+        [Authorize(Roles = "Admin, Recruiter")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateOfferLetter(Guid id, GenerateOfferLetter golDto)
         {

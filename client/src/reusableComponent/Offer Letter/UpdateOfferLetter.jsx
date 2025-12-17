@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useAuth } from "../../contexts/AuthContext";
 
 const UpdateOfferLetter = ({ id }) => {
 
     const navigate = useNavigate();
+    const { token } = useAuth();
 
     // Form Data
     const [formData, setFormData] = useState({
@@ -137,7 +139,9 @@ const UpdateOfferLetter = ({ id }) => {
         try {
             const res = await axios.put(
                 `https://localhost:7119/api/OfferLetter/update/${id}`,
-                formData
+                formData, {
+                headers: { Authorization: `Bearer ${token}` }
+            }
             );
             toast.success(res.data || "Offer letter updated successfully!");
             navigate(-1);
