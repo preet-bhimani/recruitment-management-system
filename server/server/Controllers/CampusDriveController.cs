@@ -26,8 +26,14 @@ namespace server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            // Drive date cannot be in the past
+            if (cdDto.DriveDate < DateOnly.FromDateTime(DateTime.UtcNow))
+            {
+                return BadRequest("Campus drive date cannot be in the past");
+            }
+
             // Check if JobOpening exists
-            var jobOpening = await dbContext.JobOpenings.FindAsync(cdDto.JOId);
+            var jobOpening = await dbContext.JobOpenings.FirstOrDefaultAsync(j => j.JOId == cdDto.JOId && j.Status == "Open");
             if (jobOpening == null)
                 return NotFound("Job opening not found");
 
@@ -60,7 +66,7 @@ namespace server.Controllers
                     cd.DriveDate,
                     cd.JOId,
                     cd.IsActive,
-                    JobTitle = cd.JobOpening.Title,
+                    Title = cd.JobOpening.Title,
                 })
                 .ToListAsync();
 
@@ -81,12 +87,55 @@ namespace server.Controllers
             return Ok(camp);
         }
 
+        // Get job opening which is pending to add campus drive
+        [HttpGet("add-campus")]
+        public async Task<IActionResult> GetPendingJobsCampusDrive()
+        {
+            var jobs = await dbContext.JobOpenings
+                .Where(j => j.Status == "Open")
+                .Select(j => new
+                {
+                    j.JOId,
+                    j.Title,
+                    j.Location,
+                    j.JobType,
+                    j.Experience,
+                })
+                .ToListAsync();
+
+            return Ok(jobs);
+        }
+
+        // Get visible campus drives for candidate
+        [HttpGet("visible/{joId:guid}")]
+        public async Task<IActionResult> GetVisibleCampusDrivesForCandidate(Guid joId)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var visibleFromDays = 1;
+
+            var drives = await dbContext.CampusDrives
+                .Where(cd =>
+                    cd.JOId == joId &&
+                    cd.IsActive &&
+                    cd.DriveDate >= today &&
+                    cd.DriveDate <= today.AddDays(visibleFromDays)
+                )
+                .Select(cd => new
+                {
+                    cd.CDID,
+                    cd.UniversityName,
+                    cd.DriveDate
+                })
+                .ToListAsync();
+
+            return Ok(drives);
+        }
+
         // Update campus drive
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateCampusDrive(CampusDriveDto cdDto, Guid id)
         {
 
-            // Model state validation
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -98,7 +147,7 @@ namespace server.Controllers
             }
 
             // Check if JobOpening exists
-            var jobOpening = await dbContext.JobOpenings.FindAsync(cdDto.JOId);
+            var jobOpening = await dbContext.JobOpenings.FirstOrDefaultAsync(j => j.JOId == cdDto.JOId && j.Status == "Open");
             if (jobOpening == null)
                 return NotFound("Job opening not found");
 

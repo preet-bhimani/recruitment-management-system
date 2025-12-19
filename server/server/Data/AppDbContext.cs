@@ -44,11 +44,6 @@ namespace server.Data
                 .WithMany(jo => jo.CampusDrives)
                 .HasForeignKey(cd => cd.JOId);
 
-            modelBuilder.Entity<CampusDrive>()
-                .HasMany(cd => cd.Users)
-                .WithOne(u => u.CampusDrive)
-                .HasForeignKey(u => u.CDID);
-
             modelBuilder.Entity<JobApplication>()
                 .HasOne(j => j.User)
                 .WithMany() 
@@ -60,6 +55,24 @@ namespace server.Data
                 .WithMany()
                 .HasForeignKey(j => j.JOId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<JobApplication>()
+                .HasOne(ja => ja.CampusDrive)
+                .WithMany()
+                .HasForeignKey(ja => ja.CDID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<JobApplication>()
+                .HasOne(ja => ja.WalkInDrive)
+                .WithMany()
+                .HasForeignKey(ja => ja.WalkId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<JobApplication>()
+                .HasIndex(j => j.CDID);
+
+            modelBuilder.Entity<JobApplication>()
+                .HasIndex(j => j.WalkId);
 
             modelBuilder.Entity<TechnicalInterview>()
                 .HasOne(t => t.JobOpening)

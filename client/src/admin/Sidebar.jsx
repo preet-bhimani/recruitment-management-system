@@ -16,6 +16,7 @@ import {
   University,
   IdCardLanyard,
   GraduationCap,
+  Footprints,
 } from "lucide-react";
 
 const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
@@ -86,6 +87,14 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       children: [
         { name: "Admin Campus Drive", path: "/admin-campusdrive" },
         { name: "Add Campus Drive ", path: "/admin-add-campusdrive" },
+      ],
+    },
+    {
+      title: "Walk In Drive",
+      icon: <Footprints size={20} />,
+      children: [
+        { name: "Admin Walk In Drive", path: "/admin-walkindrive" },
+        { name: "Add Walk In Drive ", path: "/admin-add-walkindrive" },
       ],
     },
     {

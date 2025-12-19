@@ -22,7 +22,6 @@ const AdminUpdateCampusDrive = () => {
 
     // Error Message
     const [errors, setErrors] = useState({
-        joId: "",
         universityName: "",
         driveDate: "",
     });
@@ -125,11 +124,10 @@ const AdminUpdateCampusDrive = () => {
                             </label>
                             <input
                                 type="text"
+                                disabled
                                 value={campusdrive.joId}
-                                onChange={e => setCampusDrive({ ...campusdrive, joId: e.target.value })}
                                 placeholder="Enter Job Opening Id"
-                                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-                            {errors.joId && (<p className="text-rose-500 text-sm mt-1">{errors.joId}</p>)}
+                                className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-300 cursor-not-allowed" />
                         </div>
 
                         {/* University Name */}

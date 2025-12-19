@@ -50,13 +50,6 @@ namespace server.Controllers
             if (await dbContext.Users.AnyAsync(u => u.Email.ToLower() == email))
                 return Conflict("Email already registered.");
 
-            // If reference is Campus drive then allow CDID
-            if (userDto.Reference == "Campus drive")
-            {
-                if (!userDto.CDID.HasValue)
-                    return BadRequest("CDID is required.");
-            }
-
             string? storedFileName = null;
 
             if (photo == null || photo.Length == 0)
@@ -108,10 +101,6 @@ namespace server.Controllers
             // Password hashing logic
             var hasher = new PasswordHasher<User>();
             user.Password = hasher.HashPassword(user, userDto.Password);
-
-            // Assign CDID
-            if (userDto.CDID.HasValue)
-                user.CDID = userDto.CDID.Value;
 
             // Add User to Database
             dbContext.Users.Add(user);

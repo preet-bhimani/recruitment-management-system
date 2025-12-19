@@ -7,6 +7,8 @@ import {
   X,
   Users,
   Briefcase,
+  University,
+  Footprints
 } from "lucide-react";
 
 const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
@@ -29,6 +31,22 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
       children: [
         { name: "Job Opening", path: "/recruiter-jobopening" },
         { name: "Create Job Opening", path: "/recruiter-add-jobopening" },
+      ],
+    },
+    {
+      title: "Campus Drive",
+      icon: <University size={20} />,
+      children: [
+        { name: "Admin Campus Drive", path: "/recruiter-campusdrive" },
+        { name: "Add Campus Drive ", path: "/recruiter-add-campusdrive" },
+      ],
+    },
+    {
+      title: "Walk In Drive",
+      icon: <Footprints size={20} />,
+      children: [
+        { name: "Admin Walk In Drive", path: "/recruiter-walkindrive" },
+        { name: "Add Walk In Drive ", path: "/recruiter-add-walkindrive" },
       ],
     },
   ];

@@ -32,10 +32,6 @@ namespace server.Controllers
             if (await dbContext.Users.AnyAsync(u => u.Email.ToLower() == email))
                 return Conflict("Email already registered.");
 
-            // If reference is Campus drive then allow CDID
-            if (userDto.Reference == "Campus drive" && !userDto.CDID.HasValue)
-                return BadRequest("CDID is required for Campus drive reference.");
-
             string? storedFileName = null;
 
             if (photo == null || photo.Length == 0)
@@ -119,7 +115,6 @@ namespace server.Controllers
                 YearsOfExperience = userDto.YearsOfExperience,
                 PreCompanyName = userDto.PreCompanyName,
                 PreCompanyTitle = userDto.PreCompanyTitle,
-                CDID = userDto.CDID,
                 Role = string.IsNullOrWhiteSpace(userDto.Role) ? "Candidate" : userDto.Role,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
@@ -220,7 +215,6 @@ namespace server.Controllers
                 user.YearsOfExperience,
                 user.PreCompanyName,
                 user.PreCompanyTitle,
-                user.CDID,
                 user.Role,
                 user.IsActive,
                 user.CreatedAt,
@@ -243,10 +237,6 @@ namespace server.Controllers
             // Prevent to change email
             if (!string.Equals(user.Email.Trim(), (userDto.Email ?? "").Trim(), StringComparison.OrdinalIgnoreCase))
                 return BadRequest("Email cannot be changed.");
-
-            // If reference is Campus drive then allow CDID
-            if (userDto.Reference == "Campus drive" && !userDto.CDID.HasValue)
-                return BadRequest("CDID is required for Campus drive reference.");
 
             // Handle photo upload
             if (photo != null && photo.Length > 0)
@@ -334,7 +324,6 @@ namespace server.Controllers
             user.PreCompanyName = userDto.PreCompanyName;
             user.PreCompanyTitle = userDto.PreCompanyTitle;
             user.Role = userDto.Role;
-            user.CDID = userDto.CDID;
             user.IsActive = userDto.IsActive;
             user.UpdatedAt = DateTime.UtcNow;
 

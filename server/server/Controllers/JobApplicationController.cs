@@ -41,6 +41,14 @@ namespace server.Controllers
                 return NotFound("Job Opening is not found");
             }
 
+            // If Job status is not open then do not allow to apply
+            var job = await dbContext.JobOpenings.FirstAsync(j => j.JOId == jaDto.JOId);
+
+            if (job.Status != "Open")
+            {
+                return BadRequest("Job opening is not open for applications");
+            }
+
             // If Candidate have not upload resume and try apply jobs
             var resumeExist = await dbContext.Users.AnyAsync(r => r.UserId == jaDto.UserId && !string.IsNullOrEmpty(r.Resume));
             if (!resumeExist)
@@ -55,6 +63,84 @@ namespace server.Controllers
                 return BadRequest("You already have applied for this job");
             }
 
+            // If candidate added CDID value at that time check if exist or not
+            if (jaDto.CDID.HasValue)
+            {
+                var campusExists = await dbContext.CampusDrives
+                    .FirstOrDefaultAsync(cd => cd.CDID == jaDto.CDID && cd.IsActive);
+
+                if (campusExists == null)
+                {
+                    return BadRequest("Invalid Campus Drive ID");
+                }
+
+                if (campusExists.JOId != jaDto.JOId)
+                {
+                    return BadRequest("Campus Drive does not belong to this job opening");
+                }
+            }
+
+            // If candidate added WalkId value at that time check if exist or not
+            if (jaDto.WalkId.HasValue)
+            {
+                var walkInExists = await dbContext.WalkInDrives
+                    .FirstOrDefaultAsync(w => w.WalkId == jaDto.WalkId && w.IsActive);
+
+                if (walkInExists == null)
+                {
+                    return BadRequest("Invalid Walk-In Drive ID");
+                }
+
+                if (walkInExists.JOId != jaDto.JOId)
+                {
+                    return BadRequest("Walk-In Drive does not belong to this job opening");
+                }
+            }
+
+            // Candidate only select walk in drive or campus drive
+            if (jaDto.CDID.HasValue && jaDto.WalkId.HasValue)
+            {
+                return BadRequest("Application can be from either Campus Drive or Walk In Drive not both");
+            }
+
+            // Fetch today date
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var hasActiveCampus = await dbContext.CampusDrives
+                .AnyAsync(cd => cd.JOId == jaDto.JOId && cd.IsActive && cd.DriveDate >= today);
+
+            var hasActiveWalkIn = await dbContext.WalkInDrives
+                .AnyAsync(w => w.JOId == jaDto.JOId && w.IsActive && w.DriveDate >= today);
+
+            // If no walk in drive or campus drive for job
+            if (!hasActiveCampus && !hasActiveWalkIn)
+            {
+                return BadRequest("No active Campus or Walk In drive available for this job");
+            }
+
+            // If the campus drive date is gone then not allowed to apply.
+            if (jaDto.CDID.HasValue)
+            {
+                var cdDate = await dbContext.CampusDrives
+                    .Where(cd => cd.CDID == jaDto.CDID)
+                    .Select(cd => cd.DriveDate)
+                    .FirstAsync();
+
+                if (cdDate < today)
+                    return BadRequest("Campus Drive date has passed");
+            }
+
+            // If the walk in drive date is gone then not allowed to apply
+            if (jaDto.WalkId.HasValue)
+            {
+                var wiDate = await dbContext.WalkInDrives
+                    .Where(w => w.WalkId == jaDto.WalkId)
+                    .Select(w => w.DriveDate)
+                    .FirstAsync();
+
+                if (wiDate < today)
+                    return BadRequest("Walk-In Drive date has passed");
+            }
+
             var jobapplication = new JobApplication
             {
                 UserId = jaDto.UserId,
@@ -64,6 +150,8 @@ namespace server.Controllers
                 Feedback = jaDto.Feedback,
                 Status = jaDto.Status,
                 OverallStatus = jaDto.OverallStatus,
+                CDID = jaDto.CDID,
+                WalkId = jaDto.WalkId,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -118,6 +206,56 @@ namespace server.Controllers
             }
 
             return Ok(jobapp);
+        }
+
+        // Show Options for Apply
+        [HttpGet("apply-options/{joId:guid}")]
+        public async Task<IActionResult> GetApplyOptions(Guid joId)
+        {
+            // Check job exists & open
+            var job = await dbContext.JobOpenings.FirstOrDefaultAsync(j => j.JOId == joId && j.Status == "Open");
+
+            if (job == null)
+            {
+                return NotFound("Job opening not available");
+            }
+
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            // Campus Drives
+            var campusDrives = await dbContext.CampusDrives
+                .Where(cd =>
+                    cd.JOId == joId &&
+                    cd.IsActive &&
+                    cd.DriveDate >= today)
+                .Select(cd => new
+                {
+                    cd.CDID,
+                    cd.UniversityName,
+                    cd.DriveDate
+                })
+                .ToListAsync();
+
+            // Walk-In Drives
+            var walkInDrives = await dbContext.WalkInDrives
+                .Where(w =>
+                    w.JOId == joId &&
+                    w.IsActive &&
+                    w.DriveDate >= today)
+                .Select(w => new
+                {
+                    w.WalkId,
+                    w.Location,
+                    w.DriveDate
+                })
+                .ToListAsync();
+
+            return Ok(new
+            {
+                allowDirectApply = true,
+                campusDrives,
+                walkInDrives
+            });
         }
 
         // Update job application based on its status

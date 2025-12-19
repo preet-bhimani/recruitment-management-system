@@ -30,6 +30,13 @@ namespace server.Models.Entities
         [Required]
         public string OverallStatus { get; set; } = "Applied";
         public string? HoldOverallStatus { get; set; }
+
+        public Guid? CDID { get; set; }
+        public CampusDrive? CampusDrive { get; set; }
+
+        public Guid? WalkId { get; set; }
+        public WalkInDrive? WalkInDrive { get; set; }
+
         public User? User { get; set; }
         public JobOpening? JobOpening { get; set; }
 

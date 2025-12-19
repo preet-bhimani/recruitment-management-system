@@ -85,6 +85,18 @@ import AdminSentOfferLetter from './admin/Offer Letter/AdminSentOfferLetter';
 import AdminOfferLetter from './admin/Offer Letter/AdminOfferLetter';
 import AdminUpdateOfferLetter from './admin/Offer Letter/AdminUpdateOfferLetter';
 import RecruiterSentOfferLetter from './recruiter/RecruiterSentOfferLetter';
+import ShowAddCampusDrive from './reusableComponent/Campus Drive/ShowAddCampusDrive';
+import AdminAddJobCampusDrive from './admin/Campus Drive/AdminAddJobCampusDrive';
+import AdminAddJobWalkInDrive from './admin/Walk In Drive/AdminAddJobWalkInDrive';
+import AdminWalkInDrive from './admin/Walk In Drive/AdminWalkInDrive';
+import AdminAddWalkInDrive from './admin/Walk In Drive/AdminAddWalkInDrive';
+import AdminUpdateWalkInDrive from './admin/Walk In Drive/AdminUpdateWalkInDrive';
+import RecruiterCampusDrive from './recruiter/RecruiterCampusDrive';
+import RecruiterAddShowCampusDrive from './recruiter/RecruiterAddShowCampusDrive';
+import RecruiterAddCampusDrive from './recruiter/RecruiterAddCampusDrive';
+import RecruiterAddWalkInDrive from './recruiter/RecruiterAddWalkInDrive';
+import RecruiterWalkInDrive from './recruiter/RecruiterWalkInDrive';
+import RecruiterAddShowWalkInDrive from './recruiter/RecruiterAddShowWalkInDrive';
 
 function App() {
   return (
@@ -123,7 +135,8 @@ function App() {
           <Route path='/admin-sent-offerletter/:id' element={<AdminSentOfferLetter />} />
           <Route path='/admin-update-offerletter/:id' element={<AdminUpdateOfferLetter />} />
           <Route path='/admin-campusdrive' element={<AdminCampusDrive />} />
-          <Route path='/admin-add-campusdrive' element={<AdminAddCampusDrive />} />
+          <Route path='/admin-add-campusdrive' element={<AdminAddJobCampusDrive />} />
+          <Route path='/admin-add-campusdrive/:id' element={<AdminAddCampusDrive />} />
           <Route path='/admin-update-campusdrive/:id' element={<AdminUpdateCampusDrive />} />
           <Route path='/admin-employee' element={<AdminEmployee />} />
           <Route path='/admin-add-employee' element={<AdminAddEmployee />} />
@@ -131,6 +144,10 @@ function App() {
           <Route path='/admin-skill' element={<AdminSkill />} />
           <Route path='/admin-add-skill' element={<AdminAddSkill />} />
           <Route path='/admin-update-skill/:id' element={<AdminUpdateSkill />} />
+          <Route path='/admin-walkindrive' element={<AdminWalkInDrive />} />
+          <Route path='/admin-add-walkindrive' element={<AdminAddJobWalkInDrive />} />
+          <Route path='/admin-add-walkindrive/:id' element={<AdminAddWalkInDrive />} />
+          <Route path='/admin-update-walkindrive/:id' element={<AdminUpdateWalkInDrive />} /> 
           <Route path='/' element={<CandidateDashboard />} />
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<Login />} />
@@ -153,6 +170,12 @@ function App() {
           <Route path='/recruiter-update-jobopening/:id' element={<RecruiterUpdateJobOpening />} />
           <Route path='/recruiter-meeting-scheduling' element={<RecruiterMeetingScheduling />} />
           <Route path='/recruiter-sent-offer-letter/:id' element={<RecruiterSentOfferLetter />} />
+          <Route path='/recruiter-campusdrive' element={<RecruiterCampusDrive />} />
+          <Route path='/recruiter-add-campusdrive' element={<RecruiterAddShowCampusDrive />} />
+          <Route path='/recruiter-add-campusdrive/:id' element={<RecruiterAddCampusDrive />} />
+          <Route path='/recruiter-walkindrive' element={<RecruiterWalkInDrive />} />
+          <Route path='/recruiter-add-walkindrive' element={<RecruiterAddShowWalkInDrive />} />
+          <Route path='/recruiter-add-walkindrive/:id' element={<RecruiterAddWalkInDrive />} />
           <Route path='/reviewer-dashboard' element={<ReviewerDashboard />} />
           <Route path='/interviewer-feedback' element={<InterviewerFeedback />} />
           <Route path='/interview-meeting-details' element={<InterviewerMeetingDetails />} />
@@ -177,6 +200,7 @@ function App() {
           <Route path='/viewer-employee' element={<ViewerEmployee />} />
           <Route path='/view-employee' element={<ViewEmployee />} />
           <Route path='/viewer-skill' element={<ViewerSkill />} />
+          <Route path='/hello' element={<ShowAddCampusDrive />} />
         </Routes>
       </Router>
     </>

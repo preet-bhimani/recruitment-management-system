@@ -14,6 +14,7 @@ namespace server.Models.Entities
         [Required]
         [ForeignKey("JobOpening")]
         public Guid JOId { get; set; }
+        public JobOpening JobOpening { get; set; }
 
         [Required]
         public required DateOnly DriveDate { get; set; }

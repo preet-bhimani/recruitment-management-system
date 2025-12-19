@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Sidebar from "../Sidebar";
 import Navbar from "../Navbar";
-import AddCampusDrive from "../../reusableComponent/Campus Drive/AddCampusDrive";
+import Sidebar from "../Sidebar";
+import WalkInDrive from "../../reusableComponent/Walk In Drive/WalkInDrive";
 
-const AdminAddCampusDrive = () => {
+function AdminWalkInDrive() {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -19,12 +19,12 @@ const AdminAddCampusDrive = () => {
             {/* Page Content */}
             <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-white mb-4">Add Campus Drive</h1>
+                    <h1 className="text-4xl font-bold text-white mb-4">Wlak In Drive</h1>
                 </div>
-                <AddCampusDrive role="admin" />
+                <WalkInDrive role="admin" />
             </main>
         </div>
-    </div>;
-};
+    </div >;
+}
 
-export default AdminAddCampusDrive;
+export default AdminWalkInDrive;

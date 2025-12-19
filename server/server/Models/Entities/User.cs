@@ -68,9 +68,6 @@ namespace server.Models.Entities
         [StringLength(150)]
         public string? PreCompanyTitle { get; set; }
 
-        public Guid? CDID { get; set; }
-        public CampusDrive? CampusDrive { get; set; }
-
         [Required, StringLength(50)]
         public string Role { get; set; } = "Candidate";
 

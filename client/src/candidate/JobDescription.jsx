@@ -12,6 +12,13 @@ const JobDescription = () => {
   const [jobData, setJobData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [campusDrives, setCampusDrives] = useState([]);
+  const [walkInDrives, setWalkInDrives] = useState([]);
+  const [selectedMode, setSelectedMode] = useState(null);
+  const [selectedCampusId, setSelectedCampusId] = useState("");
+  const [selectedWalkId, setSelectedWalkId] = useState("");
+
   const aboutCompany = "xxxyyyzzz has a crystal-clear vision. Our mission is to help our clients to achieve sustainable results through cutting-edge supply chain software and services. Our clients can expect noteworthy benefits like increased profitability, resilience, and long-term growth.";
   const { id } = useParams();
   const navigate = useNavigate();
@@ -36,31 +43,56 @@ const JobDescription = () => {
   }
 
   const { userId, role, token } = useAuth();
-  const applyForJob = async () => {
-    if (!userId) {
-      toast.error("Please login to apply for this job");
-      navigate("/login");
-      return;
-    }
 
-    if (role !== "Candidate") {
-      toast.error("Only candidates can apply for jobs");
-      return;
-    }
-
+  // Submit Job Application
+  const submitApplication = async () => {
     try {
-      const res = await axios.post(`https://localhost:7119/api/Candidate/apply`, { joId: id }, { headers: { Authorization: `Bearer ${token}` } })
-      toast.success('Applied Successfully!');
+      const payload = {
+        userId,
+        joId: id,
+        status: "Applied",
+        overallStatus: "Applied",
+        cdid: selectedMode === "CAMPUS" ? selectedCampusId : null,
+        walkId: selectedMode === "WALKIN" ? selectedWalkId : null,
+      };
+
+      await axios.post(
+        "https://localhost:7119/api/JobApplication",
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success("Application submitted successfully!");
+      setShowApplyModal(false);
       navigate(-1);
+
     }
     catch (err) {
-      toast.error(err.response.data || ("Failed to apply!"))
+      toast.error(err.response?.data || "Failed to apply");
     }
-  }
+  };
+
+  const closeApplyModal = () => {
+    setShowApplyModal(false);
+    setSelectedMode(null);
+    setSelectedCampusId("");
+    setSelectedWalkId("");
+  };
 
   useEffect(() => {
     fetchJob();
   }, [])
+
+  useEffect(() => {
+    if (!showApplyModal) return;
+
+    axios.get(`https://localhost:7119/api/CampusDrive/visible/${id}`)
+      .then(res => setCampusDrives(res.data || []));
+
+    axios.get(`https://localhost:7119/api/WalkInDrive/visible/${id}`)
+      .then(res => setWalkInDrives(res.data || []));
+
+  }, [showApplyModal]);
 
   if (loading) {
     return (
@@ -111,8 +143,8 @@ const JobDescription = () => {
               </button>
             ) : (
               <button
-                className="px-12 py-4 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-semibold text-lg transition shadow-lg"
-                onClick={applyForJob}>
+                className="px-12 py-4 bg-purple-700 hover:bg-purple-800 text-white rounded-lg"
+                onClick={() => setShowApplyModal(true)}>
                 Apply for This Job
               </button>
             )}
@@ -189,7 +221,6 @@ const JobDescription = () => {
               <p className="text-neutral-300">{jobData?.comment || "No comments available."}</p>
             </div>
 
-
             {/* About xxxyyyzzz */}
             <div className="bg-neutral-900 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
@@ -201,7 +232,6 @@ const JobDescription = () => {
 
             {/* Apply Button */}
             <div className="text-center pt-6">
-              {/* Apply Button */}
               {!userId ? (
                 <button
                   className="px-12 py-4 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-semibold text-lg transition shadow-lg"
@@ -216,8 +246,8 @@ const JobDescription = () => {
                 </button>
               ) : (
                 <button
-                  className="px-12 py-4 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-semibold text-lg transition shadow-lg"
-                  onClick={applyForJob}>
+                  className="px-12 py-4 bg-purple-700 hover:bg-purple-800 text-white rounded-lg"
+                  onClick={() => setShowApplyModal(true)}>
                   Apply for This Job
                 </button>
               )}
@@ -226,6 +256,78 @@ const JobDescription = () => {
         </div>
       </main>
 
+      {/* POP UP */}
+      {showApplyModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-neutral-900 rounded-lg p-6 w-full max-w-lg text-white">
+
+            <h2 className="text-xl font-bold mb-4">Apply for this Job</h2>
+
+            {/* Selection */}
+            <div className="space-y-3">
+
+              <button
+                className={`w-full p-3 rounded ${selectedMode === "CAMPUS" ? "bg-purple-700" : "bg-neutral-800"}`}
+                onClick={() => setSelectedMode("CAMPUS")}>
+                Apply via Campus Drive
+              </button>
+
+              <button
+                className={`w-full p-3 rounded ${selectedMode === "WALKIN" ? "bg-purple-700" : "bg-neutral-800"}`}
+                onClick={() => setSelectedMode("WALKIN")}>
+                Apply via Walk-In Drive
+              </button>
+
+              <button
+                className={`w-full p-3 rounded ${selectedMode === "DIRECT" ? "bg-purple-700" : "bg-neutral-800"}`}
+                onClick={() => setSelectedMode("DIRECT")}>
+                Apply Without Drive
+              </button>
+            </div>
+
+            {/* Campus Drive Select */}
+            {selectedMode === "CAMPUS" && (
+              <select
+                className="w-full mt-4 bg-neutral-800 p-2 rounded"
+                value={selectedCampusId}
+                onChange={(e) => setSelectedCampusId(e.target.value)}>
+                <option value="">Select Campus Drive</option>
+                {campusDrives.map(cd => (
+                  <option key={cd.cdid} value={cd.cdid}>
+                    {cd.universityName} — {cd.driveDate}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* Walk In Drive Select */}
+            {selectedMode === "WALKIN" && (
+              <select
+                className="w-full mt-4 bg-neutral-800 p-2 rounded"
+                value={selectedWalkId}
+                onChange={(e) => setSelectedWalkId(e.target.value)}>
+                <option value="">Select Walk-In Drive</option>
+                {walkInDrives.map(w => (
+                  <option key={w.walkId} value={w.walkId}>
+                    {w.location} — {w.driveDate}
+                  </option>
+                ))}
+              </select>
+            )}
+            <div className="flex justify-end gap-3 mt-6">
+              <button className="px-4 py-2 bg-neutral-700 rounded" onClick={closeApplyModal}> Cancel </button>
+              <button
+                className="px-4 py-2 bg-purple-700 rounded"
+                disabled={
+                  (selectedMode === "CAMPUS" && !selectedCampusId) ||
+                  (selectedMode === "WALKIN" && !selectedWalkId)}
+                onClick={submitApplication}>
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Footer */}
       <Footer />
     </div>
