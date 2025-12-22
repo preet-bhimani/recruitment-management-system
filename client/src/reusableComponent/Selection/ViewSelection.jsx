@@ -1,21 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, Mail } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const ViewSelection = () => {
 
     const navigate = useNavigate();
-
-    const selection = {
-        selectionId: "9282H458-JAK1-42N9-W158-30KZMN1EPL59",
-        fullName: "Preet Bhimani",
-        title: "Jr. Software Developer",
-        email: "preet@gmail.com",
-        status: "Accepted",
-        photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-        offerLetter: "https://www.pancardapp.com/blog/wp-content/uploads/2019/04/sample-pan-card.jpg",
-        templateType: "Job",
-    };
+    const { id } = useParams();
+    const [selection, setSelection] = useState(null);
 
     const handleBack = () => navigate(-1);
 
@@ -28,12 +21,36 @@ const ViewSelection = () => {
 
     // Badge Color for Status
     const badgeClassFor = (val) => {
-        const v = String(val || "").toLowerCase();
-        if (v.includes("accept")) return "bg-green-600 text-white";
-        if (v.includes("pending")) return "bg-yellow-500 text-black";
-        if (v.includes("reject")) return "bg-red-600 text-white";
+        const v = String(val || "")
+        if (v.includes("Joined")) return "bg-green-600 text-white";
+        if (v.includes("Not Joined")) return "bg-red-500 text-white";
+        if (v.includes("Selected")) return "bg-yellow-500 text-white";
+        if (v.includes("Hold")) return "bg-grey-600 text-white";
         return "bg-gray-700 text-white";
     };
+
+    // Fetch Selected Candidate Details
+    const fetchSelectionByID = async () => {
+        try {
+            const res = await axios.get(`https://localhost:7119/api/Selection/${id}`)
+            setSelection(res.data || []);
+        } 
+        catch (err) {
+            toast.error("Failed to load Selection details!")
+        }
+    }
+
+    useEffect(() => {
+        fetchSelectionByID();
+    }, []);
+
+    if (!selection) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-white">
+                Loading Selected Candidates Details...
+            </div>
+        );
+    }
 
     return <div className="min-h-screen bg-neutral-950 text-white p-4 md:p-6 flex justify-center items-start">
 
@@ -85,9 +102,9 @@ const ViewSelection = () => {
                 <div className="w-full md:w-auto flex justify-center md:justify-end items-center">
                     <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${badgeClassFor(
-                            selection.status
+                            selection.selectionStatus
                         )}`}>
-                        {safe(selection.status)}
+                        {safe(selection.selectionStatus)}
                     </span>
                 </div>
             </div>
@@ -109,8 +126,8 @@ const ViewSelection = () => {
                 </div>
 
                 <div>
-                    <div className="text-purple-400 font-medium">Template Type</div>
-                    <div className="text-neutral-200">{safe(selection.templateType)}</div>
+                    <div className="text-purple-400 font-medium">Job Type</div>
+                    <div className="text-neutral-200">{safe(selection.jobType)}</div>
                 </div>
             </div>
 

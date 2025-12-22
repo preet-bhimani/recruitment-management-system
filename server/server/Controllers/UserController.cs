@@ -222,7 +222,6 @@ namespace server.Controllers
             });
         }
 
-
         // Update user
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromForm] UserDto userDto, [FromForm] IFormFile? photo, [FromForm] IFormFile? resume)

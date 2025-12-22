@@ -208,7 +208,7 @@ const AllUsers = ({ role = "admin" }) => {
                         <div className="flex gap-2 ml-0 sm:ml-4">
                             <button
                                 className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
-                                onClick={() => navigate("/view-user")}>
+                                onClick={() => navigate(`/view-user/${user.userId}`)}>
                                 <Eye size={14} /> View
                             </button>
 

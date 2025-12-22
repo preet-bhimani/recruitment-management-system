@@ -11,4 +11,4 @@ backup-repo.git/
 # App settings (secrets)
 appsettings.json
 appsettings.Development.json
-
+Uploads/

@@ -198,9 +198,29 @@ namespace server.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetJobApplicationById(Guid id)
         {
-            var jobapp = await dbContext.JobApplications.FindAsync(id);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
 
-            if(jobapp == null)
+            var jobapp = await dbContext.JobApplications
+                .Where(ja => ja.JAId == id)
+                .Include(ja => ja.User)
+                .Include(ja => ja.JobOpening)
+                .Select(ja => new
+                {
+                    ja.JAId,
+                    ja.ExamDate,
+                    ja.ExamResult,
+                    AppliedDate = ja.CreatedAt.Date,
+                    ja.Status,
+                    ja.OverallStatus,
+                    ja.Feedback,
+                    ja.User.Email,
+                    ja.User.FullName,
+                    Photo = !string.IsNullOrEmpty(ja.User.Photo) ? baseUrl + ja.User.Photo : null,
+                    ja.JobOpening.Title
+                })
+                .FirstOrDefaultAsync();
+
+            if (jobapp == null)
             {
                 return NotFound("Job application not found");
             }

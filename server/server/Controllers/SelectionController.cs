@@ -42,7 +42,31 @@ namespace server.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetSelectedCandidateById(Guid id)
         {
-            var sel = await dbContext.Selections.FindAsync(id);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/Uploads/";
+
+            var sel = await dbContext.Selections
+                .Where(s => s.SelectionId == id)
+                .Include(s => s.User)
+                .Include(s => s.JobOpening)
+                .Include(s => s.OfferLetter)
+                .Select(s => new
+                {
+                    s.SelectionId,
+                    s.SelectionStatus,
+                    s.User.FullName,
+                    s.User.Email,
+                    s.JobOpening.Title,
+                    JobType = s.OfferLetter.TemplateType,
+                    s.OfferLetter.OfferLetterFilePath,
+                    Photo = s.User.Photo != null
+                    ? baseUrl + "User_Upload_Photos/" + s.User.Photo
+                    : null,
+
+                    OfferLetter = s.OfferLetter.OfferLetterFilePath != null
+                    ? baseUrl + "User_Upload_OfferLetters/" + s.OfferLetter.OfferLetterFilePath
+                    : null,
+                })
+                .FirstOrDefaultAsync();
 
             if (sel == null)
             {

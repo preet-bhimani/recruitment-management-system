@@ -1,41 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, Mail, Phone, MapPin, Calendar } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const ViewUser = () => {
 
   const navigate = useNavigate();
+  const { id } = useParams();
 
   // Back Button
   const handleBack = () => {
     navigate(-1);
   };
 
-  const [userData] = useState({
-    userId: "8723A287-BBB3-46C9-BD23-08DDAE2FEC35",
-    fullName: "Preet Bhimani",
-    email: "preet@gmail.com",
-    password: "***",
-    phoneNumber: "9377382731",
-    city: "Rajkot",
-    dob: "2003-05-13",
-    role: "Admin",
-    isActive: "Active",
-    photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-    resume: "https://www.pancardapp.com/blog/wp-content/uploads/2019/04/sample-pan-card.jpg",
-    reference: "Friends",
-    skills: "ASP.NET React JavaScript Java Git",
-    bachelorDegree: "Bachelor of Computer Applications",
-    bachelorUniversity: "RK University",
-    bachelorPercentage: "78.3",
-    masterDegree: "Master of Computer Applications",
-    masterUniversity: "RK University",
-    masterPercentage: "90.0",
-    yearsOfExperience: "0",
-    previousCompanyName: "",
-    previousCompanyTitle: "",
-    cdid: "",
-  });
+  const [userData, setUserData] = useState(null);
+
+  // Fetch User Details
+  const fetchUserDataByID = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7119/api/User/${id}`)
+      setUserData(res.data || []);
+    } 
+    catch (err) {
+      toast.error("Failed to load user details!")
+    }
+  }
 
   // When There is missing Data Show - Instead of
   const safe = (val) => {
@@ -43,6 +33,18 @@ const ViewUser = () => {
     if (typeof val === "string" && val.trim() === "") return "-";
     return String(val);
   };
+
+  useEffect(() => {
+    fetchUserDataByID();
+  }, []);
+
+  if (!userData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Loading User Details...
+      </div>
+    );
+  }
 
   // Date Formate
   const formattedDOB = (() => {
@@ -57,7 +59,7 @@ const ViewUser = () => {
   })();
 
   // Skills Array
-  const skills = userData.skills ? userData.skills.split(/\s+/).filter(Boolean) : [];
+  const skills = Array.isArray(userData.skills) ? userData.skills : [];
 
   // Percentage Logic
   const formatPercent = (val) => {
@@ -89,7 +91,7 @@ const ViewUser = () => {
                 <img
                   src={userData.photo}
                   alt={safe(userData.fullName)}
-                  className="w-full h-full object-cover"/>
+                  className="w-full h-full object-cover" />
               ) : (
                 <span>{userData.fullName.slice(0, 2).toUpperCase()}</span>
               )}
@@ -102,13 +104,13 @@ const ViewUser = () => {
               </h1>
               <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-neutral-400">
                 <span className="flex items-center gap-1">
-                  <Mail size={14} className="text-purple-400"/> {safe(userData.email)}
+                  <Mail size={14} className="text-purple-400" /> {safe(userData.email)}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Phone size={14} className="text-purple-400"/> {safe(userData.phoneNumber)}
+                  <Phone size={14} className="text-purple-400" /> {safe(userData.phoneNumber)}
                 </span>
                 <span className="flex items-center gap-1">
-                  <MapPin size={14} className="text-purple-400"/> {safe(userData.city)}
+                  <MapPin size={14} className="text-purple-400" /> {safe(userData.city)}
                 </span>
               </div>
               <div className="mt-3 h-0.5 w-24 rounded-full bg-gradient-to-r from-purple-500 to-indigo-400" />
@@ -116,8 +118,8 @@ const ViewUser = () => {
           </div>
 
           <div className="w-full md:w-auto flex justify-center md:justify-end">
-            <div className={`px-3 py-1 rounded-full text-xs font-medium ${safe(userData.isActive) === "Active" ? "bg-green-600" : "bg-red-600"}`}>
-              {safe(userData.isActive)}
+            <div className={`px-3 py-1 rounded-full text-xs font-medium ${userData.isActive ? "bg-green-600" : "bg-red-600"}`}>
+              {userData.isActive ? "Active" : "Inactive"}
             </div>
           </div>
         </div>
@@ -146,7 +148,7 @@ const ViewUser = () => {
 
         <div className="border-t border-neutral-800 my-5" />
 
-        {/* Reference and Experience and CDID */}
+        {/* Reference and Experience */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs md:text-sm text-neutral-400">
           <div>
             <div className="text-purple-400 font-medium">Reference</div>
@@ -157,11 +159,6 @@ const ViewUser = () => {
             <div className="text-purple-400 font-medium">Years of Experience</div>
             <div className="text-neutral-200">{safe(userData.yearsOfExperience)}</div>
           </div>
-
-          <div>
-            <div className="text-purple-400 font-medium">CDID</div>
-            <div className="text-neutral-200">{safe(userData.cdid)}</div>
-          </div>
         </div>
 
         <div className="border-t border-neutral-800 my-5" />
@@ -170,12 +167,12 @@ const ViewUser = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs md:text-sm text-neutral-400">
           <div>
             <div className="text-purple-400 font-medium">Previous Company</div>
-            <div className="text-neutral-200">{safe(userData.previousCompanyName)}</div>
+            <div className="text-neutral-200">{safe(userData.preCompanyName)}</div>
           </div>
 
           <div>
             <div className="text-purple-400 font-medium">Previous Title</div>
-            <div className="text-neutral-200">{safe(userData.previousCompanyTitle)}</div>
+            <div className="text-neutral-200">{safe(userData.preCompanyTitle)}</div>
           </div>
         </div>
 
@@ -186,11 +183,11 @@ const ViewUser = () => {
           <div className="text-sm font-semibold text-purple-400 mb-2">Skills</div>
           {skills.length > 0 ? (
             <div className="flex flex-wrap gap-2">
-              {skills.map((skill, i) => (
+              {skills.map((s) => (
                 <span
-                  key={i}
+                  key={s.skillId}
                   className="px-2 py-1 bg-neutral-800 border border-neutral-700 rounded text-xs text-neutral-200">
-                  {safe(skill)}
+                  {s.skillName}
                 </span>
               ))}
             </div>
@@ -231,7 +228,8 @@ const ViewUser = () => {
             {userData.resume ? (
               <a
                 href={userData.resume}
-                download
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-block px-3 py-1 bg-purple-600 hover:bg-purple-500 rounded text-white text-sm">
                 Download Resume
               </a>

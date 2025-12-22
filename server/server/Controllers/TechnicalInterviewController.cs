@@ -320,8 +320,34 @@ namespace server.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetTechnicalInterviewById(Guid id)
         {
-            var techin = await dbContext.TechnicalInterviews.FindAsync(id);
-            if( techin == null)
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+
+            var techin = await dbContext.TechnicalInterviews
+                .Where(t => t.TIId == id)
+                .Include(t => t.User)
+                .Include(t => t.JobOpening)
+                .Select(t => new
+                {
+                    t.TIId,
+                    t.InterviewerName,
+                    t.InterviewerEmail,
+                    t.TechDate,
+                    t.TechTime,
+                    t.TechFeedback,
+                    t.MeetingSubject,
+                    t.MeetingLink,
+                    t.NoOfRound,
+                    t.TechRating,
+                    t.TechIsClear,
+                    t.TechStatus,
+                    Photo = !string.IsNullOrEmpty(t.User.Photo) ? baseUrl + t.User.Photo : null,
+                    t.User.FullName,
+                    t.User.Email,
+                    t.JobOpening.Title
+                })
+                .FirstOrDefaultAsync();
+
+            if ( techin == null)
             {
                 return BadRequest("Technical Interview candidate not found");
             }

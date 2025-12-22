@@ -1,29 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MapPin, ArrowLeft, Mail, Calendar } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const ViewJobApplication = () => {
   const navigate = useNavigate();
   const handleBack = () => navigate(-1);
 
-  const [jobApp] = useState({
-    jaId: "9834C398-DDD4-57E0-BF34-19FFCE3HGE46",
-    photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-    candidateName: "Paras Bhut",
-    email: "paras@gmail.com",
-    jobTitle: "Sr. AI Engineer",
-    appliedDate: "2025-02-27",
-    examDate: "2025-03-04",
-    examResult: "Fail",
-    comment: "Your Exam Date is 16/07/2025. You will receive mail regarding ID and password with exam portal link.",
-    feedback: "Congratulations!!! You are now shortlisted for the interview. The other information will be shared with you soon.",
-    status: "Rejected",
-    overallStatus: "Rejected",
-  });
-
+  const [jobApp, setJobApp] = useState(null);
+  const { id } = useParams();
   const [expanded, setExpanded] = useState(false);
   const [feedbackexpand, setFeedbackexpand] = useState(false);
 
+  // Fetch Job Application Data by ID
+  const fetchJobApplicationDataByID = async () => {
+    try {
+      const res = await axios.get(`https://localhost:7119/api/JobApplication/${id}`)
+      setJobApp(res.data || []);
+    }
+    catch (err) {
+      toast.error("Failed to load job application details!");
+    }
+  }
+
+  useEffect(() => {
+    fetchJobApplicationDataByID();
+  }, []);
+
+  if (!jobApp) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-white">
+        Loading Job Application Details...
+      </div>
+    );
+  }
+
+  // Colors for Overall Status
   const badgeColor = (overallStatus) =>
   ({
     Applied: "bg-yellow-600",
@@ -33,10 +46,19 @@ const ViewJobApplication = () => {
     Selected: "bg-green-600",
     Rejected: "bg-red-600",
     Hold: "bg-gray-600",
-    Shortlisted: "bg-indigo-600",
+    'Document Pending': 'bg-orange-600',
+    'Document Submitted': 'bg-cyan-600',
+    'Offer Letter Pending': 'bg-teal-600',
+    'Offer Letter Sent': 'bg-indigo-600',
   }[overallStatus] || "bg-gray-600");
 
   const safe = (value) => (value ? value : "-");
+
+  // Date Formatting to Allow Date Only
+  const formatDate = (date) => {
+    if (!date) return "-";
+    return new Date(date).toISOString().split("T")[0];
+  };
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white p-4 md:p-6 flex justify-center">
@@ -65,13 +87,13 @@ const ViewJobApplication = () => {
                     alt={safe(jobApp.fullName)}
                     className="w-full h-full object-cover" />
                 ) : (
-                  <span>{jobApp.fullName.slice(0, 2).toUpperCase()}</span>
+                  <span>{jobApp.fullName?.slice(0, 2).toUpperCase() || "--"}</span>
                 )}
               </div>
 
               <div className="min-w-0">
                 <h1 className="text-xl md:text-2xl font-extrabold leading-tight text-white truncate">
-                  {safe(jobApp.candidateName)}
+                  {safe(jobApp.fullName)}
                 </h1>
 
                 <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-neutral-400">
@@ -80,7 +102,7 @@ const ViewJobApplication = () => {
                   </span>
                   <span className="flex items-center gap-1">
                     <Calendar size={14} className="text-purple-400" />
-                    Applied: {safe(jobApp.appliedDate)}
+                    Applied: {formatDate(jobApp.appliedDate)}
                   </span>
                   Exam Date: {safe(jobApp.examDate)}
                 </div>
@@ -106,7 +128,7 @@ const ViewJobApplication = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm md:text-base">
               <div>
                 <div className="text-purple-400 font-medium">Job Title</div>
-                <div className="text-neutral-200">{safe(jobApp.jobTitle)}</div>
+                <div className="text-neutral-200">{safe(jobApp.title)}</div>
               </div>
               <div>
                 <div className="text-purple-400 font-medium">Exam Result</div>
@@ -116,26 +138,6 @@ const ViewJobApplication = () => {
                 <div className="text-purple-400 font-medium">Status</div>
                 <div className="text-neutral-200">{safe(jobApp.status)}</div>
               </div>
-            </div>
-
-            {/* Comment */}
-            <div>
-              <div className="flex items-center justify-between">
-                <div className="text-purple-400 font-semibold text-sm md:text-base">Comment</div>
-                <button
-                  onClick={() => setExpanded((prev) => !prev)}
-                  className="text-xs text-neutral-400 hover:text-neutral-200"
-                  aria-expanded={expanded}>
-                  {expanded ? "Collapse" : "Expand"}
-                </button>
-              </div>
-              <p className="mt-2 text-sm md:text-base text-neutral-300 leading-relaxed">
-                {jobApp.comment
-                  ? expanded
-                    ? jobApp.comment
-                    : `${jobApp.comment.slice(0, 150)}${jobApp.comment.length > 150 ? "…" : ""}`
-                  : "-"}
-              </p>
             </div>
 
             {/* Feedback */}

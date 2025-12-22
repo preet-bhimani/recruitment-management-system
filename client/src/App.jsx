@@ -182,25 +182,24 @@ function App() {
           <Route path='/hr-feedback' element={<HRFeedback />} />
           <Route path='/hr-documents-check/:candidateId' element={<HRDocumentsCheck />} />
           <Route path='/viewer-jobopening' element={<ViewerJobOpening />} />
-          <Route path='/view-jobopening' element={<ViewJobOpening />} />
-          <Route path='/view-user' element={<ViewUser />} />
+          <Route path='/view-jobopening/:id' element={<ViewJobOpening />} />
+          <Route path='/view-user/:id' element={<ViewUser />} />
           <Route path='/viewer-user' element={<ViewerUser />} />
           <Route path="/viewer-jobapplication" element={<ViewerJobApplication />} />
-          <Route path='/view-jobapplication' element={<ViewJobApplication />} />
+          <Route path='/view-jobapplication/:id' element={<ViewJobApplication />} />
           <Route path='/viewer-techinterview' element={<ViewerTechnicalInterview />} />
-          <Route path='/view-techinterview' element={<ViewTechnicalInterview />} />
+          <Route path='/view-techinterview/:id' element={<ViewTechnicalInterview />} />
           <Route path='/viewer-hrinterview' element={<ViewerHRInterview />} />
-          <Route path='/view-hrinterview' element={<ViewHRInterview />} />
+          <Route path='/view-hrinterview/:id' element={<ViewHRInterview />} />
           <Route path='/viewer-selection' element={<ViewerSelection />} />
-          <Route path='/view-selection' element={<ViewSelection />} />
+          <Route path='/view-selection/:id' element={<ViewSelection />} />
           <Route path='/viewer-documentlist' element={<ViewerDocumentList />} />
-          <Route path='/view-documentlist' element={<ViewDocumentList />} />
+          <Route path='/view-documentlist/:id' element={<ViewDocumentList />} />
           <Route path='/viewer-campusdrive' element={<ViewerCampusDrive />} />
           <Route path='/view-campusdrive' element={<ViewCampusDrive />} />
           <Route path='/viewer-employee' element={<ViewerEmployee />} />
           <Route path='/view-employee' element={<ViewEmployee />} />
           <Route path='/viewer-skill' element={<ViewerSkill />} />
-          <Route path='/hello' element={<ShowAddCampusDrive />} />
         </Routes>
       </Router>
     </>

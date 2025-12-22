@@ -1,30 +1,43 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { MapPin, Briefcase, Clock, Users, Tag, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const ViewJobOpening = () => {
 
     // Back Button
     const navigate = useNavigate();
+    const { id } = useParams();
     const handleBack = () => {
         navigate(-1);
     };
 
-    const [jobsData] = useState({
-        joId: "8723B287-CCC3-46D9-CE23-08EEBF2GFD35",
-        title: "Jr. Software Engineer",
-        noOfOpening: 4,
-        requiredSkills: "Asp.Net ReactJS",
-        preferredSkills: "Git Azure",
-        location: "Ahmedabad",
-        experience: "1",
-        qualification: "BTech MTech MCA",
-        jobtype: "Full time Job",
-        description: "Bachelors/Masters degree in Engineering, Computer Science (or equivalent experience). At least 1+ years of relevant experience as a software engineer. A minimum of 1+ years of C#, .Net Core, and SQL development experience. Excellent English communication skills.",
-        status: "Open"
-    });
-
+    const [jobsData, setJobsData] = useState(null);
     const [expanded, setExpanded] = useState(false);
+
+    // Fetch Job Opening Details
+    const fetchJobOpeningByID = async () => {
+        try {
+            const res = await axios.get(`https://localhost:7119/api/JobOpening/${id}`)
+            setJobsData(res.data || []);
+        } 
+        catch (err) {
+            toast.error("Failed to load Job Opening details!")
+        }
+    }
+
+    useEffect(() => {
+        fetchJobOpeningByID();
+    }, []);
+
+    if (!jobsData) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-white">
+                Loading Job Opening Details...
+            </div>
+        );
+    }
 
     const requiredSkills = jobsData.requiredSkills ? jobsData.requiredSkills.split(/\s+/) : [];
     const preferredSkills = jobsData.preferredSkills ? jobsData.preferredSkills.split(/\s+/) : [];
@@ -59,9 +72,9 @@ const ViewJobOpening = () => {
                                     {jobsData.title}
                                 </h1>
                                 <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-neutral-400">
-                                    <span className="flex items-center gap-1"><Users size={14} className="text-purple-400"/> {jobsData.noOfOpening} openings</span>
-                                    <span className="flex items-center gap-1"><Briefcase size={14} className="text-purple-400"/> {jobsData.jobtype}</span>
-                                    <span className="flex items-center gap-1"><Clock size={14} className="text-purple-400"/> {jobsData.experience}+ yr</span>
+                                    <span className="flex items-center gap-1"><Users size={14} className="text-purple-400" /> {jobsData.noOfOpening} openings</span>
+                                    <span className="flex items-center gap-1"><Briefcase size={14} className="text-purple-400" /> {jobsData.jobType}</span>
+                                    <span className="flex items-center gap-1"><Clock size={14} className="text-purple-400" /> {jobsData.experience}+ yr</span>
                                 </div>
                                 <div className="mt-3 h-0.5 w-24 rounded-full bg-gradient-to-r from-purple-500 to-indigo-400" />
                             </div>
@@ -137,7 +150,7 @@ const ViewJobOpening = () => {
                             </div>
                             <div>
                                 <div className="text-purple-400 font-medium">Job Type</div>
-                                <div className="text-neutral-200">{jobsData.jobtype}</div>
+                                <div className="text-neutral-200">{jobsData.jobType}</div>
                             </div>
                         </div>
 

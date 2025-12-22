@@ -179,7 +179,7 @@ const Selection = ({ role = "admin" }) => {
 
                         {/* Action Buttons */}
                         <div className="flex gap-2 mt-2 sm:mt-0">
-                            <button className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs">
+                            <button className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs" onClick={() => navigate(`/view-selection/${c.selectionId}`)}>
                                 <Eye size={14} /> View
                             </button>
                             <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"

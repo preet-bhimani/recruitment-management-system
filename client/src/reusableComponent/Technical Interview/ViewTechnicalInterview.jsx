@@ -1,44 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, Mail, Link, Star, Calendar } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const ViewTechnicalInterview = () => {
 
     const navigate = useNavigate();
+    const { id } = useParams();
     const handleBack = () => navigate(-1);
 
-    const [interview] = useState({
-        tiId: "0192R489-HFB7-83B4-DJ67-10URDK2QLZ75",
-        fullName: "Rutvik Dollar",
-        title: "Quality Analyst",
-        email: "rutvik@gamil.com",
-        date: "2025-07-14",
-        isClear: "Not Clear",
-        status: "Not Clear",
-        rating: 2,
-        meetingLink: "https://teams.live.com/",
-        interviewerName: "Nirav Bhatt",
-        interviewerEmail: "nirav@gmail.com",
-        photo: "https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg",
-        noofRound: 2,
-        feedback: "Unfortunately, we cannot move forward your application. You have to work on your fundamentals. Thank you for applying!!",
-        meetingSubject: "Technical Interview Round 2",
-    });
+    const [interview, setInterview] = useState(null);
 
     const safe = (v) => (v === null || v === undefined || v === "" ? "-" : v);
 
     const statusBadge = (s) =>
-        s === "Clear"
-            ? "bg-emerald-600"
-            : s === "In Progress"
-                ? "bg-yellow-600"
-                : s === "Not Clear"
-                    ? "bg-rose-600"
+        s === "Clear" ? "bg-emerald-600"
+            : s === "In Progress" ? "bg-yellow-600"
+                : s === "Not Clear" ? "bg-rose-600"
                     : "bg-gray-600";
-
-    const roundBadge = (n) =>
-        n >= 3 ? "bg-indigo-600" : "bg-sky-600";
-
+                    
     // Star Rating Logic
     const renderStars = (r) => {
         const stars = [];
@@ -53,6 +34,28 @@ const ViewTechnicalInterview = () => {
         }
         return stars;
     };
+
+    // Fetch Technical Interview Data
+    const fetchTechnicalInterviewDataById = async () => {
+        try {
+            const res = await axios.get(`https://localhost:7119/api/TechnicalInterview/${id}`)
+            setInterview(res.data || [])
+        } catch (err) {
+            toast.err("Failed to load Technical Interview details!")
+        }
+    }
+
+    useEffect(() => {
+            fetchTechnicalInterviewDataById();
+        }, []);
+    
+        if (!interview) {
+            return (
+                <div className="min-h-screen flex items-center justify-center text-white">
+                    Loading Technical Interview Details...
+                </div>
+            );
+        }
 
     return (
         <div className="min-h-screen bg-neutral-950 text-white p-4 md:p-6 flex justify-center">
@@ -97,11 +100,6 @@ const ViewTechnicalInterview = () => {
                                         <Mail size={14} className="text-purple-400" />
                                         <span className="truncate">{safe(interview.email)}</span>
                                     </div>
-
-                                    <div className="flex items-center gap-2">
-                                        <Calendar size={14} className="text-purple-400" />
-                                        <span className="truncate">{safe(interview.date)}</span>
-                                    </div>
                                 </div>
 
                                 <div className="mt-3 h-0.5 w-24 rounded-full bg-gradient-to-r from-purple-500 to-indigo-400" />
@@ -111,8 +109,8 @@ const ViewTechnicalInterview = () => {
                         {/* Status */}
                         <div className="w-full md:w-auto flex flex-col items-start md:items-end gap-3">
                             <div className="flex items-center gap-2">
-                                <div className={`px-3 py-1 rounded-full text-xs font-medium ${statusBadge(interview.status)}`}>
-                                    {safe(interview.status)}
+                                <div className={`px-3 py-1 rounded-full text-xs font-medium ${statusBadge(interview.techStatus)}`}>
+                                    {safe(interview.techStatus)}
                                 </div>
                             </div>
                         </div>
@@ -128,6 +126,29 @@ const ViewTechnicalInterview = () => {
                                 <div className="text-neutral-200">{safe(interview.interviewerName)}</div>
                                 <div className="mt-1 text-xs text-neutral-200 flex items-center gap-2">
                                     <Mail size={13} className="text-purple-400" /> <span>{safe(interview.interviewerEmail)}</span>
+                                </div>
+
+                                {/* Tech Date & Time */}
+                                <div className="mt-4 space-y-3 text-sm">
+                                    <div>
+                                        <div className="flex items-center gap-2 text-purple-400 font-medium">
+                                            <Calendar size={14} />
+                                            <span>Tech Date</span>
+                                        </div>
+                                        <div className="text-neutral-200 mt-1">
+                                            {safe(interview.techDate)}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="flex items-center gap-2 text-purple-400 font-medium">
+                                            <Calendar size={14} />
+                                            <span>Tech Time</span>
+                                        </div>
+                                        <div className="text-neutral-200 mt-1">
+                                            {safe(interview.techTime)}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -152,14 +173,14 @@ const ViewTechnicalInterview = () => {
                             </div>
 
                             <div>
-                                <div className="mt-3 text-purple-400 font-medium">No. of Round</div>
-                                <div className="text-neutral-200 break-all">{safe(interview.noofRound)}</div>
+                                <div className="text-purple-400 font-medium">No. of Round</div>
+                                <div className="text-neutral-200 break-all">{safe(interview.noOfRound)}</div>
 
                                 <div className="mt-3 text-purple-400 font-medium">Rating</div>
-                                <div className="text-neutral-200 break-all">{renderStars(interview.rating)}</div>
+                                <div className="text-neutral-200 break-all">{renderStars(interview.techRating)}</div>
 
                                 <div className="mt-3 text-purple-400 font-medium">Interview Result</div>
-                                <div className="text-neutral-200">{safe(interview.isClear)}</div>
+                                <div className="text-neutral-200">{safe(interview.techIsClear)}</div>
                             </div>
                         </div>
 
@@ -167,13 +188,13 @@ const ViewTechnicalInterview = () => {
                         <div>
                             <div className="text-purple-400 font-semibold text-sm md:text-base mb-2">Feedback</div>
                             <div className="bg-neutral-800 border border-neutral-700 p-4 rounded text-neutral-200 text-sm md:text-base">
-                                {safe(interview.feedback)}
+                                {safe(interview.techFeedback)}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

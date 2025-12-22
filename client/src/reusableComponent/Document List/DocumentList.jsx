@@ -178,7 +178,7 @@ const DocumentList = ({ role = "admin" }) => {
                         <div className="flex gap-2 mt-2 sm:mt-0">
                             <button
                                 className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
-                                onClick={() => navigate("/view-documentlist")}>
+                                onClick={() => navigate(`/view-documentlist/${doc.dlId}`)}>
                                 <Eye size={14} /> View
                             </button>
 

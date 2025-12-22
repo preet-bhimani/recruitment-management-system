@@ -246,6 +246,8 @@ namespace server.Controllers
 
             var doc = await dbContext.DocumentLists
                 .Where(d => d.JAId == jaId)
+                .Include(d => d.User)
+                .Include(d => d.JobOpening)
                 .Select(d => new
                 {
                     userId = d.UserId,
@@ -254,6 +256,12 @@ namespace server.Controllers
                     bankAccNo = d.BankAccNo,
                     bankIFSC = d.BankIFSC,
                     bankName = d.BankName,
+                    d.JobOpening.Title,
+                    d.User.FullName,
+                    d.User.Email,
+                    Photo = d.User.Photo != null
+                    ? baseUrl + "User_Upload_Photos/" + d.User.Photo
+                    : null,
                     aadharCard = d.AadharCard != null
                     ? baseUrl + "User_Upload_Aadhar/" + d.AadharCard
                     : null,
@@ -278,6 +286,51 @@ namespace server.Controllers
             if (isCandidate && doc.userId != userId)
             {
                 return StatusCode(403, "Access Denied");
+            }
+
+            return Ok(doc);
+        }
+
+        // Get selected items for viewer and admin by ID
+        [HttpGet("fetch/{id:guid}")]
+        public async Task<IActionResult> GetItemsForViewerAndAdmin(Guid id)
+        {
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/Uploads/";
+
+            var doc = await dbContext.DocumentLists
+                .Where(d => d.DLId == id)
+                .Include(d => d.User)
+                .Include(d => d.JobOpening)
+                .Select(d => new
+                {
+                    d.DLId,
+                    d.BankAccNo,
+                    d.BankIFSC,
+                    d.BankName,
+                    d.JobOpening.Title,
+                    d.User.FullName,
+                    d.User.Email,
+                    Photo = d.User.Photo != null
+                    ? baseUrl + "User_Upload_Photos/" + d.User.Photo
+                    : null,
+
+                    Aadhar = d.AadharCard != null
+                    ? baseUrl + "User_Upload_Aadhar/" + d.AadharCard
+                    : null,
+
+                    Pan = d.PANCard != null
+                    ? baseUrl + "User_Upload_Pan/" + d.PANCard
+                    : null,
+
+                    ExperienceLetter = d.ExperienceLetter != null
+                    ? baseUrl + "User_Upload_Experience/" + d.ExperienceLetter
+                    : null
+                })
+                .FirstOrDefaultAsync();
+
+            if (doc == null)
+            {
+                return NotFound("Document list for candidate not found");
             }
 
             return Ok(doc);

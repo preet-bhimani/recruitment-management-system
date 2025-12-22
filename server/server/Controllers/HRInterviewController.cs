@@ -317,7 +317,33 @@ namespace server.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetHRInterviewById(Guid id)
         {
-            var hrin = await dbContext.HRInterviews.FindAsync(id);
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+
+            var hrin = await dbContext.HRInterviews
+                .Where(h => h.HIId == id)
+                .Include(h => h.User)
+                .Include(h => h.JobOpening)
+                .Select(h => new
+                {
+                    h.HIId,
+                    h.NoOfRound,
+                    h.HRDate,
+                    h.HRTime,
+                    h.MeetingLink,
+                    h.InterviewerName,
+                    h.InterviewerEmail,
+                    h.HRIsClear,
+                    h.HRStatus,
+                    h.HRRating,
+                    h.HRFeedback,
+                    h.MeetingSubject,
+                    Photo = !string.IsNullOrEmpty(h.User.Photo) ? baseUrl + h.User.Photo : null,
+                    h.User.FullName,
+                    h.User.Email,
+                    h.JobOpening.Title,
+                })
+                .FirstOrDefaultAsync();
+
             if (hrin == null)
             {
                 return BadRequest("HR Interview candidate not found");
