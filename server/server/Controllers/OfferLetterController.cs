@@ -130,6 +130,46 @@ namespace server.Controllers
             return Ok(result);
         }
 
+        // Fetch offer letters by ID
+        [HttpGet("fetch/{id:guid}")]
+        public async Task<IActionResult> GetOfferLetterDataByID(Guid id)
+        {
+            var baseUrl = $"{Request.Scheme}://{Request.Host}/Uploads/";
+
+            var offer = await dbContext.OfferLetters
+                .Where(o => o.OLId  == id)
+                .Include(o => o.JobOpening)
+                .Include(o => o.User)
+                .Select(o => new
+                {
+                    o.OLId,
+                    o.Salary,
+                    o.JoiningDate,
+                    o.OfferLetterStatus,
+                    o.EndDate,
+                    o.BondTime,
+                    JobType = o.TemplateType,
+                    o.User.FullName,
+                    o.User.Email,
+                    o.JobOpening.Title,
+                    Photo = o.User.Photo != null
+                    ? baseUrl + "User_Upload_Photos/" + o.User.Photo
+                    : null,
+
+                    OfferLetter = o.OfferLetterFilePath != null
+                    ? baseUrl + "User_Upload_OfferLetters/" + o.OfferLetterFilePath
+                    : null,
+                })
+                .FirstOrDefaultAsync();
+
+            if (offer == null) 
+            {
+                return NotFound("Offer Letter not found");
+            }
+
+            return Ok(offer);
+        }
+
         // Fetch all candidates from offerletter table
         [HttpGet]
         public async Task<IActionResult> GetAllOfferLetters()

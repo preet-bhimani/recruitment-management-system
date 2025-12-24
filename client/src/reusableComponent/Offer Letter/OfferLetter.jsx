@@ -238,15 +238,13 @@ const OfferLetter = () => {
                                 <p><span className="font-medium text-purple-300">Status:</span>{" "}
                                     <span
                                         className={`px-2 py-0.5 rounded text-xs
-                                        ${offer.overallStatus === "Offer Letter Sent"
+                                        ${offer.offerLetterStatus === "Accepted"
                                                 ? "bg-emerald-800 text-emerald-200"
-                                                : offer.overallStatus === "Selected"
-                                                    ? "bg-blue-800 text-blue-200"
-                                                    : offer.overallStatus === "Offer Letter Rejected"
-                                                        ? "bg-rose-800 text-rose-200"
-                                                        : "bg-yellow-800 text-yellow-200"
+                                                : offer.OfferLetterStatus === "Rejected"
+                                                    ? "bg-red-800 text-red-200"
+                                                    : "bg-grey-800 text-grey-200"
                                             }`}>
-                                        {offer.overallStatus}
+                                        {offer.offerLetterStatus}
                                     </span>
                                 </p>
                             </div>
@@ -255,7 +253,7 @@ const OfferLetter = () => {
                         {/* Action Buttons */}
                         <div className="flex gap-2 mt-2 sm:mt-0">
                             <button className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
-                                onClick={() => { }}>
+                                onClick={() => { navigate(`/view-offerletter/${offer.olId}`) }}>
                                 <Eye size={14} /> View
                             </button>
 

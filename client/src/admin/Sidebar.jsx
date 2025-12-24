@@ -98,14 +98,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
       ],
     },
     {
-      title: "Employee",
-      icon: <IdCardLanyard size={20} />,
-      children: [
-        { name: "Admin Employee", path: "/admin-employee" },
-        { name: "Add Employee ", path: "/admin-add-employee" },
-      ],
-    },
-    {
       title: "Skill",
       icon: <GraduationCap size={20} />,
       children: [

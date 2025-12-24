@@ -68,7 +68,7 @@ namespace server.Services
                 .Where(o =>
                     o.OfferLetterStatus == "Accepted" &&
                     o.TemplateType == "Job" &&
-                    o.JoiningDate.Date == today
+                    o.JoiningDate.Date <= today
                 )
                 .ToListAsync(token);
 
@@ -142,6 +142,24 @@ namespace server.Services
 
                     await dbContext.Employees.AddAsync(employee, token);
                     await dbContext.SaveChangesAsync(token);
+
+                    // Update Selection status to Joined
+                    var selection = await dbContext.Selections
+                        .FirstOrDefaultAsync(s =>
+                            s.UserId == offer.UserId &&
+                            s.JAId == offer.JAId &&
+                            s.OLId == offer.OLId,
+                            token);
+
+                    if (selection != null && selection.SelectionStatus != "Joined")
+                    {
+                        selection.SelectionStatus = "Joined";
+                        selection.UpdatedAt = DateTime.UtcNow;
+
+                        await dbContext.SaveChangesAsync(token);
+
+                        logger.LogInformation($"Selection status updated to Joined for SelectionId {selection.SelectionId}");
+                    }
 
                     logger.LogInformation($"Employee created: {employee.EmployeeId} for user {user.UserId}");
                 }

@@ -36,6 +36,9 @@ builder.Services.AddHostedService<TechInterviewStatusScheduler>();
 // Add HR interview status update service
 builder.Services.AddHostedService<HRInterviewStatusScheduler>();
 
+// Add Selected candidates to Employee table
+builder.Services.AddHostedService<EmployeeJoiningScheduler>();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("ConStr")));
 

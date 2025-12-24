@@ -24,13 +24,9 @@ import AdminSentMailSelection from './admin/selection/AdminSentMailSelection';
 import AdminUpdateSelection from './admin/selection/AdminUpdateSelection';
 import AdminDocuments from './admin/Documents/AdminDocuments';
 import AdminAddDocuments from './admin/Documents/AdminAddDocuments';
-import AdminUpdateDocuments from './admin/Documents/AdminUpdateDocuments';
 import AdminCampusDrive from './admin/Campus Drive/AdminCampusDrive';
 import AdminAddCampusDrive from './admin/Campus Drive/AdminAddCampusDrive';
 import AdminUpdateCampusDrive from './admin/Campus Drive/AdminUpdateCampusDrive';
-import AdminEmployee from './admin/Employee/AdminEmployee';
-import AdminAddEmployee from './admin/Employee/AdminAddEmployee';
-import AdminUpdateEmployee from './admin/Employee/AdminUpdateEmployee';
 import Register from './components/Register';
 import Login from './components/Login';
 import CandidateDashboard from './candidate/CandidateDashboard';
@@ -73,8 +69,6 @@ import ViewerDocumentList from './viewer/ViewerDocumentList';
 import ViewDocumentList from './reusableComponent/Document List/ViewDocumentList';
 import ViewerCampusDrive from './viewer/ViewerCampusDrive';
 import ViewCampusDrive from './reusableComponent/Campus Drive/ViewCampusDrive';
-import ViewerEmployee from './viewer/ViewerEmployee';
-import ViewEmployee from './reusableComponent/Employee/ViewEmployee';
 import AdminSkill from './admin/Skill/AdminSkill';
 import AdminAddSkill from './admin/Skill/AdminAddSkill';
 import AdminUpdateSkill from './admin/Skill/AdminUpdateSkill';
@@ -85,7 +79,6 @@ import AdminSentOfferLetter from './admin/Offer Letter/AdminSentOfferLetter';
 import AdminOfferLetter from './admin/Offer Letter/AdminOfferLetter';
 import AdminUpdateOfferLetter from './admin/Offer Letter/AdminUpdateOfferLetter';
 import RecruiterSentOfferLetter from './recruiter/RecruiterSentOfferLetter';
-import ShowAddCampusDrive from './reusableComponent/Campus Drive/ShowAddCampusDrive';
 import AdminAddJobCampusDrive from './admin/Campus Drive/AdminAddJobCampusDrive';
 import AdminAddJobWalkInDrive from './admin/Walk In Drive/AdminAddJobWalkInDrive';
 import AdminWalkInDrive from './admin/Walk In Drive/AdminWalkInDrive';
@@ -97,6 +90,10 @@ import RecruiterAddCampusDrive from './recruiter/RecruiterAddCampusDrive';
 import RecruiterAddWalkInDrive from './recruiter/RecruiterAddWalkInDrive';
 import RecruiterWalkInDrive from './recruiter/RecruiterWalkInDrive';
 import RecruiterAddShowWalkInDrive from './recruiter/RecruiterAddShowWalkInDrive';
+import ViewWalkInDrive from './reusableComponent/Walk In Drive/ViewWalkInDrive';
+import ViewOfferLetter from './reusableComponent/Offer Letter/ViewOfferLetter';
+import ViewerWalkInDrive from './viewer/ViewerWalkInDrive';
+import ViewerOfferLetter from './viewer/ViewerOfferLetter';
 
 function App() {
   return (
@@ -138,9 +135,6 @@ function App() {
           <Route path='/admin-add-campusdrive' element={<AdminAddJobCampusDrive />} />
           <Route path='/admin-add-campusdrive/:id' element={<AdminAddCampusDrive />} />
           <Route path='/admin-update-campusdrive/:id' element={<AdminUpdateCampusDrive />} />
-          <Route path='/admin-employee' element={<AdminEmployee />} />
-          <Route path='/admin-add-employee' element={<AdminAddEmployee />} />
-          <Route path='/admin-update-employee' element={<AdminUpdateEmployee />} />
           <Route path='/admin-skill' element={<AdminSkill />} />
           <Route path='/admin-add-skill' element={<AdminAddSkill />} />
           <Route path='/admin-update-skill/:id' element={<AdminUpdateSkill />} />
@@ -196,10 +190,12 @@ function App() {
           <Route path='/viewer-documentlist' element={<ViewerDocumentList />} />
           <Route path='/view-documentlist/:id' element={<ViewDocumentList />} />
           <Route path='/viewer-campusdrive' element={<ViewerCampusDrive />} />
-          <Route path='/view-campusdrive' element={<ViewCampusDrive />} />
-          <Route path='/viewer-employee' element={<ViewerEmployee />} />
-          <Route path='/view-employee' element={<ViewEmployee />} />
+          <Route path='/view-campusdrive/:id' element={<ViewCampusDrive />} />
           <Route path='/viewer-skill' element={<ViewerSkill />} />
+          <Route path='/view-walkindrive/:id' element={<ViewWalkInDrive />} />
+          <Route path='/viewer-walkindrive' element={<ViewerWalkInDrive />} />
+          <Route path='/view-offerletter/:id' element={<ViewOfferLetter />} />
+          <Route path='viewer-offerletter' element={<ViewerOfferLetter />} />
         </Routes>
       </Router>
     </>

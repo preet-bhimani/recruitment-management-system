@@ -62,7 +62,7 @@ namespace server.Controllers
         }
 
         // Fetch all walk in drive
-        [Authorize(Roles = "Admin, Recruiter, HR")]
+        [Authorize(Roles = "Admin, Recruiter, HR, Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllWalkInDrives()
         {
@@ -109,7 +109,7 @@ namespace server.Controllers
         }
 
         // get walk in drive by ID
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Viewer")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetWalkInDriveByID(Guid id)
         {
@@ -120,7 +120,20 @@ namespace server.Controllers
             }
             var userId = Guid.Parse(userIdClaim);
 
-            var walk = await dbContext.WalkInDrives.FindAsync(id);
+            var walk = await dbContext.WalkInDrives
+                .Where(w => w.WalkId == id)
+                .Include(w => w.JobOpening)
+                .Select(w => new
+                {
+                    w.WalkId,
+                    w.Location,
+                    w.DriveDate,
+                    w.JOId,
+                    w.IsActive,
+                    w.JobOpening.Title,
+                })
+                .FirstOrDefaultAsync();
+
             if (walk == null) 
             {
                 return NotFound("WalkInDrive not found");

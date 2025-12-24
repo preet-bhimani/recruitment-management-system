@@ -77,7 +77,19 @@ namespace server.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetCampusDriveById(Guid id)
         {
-            var camp = await dbContext.CampusDrives.FindAsync(id);
+            var camp = await dbContext.CampusDrives
+                .Where(c => c.CDID == id)
+                .Include(c => c.JobOpening)
+                .Select(c => new
+                {
+                    c.CDID,
+                    c.UniversityName,
+                    c.DriveDate,
+                    c.JOId,
+                    c.IsActive,
+                    c.JobOpening.Title,
+                })
+                .FirstOrDefaultAsync();
 
             if(camp == null)
             {

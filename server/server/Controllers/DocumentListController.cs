@@ -228,7 +228,7 @@ namespace server.Controllers
         }
 
         // Get Document list by ID
-        [Authorize(Roles = "Admin,Candidate, HR")]
+        [Authorize(Roles = "Admin,Candidate, HR, Viewer")]
         [HttpGet("{jaId:guid}")]
         public async Task<IActionResult> GetDocumentListByJAId(Guid jaId)
         {
@@ -337,7 +337,7 @@ namespace server.Controllers
         }
 
         // Get all documents list 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllDocuments()
         {
