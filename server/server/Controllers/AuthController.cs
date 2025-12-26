@@ -131,6 +131,12 @@ namespace server.Controllers
                 return Unauthorized("Invalid email or password");
             }
 
+            // If user has not set password yet
+            if (!user.IsPasswordSet)
+            {
+                return Unauthorized("Please set your password first");
+            }
+
             // Hash passowrd and check if password is correct or not
             var hasher = new PasswordHasher<User>();
             var result = hasher.VerifyHashedPassword(user, user.Password, loginDto.Password);
@@ -326,6 +332,7 @@ namespace server.Controllers
             // Clear OTP after password reset
             user.ResetOtp = null;
             user.ResetOtpExpiry = null;
+            user.IsPasswordSet = true;
 
             await dbContext.SaveChangesAsync();
 

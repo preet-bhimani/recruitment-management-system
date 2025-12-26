@@ -30,11 +30,11 @@ namespace server.Models.Entities
         [Required, DataType(DataType.Date)]
         public required DateOnly DOB { get; set; }
 
-        [Required, StringLength(500)]
-        public required string Photo { get; set; }
+        [StringLength(500)]
+        public string? Photo { get; set; }
 
-        [Required, StringLength(200)]
-        public required string Reference { get; set; }
+        [StringLength(200)]
+        public string? Reference { get; set; }
 
         [StringLength(500)]
         public string? Resume { get; set; }
@@ -71,11 +71,13 @@ namespace server.Models.Entities
         [Required, StringLength(50)]
         public string Role { get; set; } = "Candidate";
 
+        public bool IsPasswordSet { get; set; } = true;
+
         public bool IsActive { get; set; } = true;
 
         public string? RefreshToken { get; set; }
 
-        public DateTime? RefreshTokenExpiryTime { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }   
 
         public string? ResetOtp { get; set; }
         public DateTime? ResetOtpExpiry { get; set; }

@@ -117,7 +117,7 @@ const Login = () => {
                     <div>
 
                         {/* Email */}
-                        <label className="block text-sm font-medium text-neutral-300 mb-2">Email Address</label>
+                        <label className="block text-sm font-medium text-neutral-300 mb-2">Email Address <span className="text-rose-500">*</span></label>
                         <input
                             type="email"
                             placeholder="Enter your email"
@@ -152,6 +152,16 @@ const Login = () => {
                         {errors.password && (<p className="text-rose-500 text-sm mt-1">{errors.password}</p>)}
                     </div>
 
+                    {/* Forgot Password */}
+                    <div className="text-right">
+                        <button
+                            type="button"
+                            onClick={() => navigate("/update-password-mail")}
+                            className="text-sm text-purple-400 hover:text-purple-300 transition-colors">
+                            Forgot password?
+                        </button>
+                    </div>
+                    
                     {/* Submit */}
                     <button
                         type="submit"

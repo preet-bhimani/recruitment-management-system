@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Models.Dto;
 using server.Models.Entities;
+using server.Services;
 
 namespace server.Controllers
 {
@@ -13,11 +14,15 @@ namespace server.Controllers
     public class UserController : ControllerBase
     {
         private readonly AppDbContext dbContext;
+        private readonly EmailService emailService;
+        private readonly EmailTemplateService templateService;
         private const long MaxFileBytes = 5 * 1024 * 1024;
         private static readonly string[] AllowedExt = [".jpg", ".jpeg", ".png"];
-        public UserController(AppDbContext dbContext)
+        public UserController(AppDbContext dbContext, EmailService emailService, EmailTemplateService templateService)
         {
             this.dbContext = dbContext;
+            this.emailService = emailService;
+            this.templateService = templateService;
         }
 
         [HttpPost("create")]
@@ -117,6 +122,7 @@ namespace server.Controllers
                 PreCompanyTitle = userDto.PreCompanyTitle,
                 Role = string.IsNullOrWhiteSpace(userDto.Role) ? "Candidate" : userDto.Role,
                 IsActive = true,
+                IsPasswordSet = true,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -154,6 +160,114 @@ namespace server.Controllers
                 email = user.Email,
                 message = "User created successfully"
             });
+        }
+
+        // Add user by Excel file
+        [HttpPost("import-excel")]
+        public async Task<IActionResult> AddUsersByExcel(IFormFile file)
+        {
+            // File validation
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("Excel file is required");
+            }
+
+            var result = new ExcelImportUserDto();
+
+            // Copy file into memory
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+            stream.Position = 0;
+
+            using var reader = ExcelDataReader.ExcelReaderFactory.CreateReader(stream);
+            int rowNumber = 0;
+
+            // Read Excel row by row
+            while (reader.Read())
+            {
+                rowNumber++;
+
+                // Skip header row
+                if (rowNumber == 1)
+                    continue;
+
+                result.TotalRows++;
+
+                try
+                {
+                    // Read row values
+                    var fullName = reader.GetValue(0)?.ToString();
+                    var email = reader.GetValue(1)?.ToString()?.Trim().ToLower();
+                    var phoneNumber = reader.GetValue(2)?.ToString();
+                    var city = reader.GetValue(3)?.ToString();
+                    var country = reader.GetValue(4)?.ToString();
+                    var dobValue = reader.GetValue(5)?.ToString();
+
+                    // Validations
+                    if (string.IsNullOrWhiteSpace(fullName))
+                    {
+                        throw new Exception("Full name is required");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(email))
+                    {
+                        throw new Exception("Email is required");
+                    }
+
+                    if (!DateTime.TryParse(dobValue, out var dob))
+                    {
+                        throw new Exception("Invalid DOB");
+                    }
+
+                    // Check if email exists
+                    if (await dbContext.Users.AnyAsync(u => u.Email == email))
+                    {
+                        throw new Exception("Email already exists");
+                    }
+
+                    var user = new User
+                    {
+                        FullName = fullName,
+                        Email = email,
+                        PhoneNumber = phoneNumber,
+                        City = city,
+                        Country = country,
+                        DOB = DateOnly.FromDateTime(dob),
+                        Role = "Candidate",
+                        IsActive = true,
+                        IsPasswordSet = false,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    // Generate password
+                    var hasher = new PasswordHasher<User>();
+                    user.Password = hasher.HashPassword(user, Guid.NewGuid().ToString());
+
+                    dbContext.Users.Add(user);
+                    await dbContext.SaveChangesAsync();
+
+                    // Send email for reset password
+                    string subject = "Activate your account - Set your password";
+                    string body = templateService.PasswordSetupTemplate(fullName);
+
+                    await emailService.SendEmail(email, subject, body);
+
+
+                    result.Inserted++;
+                }
+                catch (Exception ex)
+                {
+                    // Show Result
+                    result.Errors.Add(new ExcelImportUserErrorDto
+                    {
+                        Row = rowNumber,
+                        Email = reader.GetValue(1)?.ToString(),
+                        Reason = ex.Message
+                    });
+                }
+            }
+
+            return Ok(result);
         }
 
         // Fetch all users

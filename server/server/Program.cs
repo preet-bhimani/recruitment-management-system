@@ -8,6 +8,9 @@ using server.Data;
 using server.Services;
 using System.Text;
 
+System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

@@ -38,7 +38,7 @@ const UpdatePassword = () => {
             });
 
             toast.success(res.data || "Password updated successfully!");
-            navigate(-1);
+            navigate("/login");
         }
         catch (err) {
             toast.error(err.response.data || "Something went wrong!");

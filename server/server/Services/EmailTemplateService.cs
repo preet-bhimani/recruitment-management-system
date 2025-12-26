@@ -113,5 +113,38 @@
 
                 <p><i>Regards,<br/>Roima Recruitment Team</i></p>";
         }
+
+        // Account activation template
+        public string PasswordSetupTemplate(string name)
+        {
+            return $@"
+                <h2>Welcome to Roima Recruitment Portal</h2>
+
+                <p>Hi {name},</p>
+
+                <p>Your account has been created by our recruitment team.</p>
+
+                <p>To activate your account, please set your password by visiting the link below:</p>
+
+                <p style='margin: 20px 0;'>
+                <a 
+                    href='http://localhost:5173/login' 
+                    style='
+                        background-color:#6a0dad;
+                        color:white;
+                        padding:10px 18px;
+                        text-decoration:none;
+                        border-radius:5px;
+                        font-weight:bold;'>
+                    Set Your Password
+                </a>
+                </p>
+
+                <p> On the login page, click forget password and follow the steps to set your password.</p>
+
+                <p> For security reasons, do not share your login details with anyone. </p>
+
+                <p><i>Regards,<br/>Roima Recruitment Team</i></p>";
+        }
     }
 }
