@@ -279,11 +279,6 @@ namespace server.Controllers
                 });
             }
 
-            if (!result.Any())
-            {
-                return NotFound("No candidates waiting for technical interview scheduling.");
-            }
-
             return Ok(result);
         }
 
@@ -329,6 +324,9 @@ namespace server.Controllers
                 .Select(t => new
                 {
                     t.TIId,
+                    t.UserId,
+                    t.JOId,
+                    t.JAId,
                     t.InterviewerName,
                     t.InterviewerEmail,
                     t.TechDate,

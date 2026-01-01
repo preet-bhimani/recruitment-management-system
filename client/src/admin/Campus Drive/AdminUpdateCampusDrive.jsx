@@ -4,6 +4,7 @@ import Sidebar from "../Sidebar";
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const AdminUpdateCampusDrive = () => {
 
@@ -11,6 +12,8 @@ const AdminUpdateCampusDrive = () => {
 
     const { id } = useParams();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const [campusdrive, setCampusDrive] = useState({
         cdid: "",
@@ -29,11 +32,15 @@ const AdminUpdateCampusDrive = () => {
     // Fetch Campus Drive
     const fetchCampusDrive = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/CampusDrive/${id}`)
             setCampusDrive(res.data || []);
         }
         catch (err) {
             toast.error("Failed to load campus drive data!")
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -73,18 +80,31 @@ const AdminUpdateCampusDrive = () => {
 
         // Endpoint Logic
         try {
+            setSubmitLoading(true);
             const res = await axios.put(`https://localhost:7119/api/CampusDrive/update/${id}`, campusdrive)
 
             toast.success(res.data.message || "Campus Drive updated successfully!");
             navigate(-1);
-        } catch (err) {
-            toast.error(err.response.data || "Failed to update campus drive.");
+        }
+        catch (err) {
+            toast.error(err.response.data || "Failed to update campus drive!");
+        }
+        finally {
+            setSubmitLoading(false);
         }
     };
 
     useEffect(() => {
         fetchCampusDrive();
     }, [])
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
 
     return <div className="flex flex-col h-screen">
 
@@ -100,10 +120,23 @@ const AdminUpdateCampusDrive = () => {
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white mb-4">Update Campus Drive</h1>
                 </div>
+                {submitLoading && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                        <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                            <CommonLoader />
+                            <span className="text-neutral-200 text-sm">
+                                Updating Campus Drive
+                            </span>
+                        </div>
+                    </div>
+                )}
 
                 {/* User Update Form */}
                 <div className="max-w-6xl mx-auto">
-                    <form onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg">
+                    <form
+                        onSubmit={handleUpdate}
+                        className={`grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg
+                        ${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
 
                         {/* Campus Drive ID */}
                         <div className="md:col-span-2">
@@ -174,8 +207,12 @@ const AdminUpdateCampusDrive = () => {
                         <div className="md:col-span-2">
                             <button
                                 type="submit"
-                                className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                                + Update Campus Drive
+                                className={`w-full p-2 rounded font-medium transition
+                                    ${submitLoading
+                                        ? "bg-neutral-600 cursor-not-allowed"
+                                        : "bg-purple-600 hover:bg-purple-500"
+                                    }`}>
+                                {submitLoading ? "Updating..." : "+ Update Campus Drive"}
                             </button>
                         </div>
                     </form>

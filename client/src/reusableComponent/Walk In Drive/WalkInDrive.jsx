@@ -5,23 +5,29 @@ import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
+import CommonLoader from "../../components/CommonLoader";
 
 function WalkInDrive({ role = "admin" }) {
 
     const navigate = useNavigate();
     const { token } = useAuth();
     const [walkIns, setWalkIns] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // Fetch Walk In Drive Data
     const fetchWalkInDrives = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/WalkInDrive`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setWalkIns(res.data || []);
-        } 
+        }
         catch {
             toast.error("Failed to load walk-in drive data!");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -78,10 +84,10 @@ function WalkInDrive({ role = "admin" }) {
 
     // Navigation
     const navigateAddDrive = () => {
-        if(role == "admin"){
+        if (role == "admin") {
             navigate("/admin-add-walkindrive")
         }
-        else if(role == "recruiter"){
+        else if (role == "recruiter") {
             navigate("/recruiter-add-walkindrive")
         }
     }
@@ -188,53 +194,57 @@ function WalkInDrive({ role = "admin" }) {
         )}
 
         {/* Walk In Drive List */}
-        <div className="space-y-3">
-            {pageItems.map((w) => (
-                <div
-                    key={w.walkId}
-                    className="bg-neutral-900 border border-neutral-700 rounded-md p-4 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-neutral-300 flex-1">
-                        <p><span className="font-medium text-purple-300">Walk ID:</span>{" "}{w.walkId}</p>
-                        <p><span className="font-medium text-purple-300">Location:</span>{" "}{w.location}</p>
-                        <p><span className="font-medium text-purple-300">Job Title:</span>{" "}{w.title}</p>
-                        <p><span className="font-medium text-purple-300">Drive Date:</span>{" "}{w.driveDate}</p>
-                        <p>
-                            <span className="font-medium text-purple-300">Status:</span>{" "}
-                            <span className={`px-2 py-0.5 rounded text-xs ${w.isActive ? "bg-emerald-800 text-emerald-200" : "bg-rose-800 text-rose-200"}`}>
-                                {w.isActive ? "Active" : "Inactive"}
-                            </span>
-                        </p>
-                    </div>
+        {loading ? (<CommonLoader />) : (
+            <div className="space-y-3">
+                {pageItems.length === 0 ? (<div className="text-center text-neutral-400 py-12">No Walk In Drive Found</div>) : (
+                    pageItems.map((w) => (
+                        <div
+                            key={w.walkId}
+                            className="bg-neutral-900 border border-neutral-700 rounded-md p-4 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-neutral-300 flex-1">
+                                <p><span className="font-medium text-purple-300">Walk ID:</span>{" "}{w.walkId}</p>
+                                <p><span className="font-medium text-purple-300">Location:</span>{" "}{w.location}</p>
+                                <p><span className="font-medium text-purple-300">Job Title:</span>{" "}{w.title}</p>
+                                <p><span className="font-medium text-purple-300">Drive Date:</span>{" "}{w.driveDate}</p>
+                                <p>
+                                    <span className="font-medium text-purple-300">Status:</span>{" "}
+                                    <span className={`px-2 py-0.5 rounded text-xs ${w.isActive ? "bg-emerald-800 text-emerald-200" : "bg-rose-800 text-rose-200"}`}>
+                                        {w.isActive ? "Active" : "Inactive"}
+                                    </span>
+                                </p>
+                            </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-2">
-                        <button
-                            className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
-                            onClick={() => navigate(`/view-walkindrive/${w.walkId}`)}>
-                            <Eye size={14} /> View
-                        </button>
-
-                        {role === "admin" && (
-                            <>
+                            {/* Action Buttons */}
+                            <div className="flex gap-2">
                                 <button
-                                    className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                    onClick={() => navigate(`/admin-update-walkindrive/${w.walkId}`)}>
-                                    <Edit size={14} /> Update
+                                    className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
+                                    onClick={() => navigate(`/view-walkindrive/${w.walkId}`)}>
+                                    <Eye size={14} /> View
                                 </button>
 
-                                {w.isActive && (
-                                    <button
-                                        className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
-                                        onClick={() => handleDelete(w.walkId)}>
-                                        <Trash2 size={14} /> Delete
-                                    </button>
+                                {role === "admin" && (
+                                    <>
+                                        <button
+                                            className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                                            onClick={() => navigate(`/admin-update-walkindrive/${w.walkId}`)}>
+                                            <Edit size={14} /> Update
+                                        </button>
+
+                                        {w.isActive && (
+                                            <button
+                                                className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                                onClick={() => handleDelete(w.walkId)}>
+                                                <Trash2 size={14} /> Delete
+                                            </button>
+                                        )}
+                                    </>
                                 )}
-                            </>
-                        )}
-                    </div>
-                </div>
-            ))}
-        </div>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+        )}
 
         {/* Pagination */}
         <div className="mt-4">

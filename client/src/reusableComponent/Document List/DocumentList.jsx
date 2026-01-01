@@ -4,12 +4,14 @@ import { Eye, Edit, Trash2, Plus, Filter, Download } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const DocumentList = ({ role = "admin" }) => {
-    
+
     const navigate = useNavigate();
     const [documents, setDocuments] = useState([]);
     const [showFilters, setShowFilters] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState({
         jobTitle: "",
         bankName: "",
@@ -18,13 +20,17 @@ const DocumentList = ({ role = "admin" }) => {
     // Fetch Data from Backend
     const fetchDocuments = async () => {
         try {
+            setLoading(true);
             const res = await axios.get("https://localhost:7119/api/DocumentList", {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}`},
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setDocuments(res.data || []);
         }
         catch (err) {
             toast.error("Failed to load documents!");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -134,71 +140,72 @@ const DocumentList = ({ role = "admin" }) => {
             )}
 
             {/* Document List */}
-            <div className="space-y-3">
-                {pageItems.length === 0 && (
-                    <div className="text-center py-6 text-neutral-400">
-                        No documents found.
-                    </div>
-                )}
-                {pageItems.map((doc) => (
-                    <div
-                        key={doc.dlId}
-                        className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-                        {/* Info */}
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <img
-                                src={doc.photo}
-                                alt={doc.fullName}
-                                className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0">
-                                <p className="break-all">
-                                    <span className="font-medium text-purple-300">
-                                        Document Id:
-                                    </span>{" "}
-                                    {doc.dlId}
-                                </p>
-                                <p className="break-words">
-                                    <span className="font-medium text-purple-300">
-                                        Full Name:
-                                    </span>{" "}
-                                    {doc.fullName}
-                                </p>
-                                <p className="break-words">
-                                    <span className="font-medium text-purple-300">Title:</span>{" "}
-                                    {doc.title}
-                                </p>
-                                <p className="break-words">
-                                    <span className="font-medium text-purple-300">Email:</span>{" "}
-                                    {doc.email}
-                                </p>
+            {loading ? (<CommonLoader />) : (
+                <div className="space-y-3">
+                    {pageItems.length === 0 && (
+                        <div className="text-center py-6 text-neutral-400">
+                            No documents found.
+                        </div>
+                    )}
+                    {pageItems.map((doc) => (
+                        <div
+                            key={doc.dlId}
+                            className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+                            {/* Info */}
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <img
+                                    src={doc.photo}
+                                    alt={doc.fullName}
+                                    className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0">
+                                    <p className="break-all">
+                                        <span className="font-medium text-purple-300">
+                                            Document Id:
+                                        </span>{" "}
+                                        {doc.dlId}
+                                    </p>
+                                    <p className="break-words">
+                                        <span className="font-medium text-purple-300">
+                                            Full Name:
+                                        </span>{" "}
+                                        {doc.fullName}
+                                    </p>
+                                    <p className="break-words">
+                                        <span className="font-medium text-purple-300">Title:</span>{" "}
+                                        {doc.title}
+                                    </p>
+                                    <p className="break-words">
+                                        <span className="font-medium text-purple-300">Email:</span>{" "}
+                                        {doc.email}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-2 mt-2 sm:mt-0">
+                                <button
+                                    className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
+                                    onClick={() => navigate(`/view-documentlist/${doc.dlId}`)}>
+                                    <Eye size={14} /> View
+                                </button>
+
+                                {role === "admin" && (
+                                    <>
+                                        <button
+                                            className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                                            onClick={() => navigate(`/admin-add-update-candidate-documents/${doc.jaId}`)}>
+                                            <Edit size={14} /> Update
+                                        </button>
+                                        <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
+                                            <Trash2 size={14} /> Delete
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-2 mt-2 sm:mt-0">
-                            <button
-                                className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
-                                onClick={() => navigate(`/view-documentlist/${doc.dlId}`)}>
-                                <Eye size={14} /> View
-                            </button>
-
-                            {role === "admin" && (
-                                <>
-                                
-                                    <button
-                                        className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                        onClick={() => navigate(`/admin-add-update-candidate-documents/${doc.jaId}`)}>
-                                        <Edit size={14} /> Update
-                                    </button>
-                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
-                                        <Trash2 size={14} /> Delete
-                                    </button>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
 
             {/* Pagination */}
             <div className="mt-4">

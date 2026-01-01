@@ -3,11 +3,13 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const ViewCampusDrive = () => {
 
     const navigate = useNavigate();
     const { id } = useParams();
+    const [loading, setLoading] = useState(false);
 
     const handleBack = () => navigate(-1);
 
@@ -23,11 +25,15 @@ const ViewCampusDrive = () => {
     // Fetch Campus Drive Data
     const fetchCampusDrive = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/CampusDrive/${id}`)
             setCampusDrive(res.data || []);
         }
         catch (err) {
             toast.error("Failed to load Campus Drive details!")
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -35,10 +41,20 @@ const ViewCampusDrive = () => {
         fetchCampusDrive();
     }, []);
 
+    // Loding
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
+
+    // If Campus Drive is Not Found
     if (!campusdrive) {
         return (
             <div className="min-h-screen flex items-center justify-center text-white">
-                Loading Campus Drive Details...
+                Campus Drive not found
             </div>
         );
     }

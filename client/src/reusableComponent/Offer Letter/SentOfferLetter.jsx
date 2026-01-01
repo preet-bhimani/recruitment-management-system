@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const SentOfferLetter = ({ id }) => {
 
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     // Form Data
     const [formData, setFormData] = useState({
@@ -109,6 +111,7 @@ const SentOfferLetter = ({ id }) => {
 
         console.log(formData);
         try {
+            setLoading(true);
             const res = await axios.post(`https://localhost:7119/api/OfferLetter/generate`, formData);
 
             toast.success(res.data.message || "Offer letter generated and sent successfully!");
@@ -117,87 +120,107 @@ const SentOfferLetter = ({ id }) => {
         catch (error) {
             toast.error(error.response?.data?.message || "Failed to generate offer letter!");
         }
+        finally {
+            setLoading(false);
+        }
     };
 
-    return <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg text-neutral-100">
-        {/* Joining Date */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Joining Date <span className="text-rose-500">*</span>
-            </label>
-            <input
-                type="date"
-                value={formData.joiningDate}
-                onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-            {errors.joiningDate && <p className="text-rose-500 text-sm mt-1">{errors.joiningDate}</p>}
-        </div>
+    return <>
+        {loading && (
+            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                    <CommonLoader />
+                    <span className="text-neutral-200 text-sm">
+                        Generating offer letter & sending email
+                    </span>
+                </div>
+            </div>
+        )}
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg text-neutral-100">
+            {/* Joining Date */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Joining Date <span className="text-rose-500">*</span>
+                </label>
+                <input
+                    type="date"
+                    value={formData.joiningDate}
+                    onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                {errors.joiningDate && <p className="text-rose-500 text-sm mt-1">{errors.joiningDate}</p>}
+            </div>
 
-        {/* End Date */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                End Date (Only for Internship)
-            </label>
-            <input
-                type="date"
-                value={formData.endDate}
-                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-        </div>
+            {/* End Date */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    End Date (Only for Internship)
+                </label>
+                <input
+                    type="date"
+                    value={formData.endDate}
+                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+            </div>
 
-        {/* Bond Time */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Bond Time <span className="text-rose-500">*</span>
-            </label>
-            <input
-                type="text"
-                placeholder="e.g. 6 months"
-                value={formData.bondTime}
-                onChange={(e) => setFormData({ ...formData, bondTime: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-            {errors.bondTime && <p className="text-rose-500 text-sm mt-1">{errors.bondTime}</p>}
-        </div>
+            {/* Bond Time */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Bond Time <span className="text-rose-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    placeholder="e.g. 6 months"
+                    value={formData.bondTime}
+                    onChange={(e) => setFormData({ ...formData, bondTime: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                {errors.bondTime && <p className="text-rose-500 text-sm mt-1">{errors.bondTime}</p>}
+            </div>
 
-        {/* Salary */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Salary (INR) <span className="text-rose-500">*</span>
-            </label>
-            <input
-                type="number"
-                placeholder="Enter Salary"
-                value={formData.salary}
-                onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-            {errors.salary && <p className="text-rose-500 text-sm mt-1">{errors.salary}</p>}
-        </div>
+            {/* Salary */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Salary (INR) <span className="text-rose-500">*</span>
+                </label>
+                <input
+                    type="number"
+                    placeholder="Enter Salary"
+                    value={formData.salary}
+                    onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                {errors.salary && <p className="text-rose-500 text-sm mt-1">{errors.salary}</p>}
+            </div>
 
-        {/* Template Type */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Template Type <span className="text-rose-500">*</span>
-            </label>
-            <select
-                value={formData.templateType}
-                onChange={(e) => setFormData({ ...formData, templateType: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700">
-                <option value="" disabled>Select Template Type</option>
-                <option value="Internship">Internship</option>
-                <option value="Job">Job</option>
-            </select>
-            {errors.templateType && <p className="text-rose-500 text-sm mt-1">{errors.templateType}</p>}
-        </div>
+            {/* Template Type */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Template Type <span className="text-rose-500">*</span>
+                </label>
+                <select
+                    value={formData.templateType}
+                    onChange={(e) => setFormData({ ...formData, templateType: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700">
+                    <option value="" disabled>Select Template Type</option>
+                    <option value="Internship">Internship</option>
+                    <option value="Job">Job</option>
+                </select>
+                {errors.templateType && <p className="text-rose-500 text-sm mt-1">{errors.templateType}</p>}
+            </div>
 
-        {/* Submit Button */}
-        <div className="md:col-span-2">
-            <button
-                type="submit"
-                className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                + Generate and Send Offer Letter
-            </button>
-        </div>
-    </form>;
+            {/* Submit Button */}
+            <div className="md:col-span-2">
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className={`w-full p-2 rounded font-medium transition
+                        ${loading
+                            ? "bg-neutral-600 cursor-not-allowed"
+                            : "bg-purple-600 hover:bg-purple-500"
+                        }`}>
+                    + Generate and Send Offer Letter
+                </button>
+            </div>
+        </form>
+    </>;
 };
 
 export default SentOfferLetter;

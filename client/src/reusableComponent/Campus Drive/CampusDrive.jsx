@@ -4,21 +4,27 @@ import { useNavigate } from "react-router-dom";
 import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const CampusDrive = ({ role = "admin" }) => {
 
     const navigate = useNavigate();
 
     const [campus, setCampus] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // Fetch Campus Drive
     const fetchCampusDrive = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/CampusDrive`)
             setCampus(res.data || []);
         }
         catch (err) {
             toast.error("Failed to load campus drive data!")
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -55,13 +61,11 @@ const CampusDrive = ({ role = "admin" }) => {
         });
     }, [campus, filters]);
 
-    const handleAddNavigate = () =>{
-        if(role == "admin")
-        {
+    const handleAddNavigate = () => {
+        if (role == "admin") {
             navigate("/admin-add-campusdrive")
         }
-        else if(role == "recruiter")
-        {
+        else if (role == "recruiter") {
             navigate("/recruiter-add-campusdrive")
         }
     }
@@ -178,55 +182,58 @@ const CampusDrive = ({ role = "admin" }) => {
         )}
 
         {/* Campus Drive List */}
-        <div className="space-y-3">
-            {pageItems.map((cd) => (
-                <div
-                    key={cd.cdId}
-                    className="bg-neutral-900 border border-neutral-700 rounded-md p-4 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-                    <div className="flex items-start gap-3 flex-1 min-w-0">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 flex-1 min-w-0 text-neutral-300">
-                            <p className="break-all"><span className="font-medium text-purple-300">CD ID:</span> {cd.cdid}</p>
-                            <p className="break-words"><span className="font-medium text-purple-300">University Name:</span> {cd.universityName}</p>
-                            <p className="break-words"><span className="font-medium text-purple-300">Title:</span> {cd.title}</p>
-                            <p className="break-words"><span className="font-medium text-purple-300">Drive Date:</span> {cd.driveDate}</p>
-                            <p>
-                                <span className="font-medium text-purple-300">Status:</span>{" "}
-                                <span className={`px-2 py-0.5 rounded text-xs ${cd.isActive ? "bg-emerald-800 text-emerald-200" : "bg-rose-800 text-rose-200"}`}>
-                                    {cd.isActive ? "Active" : "Inactive"}
-                                </span>
-                            </p>
-                        </div>
-                    </div>
+        {loading ? (<CommonLoader />) : (
+            <div className="space-y-3">
+                {pageItems.length === 0 ? (<div className="text-center text-neutral-400 py-12">No campus drives found</div>) : (
+                    pageItems.map((cd) => (
+                        <div
+                            key={cd.cdId}
+                            className="bg-neutral-900 border border-neutral-700 rounded-md p-4 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+                            <div className="flex items-start gap-3 flex-1 min-w-0">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 flex-1 min-w-0 text-neutral-300">
+                                    <p className="break-all"><span className="font-medium text-purple-300">CD ID:</span> {cd.cdid}</p>
+                                    <p className="break-words"><span className="font-medium text-purple-300">University Name:</span> {cd.universityName}</p>
+                                    <p className="break-words"><span className="font-medium text-purple-300">Title:</span> {cd.title}</p>
+                                    <p className="break-words"><span className="font-medium text-purple-300">Drive Date:</span> {cd.driveDate}</p>
+                                    <p>
+                                        <span className="font-medium text-purple-300">Status:</span>{" "}
+                                        <span className={`px-2 py-0.5 rounded text-xs ${cd.isActive ? "bg-emerald-800 text-emerald-200" : "bg-rose-800 text-rose-200"}`}>
+                                            {cd.isActive ? "Active" : "Inactive"}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 mt-2 sm:mt-0">
-                        <button
-                            className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
-                            onClick={() => navigate(`/view-campusdrive/${cd.cdid}`)}>
-                            <Eye size={14} /> View
-                        </button>
-
-                        {role === "admin" && (
-                            <>
+                            {/* Action Buttons */}
+                            <div className="flex gap-2 mt-2 sm:mt-0">
                                 <button
-                                    className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                    onClick={() => navigate(`/admin-update-campusdrive/${cd.cdid}`)}>
-                                    <Edit size={14} /> Update
+                                    className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
+                                    onClick={() => navigate(`/view-campusdrive/${cd.cdid}`)}>
+                                    <Eye size={14} /> View
                                 </button>
-                                {cd.isActive && (
-                                    <button
-                                        className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
-                                        onClick={() => handleDelete(cd.cdid)}>
-                                        <Trash2 size={14} /> Delete
-                                    </button>
-                                )}
-                            </>
-                        )}
-                    </div>
-                </div>
-            ))}
-        </div>
 
+                                {role === "admin" && (
+                                    <>
+                                        <button
+                                            className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                                            onClick={() => navigate(`/admin-update-campusdrive/${cd.cdid}`)}>
+                                            <Edit size={14} /> Update
+                                        </button>
+                                        {cd.isActive && (
+                                            <button
+                                                className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                                onClick={() => handleDelete(cd.cdid)}>
+                                                <Trash2 size={14} /> Delete
+                                            </button>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+        )}
         {/* Pagination */}
         <div className="mt-4">
             <CommonPagination

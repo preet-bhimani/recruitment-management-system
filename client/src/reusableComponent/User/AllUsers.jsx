@@ -4,20 +4,26 @@ import { useNavigate } from "react-router-dom";
 import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const AllUsers = ({ role = "admin" }) => {
 
     const [users, setUsers] = useState([]);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     // Fetch Users
     const fetchUsers = async () => {
         try {
+            setLoading(true);
             const res = await axios.get("https://localhost:7119/api/User");
             setUsers(res.data || []);
         }
         catch (err) {
             toast.error("failed to load users")
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -175,63 +181,67 @@ const AllUsers = ({ role = "admin" }) => {
             )}
 
             {/* User Details */}
-            <div className="space-y-2">
-                {pageItems.map((user, idx) => (
-                    <div
-                        key={`${user.userId}-${idx}`}
-                        className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-                        <div className="flex items-center gap-3 flex-1">
-                            <img
-                                src={user.photo}
-                                alt={user.fullName}
-                                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover flex-shrink-0" />
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-1 flex-1">
-                                <p><span className="font-medium text-purple-300">UserID:</span> {user.userId || "-"}</p>
-                                <p><span className="font-medium text-purple-300">Name:</span> {user.fullName || "-"}</p>
-                                <p><span className="font-medium text-purple-300 ">Email:</span> <span className="break-all">{user.email || "-"}</span></p>
-                                <p><span className="font-medium text-purple-300">Phone:</span> {user.phoneNumber || "-"}</p>
-                                <p><span className="font-medium text-purple-300">City:</span> {user.city || "-"}</p>
-                                <p><span className="font-medium text-purple-300">DOB:</span> {user.dob || "-"}</p>
-                                <p><span className="font-medium text-purple-300">Role:</span> {user.role || "-"}</p>
-                                <p><span className="font-medium text-purple-300">Status:</span>{" "}
-                                    <span className={`px-2 py-0.5 rounded text-xs ${user.isActive
-                                        ? "bg-emerald-800 text-emerald-200"
-                                        : "bg-rose-800 text-rose-200"
-                                        }`}>
-                                        {user.isActive ? "Active" : "Deactive"}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
+            {loading ? (<CommonLoader />) : (
+                <div className="space-y-2">
+                    {pageItems.length === 0 ? (<div className="text-center text-neutral-400 py-12">No User Found</div>) : (
+                        pageItems.map((user, idx) => (
+                            <div
+                                key={`${user.userId}-${idx}`}
+                                className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+                                <div className="flex items-center gap-3 flex-1">
+                                    <img
+                                        src={user.photo}
+                                        alt={user.fullName}
+                                        className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover flex-shrink-0" />
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-1 flex-1">
+                                        <p><span className="font-medium text-purple-300">UserID:</span> {user.userId || "-"}</p>
+                                        <p><span className="font-medium text-purple-300">Name:</span> {user.fullName || "-"}</p>
+                                        <p><span className="font-medium text-purple-300 ">Email:</span> <span className="break-all">{user.email || "-"}</span></p>
+                                        <p><span className="font-medium text-purple-300">Phone:</span> {user.phoneNumber || "-"}</p>
+                                        <p><span className="font-medium text-purple-300">City:</span> {user.city || "-"}</p>
+                                        <p><span className="font-medium text-purple-300">DOB:</span> {user.dob || "-"}</p>
+                                        <p><span className="font-medium text-purple-300">Role:</span> {user.role || "-"}</p>
+                                        <p><span className="font-medium text-purple-300">Status:</span>{" "}
+                                            <span className={`px-2 py-0.5 rounded text-xs ${user.isActive
+                                                ? "bg-emerald-800 text-emerald-200"
+                                                : "bg-rose-800 text-rose-200"
+                                                }`}>
+                                                {user.isActive ? "Active" : "Deactive"}
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
 
-                        {/* Buttons */}
-                        <div className="flex gap-2 ml-0 sm:ml-4">
-                            <button
-                                className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
-                                onClick={() => navigate(`/view-user/${user.userId}`)}>
-                                <Eye size={14} /> View
-                            </button>
-
-                            {role === "admin" && (
-                                <>
+                                {/* Buttons */}
+                                <div className="flex gap-2 ml-0 sm:ml-4">
                                     <button
-                                        className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                        onClick={() => navigate(`/admin-user-update/${user.userId}`)}>
-                                        <Edit size={14} /> Update
+                                        className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
+                                        onClick={() => navigate(`/view-user/${user.userId}`)}>
+                                        <Eye size={14} /> View
                                     </button>
 
-                                    {user.isActive && (
-                                        <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
-                                            onClick={() => handleDelete(user.userId)}>
-                                            <Trash2 size={14} /> Delete
-                                        </button>
+                                    {role === "admin" && (
+                                        <>
+                                            <button
+                                                className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                                                onClick={() => navigate(`/admin-user-update/${user.userId}`)}>
+                                                <Edit size={14} /> Update
+                                            </button>
+
+                                            {user.isActive && (
+                                                <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                                    onClick={() => handleDelete(user.userId)}>
+                                                    <Trash2 size={14} /> Delete
+                                                </button>
+                                            )}
+                                        </>
                                     )}
-                                </>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            )}
 
             {/* Pagination UI */}
             <div className="mt-4">

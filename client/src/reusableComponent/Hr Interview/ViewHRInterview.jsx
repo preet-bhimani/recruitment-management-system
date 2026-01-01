@@ -3,12 +3,14 @@ import { ArrowLeft, Mail, Link, Star, Calendar } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const ViewHRInterview = () => {
 
     const navigate = useNavigate();
     const { id } = useParams();
     const handleBack = () => navigate(-1);
+    const [loading, setLoading] = useState(false);
 
     const [interview, setInterview] = useState(null);
 
@@ -38,11 +40,15 @@ const ViewHRInterview = () => {
     // Fetch HR Interview Data
     const fetchHRInterviewDataById = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/HRInterview/${id}`)
             setInterview(res.data || [])
-        } 
+        }
         catch (err) {
             toast.err("Failed to load HR Interview details!")
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -50,10 +56,18 @@ const ViewHRInterview = () => {
         fetchHRInterviewDataById();
     }, []);
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
+
     if (!interview) {
         return (
             <div className="min-h-screen flex items-center justify-center text-white">
-                Loading HR Interview Details...
+                No Interview Found
             </div>
         );
     }

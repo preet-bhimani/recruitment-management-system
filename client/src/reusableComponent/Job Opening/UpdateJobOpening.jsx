@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import CommonLoader from "../../components/CommonLoader";
 
 const UpdateJobOpening = ({ id }) => {
+
+    const [loading, setLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     // State for Job Opening Data
     const [jobsData, setJobsData] = useState({
@@ -38,11 +42,15 @@ const UpdateJobOpening = ({ id }) => {
     // Fetch Job Opening
     const fetchJobOpening = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/JobOpening/${id}`)
             setJobsData(res.data || []);
         }
         catch (err) {
             toast.error("Failed to load job opening data!")
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -139,11 +147,16 @@ const UpdateJobOpening = ({ id }) => {
 
         // Fectch Data
         try {
+            setSubmitLoading(true);
             const res = await axios.put(`https://localhost:7119/api/JobOpening/update/${id}`, jobsData)
             toast.success(res.data.message || "Job opening updated successfully!");
             navigate(-1);
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to update job opening!");
+        }
+        catch (err) {
+            toast.error(err.response?.data?.message || "Failed to update job opening!");
+        }
+        finally {
+            setSubmitLoading(false);
         }
     }
 
@@ -151,9 +164,33 @@ const UpdateJobOpening = ({ id }) => {
         if (id) fetchJobOpening();
     }, [id]);
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
+
     return <>
         <div className="max-w-6xl mx-auto">
-            <form onSubmit={handleupdate} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg">
+
+            {submitLoading && (
+                <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                    <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                        <CommonLoader />
+                        <span className="text-neutral-200 text-sm">
+                            Job Opening
+                        </span>
+                    </div>
+                </div>
+            )}
+
+            <form
+                onSubmit={handleupdate}
+                className={`grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg
+                ${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
+
                 {/* Job Opening ID */}
                 <div className="md:col-span-2">
                     <label className="block mb-1 text-sm font-medium text-neutral-300">
@@ -337,8 +374,12 @@ const UpdateJobOpening = ({ id }) => {
                 <div className="md:col-span-2">
                     <button
                         type="submit"
-                        className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                        + Update Job Opening
+                        className={`w-full p-2 rounded font-medium transition
+                            ${submitLoading
+                                ? "bg-neutral-600 cursor-not-allowed"
+                                : "bg-purple-600 hover:bg-purple-500"
+                            }`}>
+                        {submitLoading ? "Updating..." : "+ Update Job Opening"}
                     </button>
                 </div>
             </form>

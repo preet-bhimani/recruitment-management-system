@@ -326,6 +326,9 @@ namespace server.Controllers
                 .Select(h => new
                 {
                     h.HIId,
+                    h.UserId,
+                    h.JOId,
+                    h.JAId,
                     h.NoOfRound,
                     h.HRDate,
                     h.HRTime,

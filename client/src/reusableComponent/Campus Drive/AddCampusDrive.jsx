@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 function AddCampusDrive() {
 
     const { id } = useParams();
+    const [submitting, setSubmitting] = useState(false);
 
     const [formData, setFormData] = useState({
         joId: id,
@@ -48,10 +49,29 @@ function AddCampusDrive() {
 
         // Endpoint Logic
         try {
+            setSubmitting(true);
             const res = await axios.post(`https://localhost:7119/api/CampusDrive`, formData)
             toast.success(res.data || "Campus Drive added successfully!");
-        } catch (err) {
+
+            // Clear FormData
+            setFormData({
+                joId: id,
+                universityName: "",
+                driveDate: "",
+                isActive: true
+            });
+
+            // Clear Validation Errors
+            setErrors({
+                universityName: "",
+                driveDate: ""
+            });
+        }
+        catch (err) {
             toast.error(err.response?.data || "Failed to add campus drive!");
+        }
+        finally {
+            setSubmitting(false);
         }
     };
 
@@ -114,11 +134,16 @@ function AddCampusDrive() {
         <div className="md:col-span-2">
             <button
                 type="submit"
-                className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                + Add Campus Drive
+                disabled={submitting}
+                className={`w-full p-2 rounded font-medium transition
+                    ${submitting
+                        ? "bg-purple-400 cursor-not-allowed"
+                        : "bg-purple-600 hover:bg-purple-500"
+                    }`}>
+                {submitting ? "Adding Campus Drive..." : "+ Add Campus Drive"}
             </button>
         </div>
-    </form>
+    </form >
 }
 
 export default AddCampusDrive;

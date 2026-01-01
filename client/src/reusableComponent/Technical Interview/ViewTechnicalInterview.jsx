@@ -3,12 +3,14 @@ import { ArrowLeft, Mail, Link, Star, Calendar } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const ViewTechnicalInterview = () => {
 
     const navigate = useNavigate();
     const { id } = useParams();
     const handleBack = () => navigate(-1);
+    const [loading, setLoading] = useState(false);
 
     const [interview, setInterview] = useState(null);
 
@@ -19,7 +21,7 @@ const ViewTechnicalInterview = () => {
             : s === "In Progress" ? "bg-yellow-600"
                 : s === "Not Clear" ? "bg-rose-600"
                     : "bg-gray-600";
-                    
+
     // Star Rating Logic
     const renderStars = (r) => {
         const stars = [];
@@ -38,24 +40,37 @@ const ViewTechnicalInterview = () => {
     // Fetch Technical Interview Data
     const fetchTechnicalInterviewDataById = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/TechnicalInterview/${id}`)
             setInterview(res.data || [])
-        } catch (err) {
+        }
+        catch (err) {
             toast.err("Failed to load Technical Interview details!")
+        }
+        finally {
+            setLoading(false);
         }
     }
 
     useEffect(() => {
-            fetchTechnicalInterviewDataById();
-        }, []);
-    
-        if (!interview) {
-            return (
-                <div className="min-h-screen flex items-center justify-center text-white">
-                    Loading Technical Interview Details...
-                </div>
-            );
-        }
+        fetchTechnicalInterviewDataById();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
+
+    if (!interview) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-white">
+                No Technical Interview Data Found
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-neutral-950 text-white p-4 md:p-6 flex justify-center">

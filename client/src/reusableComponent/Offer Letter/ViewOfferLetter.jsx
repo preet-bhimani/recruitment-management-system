@@ -3,12 +3,14 @@ import { ArrowLeft, Mail, FileText } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 function ViewOfferLetter() {
 
     const navigate = useNavigate();
     const { id } = useParams();
     const [offer, setOffer] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const handleBack = () => navigate(-1);
 
@@ -37,6 +39,7 @@ function ViewOfferLetter() {
     // Fetch Offer Letter Details
     const fetchOfferLetterById = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/OfferLetter/fetch/${id}`);
             setOffer(res.data);
             console.log(res.data);
@@ -44,16 +47,27 @@ function ViewOfferLetter() {
         catch (err) {
             toast.error("Failed to load Offer Letter details!");
         }
+        finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
         fetchOfferLetterById();
     }, []);
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
+
     if (!offer) {
         return (
             <div className="min-h-screen flex items-center justify-center text-white">
-                Loading Offer Letter Details...
+                No Offer Letter Found
             </div>
         );
     }

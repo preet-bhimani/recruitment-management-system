@@ -4,20 +4,28 @@ import { Filter, Download } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const Skill = ({ role = "admin" }) => {
 
     const navigate = useNavigate();
 
     const [allSkills, setAllSkills] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // Fetch  Skills
     const fetchSkills = async () => {
         try {
+            setLoading(true);
             const res = await axios.get("https://localhost:7119/api/Skill");
             setAllSkills(res.data || []);
         }
-        catch (err) { toast.error("Failed to load skills"); }
+        catch (err) {
+            toast.error("Failed to load skills");
+        }
+        finally {
+            setLoading(false);
+        }
     };
 
     // Delete Skill Logic
@@ -111,49 +119,51 @@ const Skill = ({ role = "admin" }) => {
         )}
 
         {/* Skills Details */}
-        <div className="space-y-3">
-            {pageItems.length === 0 && (
-                <div className="text-center py-6 text-neutral-400">No skills found.</div>
-            )}
+        {loading ? (<CommonLoader />) : (
+            <div className="space-y-3">
+                {pageItems.length === 0 && (
+                    <div className="text-center py-6 text-neutral-400">No skills found.</div>
+                )}
 
-            {pageItems.map((skill) => (
-                <div
-                    key={skill.skillId}
-                    className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0 text-neutral-300">
-                            <p className="break-all">
-                                <span className="font-medium text-purple-300">Skill ID:</span>{" "}
-                                <span className="text-neutral-200">{skill.skillId}</span>
-                            </p>
+                {pageItems.map((skill) => (
+                    <div
+                        key={skill.skillId}
+                        className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0 text-neutral-300">
+                                <p className="break-all">
+                                    <span className="font-medium text-purple-300">Skill ID:</span>{" "}
+                                    <span className="text-neutral-200">{skill.skillId}</span>
+                                </p>
 
-                            <p className="break-words">
-                                <span className="font-medium text-purple-300">Skill Name:</span>{" "}
-                                <span className="text-neutral-200">{skill.skillName}</span>
-                            </p>
+                                <p className="break-words">
+                                    <span className="font-medium text-purple-300">Skill Name:</span>{" "}
+                                    <span className="text-neutral-200">{skill.skillName}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 mt-2 sm:mt-0">
+                            {role === "admin" && (
+                                <>
+                                    <button
+                                        className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                                        onClick={() => navigate(`/admin-update-skill/${skill.skillId}`)}>
+                                        Update
+                                    </button>
+
+                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                        onClick={() => handleDelete(skill.skillId)}>
+                                        Delete
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 mt-2 sm:mt-0">
-                        {role === "admin" && (
-                            <>
-                                <button
-                                    className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                    onClick={() => navigate(`/admin-update-skill/${skill.skillId}`)}>
-                                    Update
-                                </button>
-
-                                <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
-                                    onClick={() => handleDelete(skill.skillId)}>
-                                    Delete
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </div>
-            ))}
-        </div>
+                ))}
+            </div>
+        )}
 
         {/* Pagination */}
         <div className="mt-4">

@@ -4,6 +4,7 @@ import Sidebar from "../Sidebar";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from 'axios';
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const AdminUpdateJobApplication = () => {
 
@@ -11,6 +12,8 @@ const AdminUpdateJobApplication = () => {
 
     const { id } = useParams();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const [jobapp, setJobappData] = useState({
         jaId: "",
@@ -30,11 +33,15 @@ const AdminUpdateJobApplication = () => {
     // Fetch Job Application
     const fetchJobApplication = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/JobApplication/${id}`)
             setJobappData(res.data || []);
         }
         catch (err) {
             toast.error("Error to fetch data!")
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -58,20 +65,32 @@ const AdminUpdateJobApplication = () => {
 
         // Endpoint Logic
         try {
+            setSubmitLoading(true);
             const res = await axios.put(`https://localhost:7119/api/JobApplication/update/${id}`, jobapp);
             toast.success(res.data.message || "Job application submitted successfully!");
             navigate(-1);
 
-        } 
+        }
         catch (err) {
             console.log(err)
             toast.error(err.response.data || "Failed to submit job application!");
+        }
+        finally {
+            setSubmitLoading(false);
         }
     }
 
     useEffect(() => {
         fetchJobApplication();
     }, [])
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
 
     return <div className="flex flex-col h-screen">
 
@@ -87,9 +106,23 @@ const AdminUpdateJobApplication = () => {
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white mb-4">Update Job Application</h1>
                 </div>
+                {submitLoading && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                        <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                            <CommonLoader />
+                            <span className="text-neutral-200 text-sm">
+                                Updating Job Application
+                            </span>
+                        </div>
+                    </div>
+                )}
                 {/* User Update Form */}
                 <div className="max-w-6xl mx-auto">
-                    <form onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg">
+                    <form
+                        onSubmit={handleUpdate}
+                        className={`grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg
+                        ${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
+
                         {/* Job Application ID */}
                         <div className="md:col-span-2">
                             <label className="block mb-1 text-sm font-medium text-neutral-300">
@@ -144,9 +177,9 @@ const AdminUpdateJobApplication = () => {
                         {/* Exam Result */}
                         <div>
                             <label className="block mb-1 text-sm font-medium">Exam Result</label>
-                            <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" 
-                            value={jobapp.examResult}
-                            onChange={(e) => setJobappData({ ...jobapp, examResult: e.target.value })}>
+                            <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700"
+                                value={jobapp.examResult}
+                                onChange={(e) => setJobappData({ ...jobapp, examResult: e.target.value })}>
                                 <option value="" disabled>Select Exam Result</option>
                                 <option value="Pass">Pass</option>
                                 <option value="Fail">Fail</option>
@@ -170,9 +203,9 @@ const AdminUpdateJobApplication = () => {
                         {/* Status */}
                         <div>
                             <label className="block mb-1 text-sm font-medium">Status <span className="text-rose-500">*</span></label>
-                            <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" 
-                            value={jobapp.status}
-                            onChange={(e) => setJobappData({ ...jobapp, status: e.target.value })}>
+                            <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700"
+                                value={jobapp.status}
+                                onChange={(e) => setJobappData({ ...jobapp, status: e.target.value })}>
                                 <option value="" disabled>Select Status</option>
                                 <option value="Applied">Applied</option>
                                 <option value="Exam">Exam</option>
@@ -180,15 +213,19 @@ const AdminUpdateJobApplication = () => {
                                 <option value="Rejected">Rejected</option>
                                 <option value="Hold">Hold</option>
                             </select>
-                        {errors.status && (<p className="text-rose-500 text-sm mt-1">{errors.status}</p>)}
+                            {errors.status && (<p className="text-rose-500 text-sm mt-1">{errors.status}</p>)}
                         </div>
 
                         {/* Submit */}
                         <div className="md:col-span-2">
                             <button
                                 type="submit"
-                                className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                                + Update Job Application
+                                className={`w-full p-2 rounded font-medium transition
+                                    ${submitLoading
+                                        ? "bg-neutral-600 cursor-not-allowed"
+                                        : "bg-purple-600 hover:bg-purple-500"
+                                    }`}>
+                                {submitLoading ? "Updating..." : "+ Update Job Application"}
                             </button>
                         </div>
                     </form>

@@ -4,20 +4,26 @@ import { Eye, Edit, Trash2, Filter, Download } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from 'react-toastify';
+import CommonLoader from "../../components/CommonLoader";
 
 const HRInterview = ({ role = "admin" }) => {
 
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const [hrin, setHrin] = useState([]);
 
     const fetchHrin = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/HRInterview`);
             setHrin(res.data || []);
         }
         catch (err) {
             toast.error("Error fetching data!");
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -69,7 +75,14 @@ const HRInterview = ({ role = "admin" }) => {
     const pageItems = useMemo(
         () => paginate(filtered, currentPage, pageSize),
         [filtered, currentPage, pageSize]);
-    useEffect(() => setCurrentPage(1), fetchHrin(), [filters]);
+
+    useEffect(() => {
+        fetchHrin();
+    }, [])
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filters]);
 
     return <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
         <div className="flex flex-wrap items-center justify-end gap-3 mb-4">
@@ -215,83 +228,86 @@ const HRInterview = ({ role = "admin" }) => {
             </div>
         )}
 
-        <div className="space-y-3">
-            {pageItems.length === 0 && (
-                <div className="text-center py-6 text-neutral-400">
-                    No HR interviews found.
-                </div>
-            )}
+        {/* Show HR Interview Details */}
+        {loading ? (<CommonLoader />) : (
+            <div className="space-y-3">
+                {pageItems.length === 0 && (
+                    <div className="text-center py-6 text-neutral-400">
+                        No HR interviews found.
+                    </div>
+                )}
 
-            {pageItems.map((hr) => (
-                <div
-                    key={hr.hiId}
-                    className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+                {pageItems.map((hr) => (
+                    <div
+                        key={hr.hiId}
+                        className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
 
-                    {/* Interview Details */}
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <img src={hr.photo} alt={hr.fullName} className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
+                        {/* Interview Details */}
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <img src={hr.photo} alt={hr.fullName} className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0">
-                            <p className="break-all"><span className="font-medium text-purple-300">HIId:</span>{" "}{hr.hiId}</p>
-                            <p className="break-words"><span className="font-medium text-purple-300">Full Name:</span>{" "}{hr.fullName}</p>
-                            <p className="break-words"><span className="font-medium text-purple-300">Title:</span>{" "}{hr.title}</p>
-                            <p className="break-words"><span className="font-medium text-purple-300">Email:</span>{" "}{hr.email}</p>
-                            <p className="break-words"><span className="font-medium text-purple-300">Date:</span>{" "}{hr.hrDate}</p>
-                            <p className="truncate"><span className="font-medium text-purple-300">No. of Rounds:</span>{" "}{hr.noOfRound}</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0">
+                                <p className="break-all"><span className="font-medium text-purple-300">HIId:</span>{" "}{hr.hiId}</p>
+                                <p className="break-words"><span className="font-medium text-purple-300">Full Name:</span>{" "}{hr.fullName}</p>
+                                <p className="break-words"><span className="font-medium text-purple-300">Title:</span>{" "}{hr.title}</p>
+                                <p className="break-words"><span className="font-medium text-purple-300">Email:</span>{" "}{hr.email}</p>
+                                <p className="break-words"><span className="font-medium text-purple-300">Date:</span>{" "}{hr.hrDate}</p>
+                                <p className="truncate"><span className="font-medium text-purple-300">No. of Rounds:</span>{" "}{hr.noOfRound}</p>
 
-                            {/* IsClear */}
-                            <p className="truncate">
-                                <span className="font-medium text-purple-300">IsClear:</span>{" "}
-                                <span
-                                    className={`px-2 py-0.5 rounded text-xs ${hr.hrIsClear === "Clear"
-                                        ? "bg-emerald-800 text-emerald-200"
-                                        : hr.hrIsClear === "In Progress"
-                                            ? "bg-yellow-800 text-yellow-200"
-                                            : "bg-rose-800 text-rose-200"}`}>
-                                    {hr.hrIsClear}
-                                </span>
-                            </p>
+                                {/* IsClear */}
+                                <p className="truncate">
+                                    <span className="font-medium text-purple-300">IsClear:</span>{" "}
+                                    <span
+                                        className={`px-2 py-0.5 rounded text-xs ${hr.hrIsClear === "Clear"
+                                            ? "bg-emerald-800 text-emerald-200"
+                                            : hr.hrIsClear === "In Progress"
+                                                ? "bg-yellow-800 text-yellow-200"
+                                                : "bg-rose-800 text-rose-200"}`}>
+                                        {hr.hrIsClear}
+                                    </span>
+                                </p>
 
-                            {/* Status */}
-                            <p className="truncate">
-                                <span className="font-medium text-purple-300">Status:</span>{" "}
-                                <span
-                                    className={`px-2 py-0.5 rounded text-xs ${hr.hrStatus === "Clear"
-                                        ? "bg-emerald-800 text-emerald-200"
-                                        : hr.hrStatus === "In Progress"
-                                            ? "bg-yellow-800 text-yellow-200"
-                                            : "bg-rose-800 text-rose-200"}`}>
-                                    {hr.hrStatus}
-                                </span>
-                            </p>
+                                {/* Status */}
+                                <p className="truncate">
+                                    <span className="font-medium text-purple-300">Status:</span>{" "}
+                                    <span
+                                        className={`px-2 py-0.5 rounded text-xs ${hr.hrStatus === "Clear"
+                                            ? "bg-emerald-800 text-emerald-200"
+                                            : hr.hrStatus === "In Progress"
+                                                ? "bg-yellow-800 text-yellow-200"
+                                                : "bg-rose-800 text-rose-200"}`}>
+                                        {hr.hrStatus}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 mt-2 sm:mt-0">
+                            <button
+                                className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
+                                onClick={() => navigate(`/view-hrinterview/${hr.hiId}`)}>
+                                <Eye size={14} /> View
+                            </button>
+
+                            {role === "admin" && (
+                                <>
+                                    <button
+                                        className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                                        onClick={() => navigate(`/admin-update-hrinterview/${hr.hiId}`)}>
+                                        <Edit size={14} /> Update
+                                    </button>
+
+                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
+                                        <Trash2 size={14} /> Delete
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 mt-2 sm:mt-0">
-                        <button
-                            className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
-                            onClick={() => navigate(`/view-hrinterview/${hr.hiId}`)}>
-                            <Eye size={14} /> View
-                        </button>
-
-                        {role === "admin" && (
-                            <>
-                                <button
-                                    className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                    onClick={() => navigate(`/admin-update-hrinterview/${hr.hiId}`)}>
-                                    <Edit size={14} /> Update
-                                </button>
-
-                                <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
-                                    <Trash2 size={14} /> Delete
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </div>
-            ))}
-        </div>
+                ))}
+            </div>
+        )}
 
         {/* Pagination */}
         <div className="mt-4">

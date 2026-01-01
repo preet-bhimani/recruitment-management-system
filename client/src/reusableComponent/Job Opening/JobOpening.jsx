@@ -4,19 +4,25 @@ import { Eye, Edit, Trash2, Filter, Download } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const JobOpening = ({ role = "admin" }) => {
 
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // Fetch Job Opening Data
   const fetchJobOpening = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`https://localhost:7119/api/JobOpening`)
       setJobs(res.data || []);
     }
     catch (err) {
       toast.error("Failed to load job opening data!")
+    }
+    finally {
+      setLoading(false);
     }
   }
 
@@ -204,59 +210,64 @@ const JobOpening = ({ role = "admin" }) => {
     )}
 
     {/* Card View Data */}
-    <div className="space-y-2">
-      {pageItems.map((job, idx) => (
-        <div
-          key={`${job.joId}-${idx}`}
-          className="bg-neutral-900 border border-neutral-700 rounded-md p-3 sm:p-4 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-          <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0">
-              <p className="break-all"><span className="font-medium text-purple-300">JoId:</span> {job.joId}</p>
-              <p className="break-words"><span className="font-medium text-purple-300">Title:</span> {job.title}</p>
-              <p className="break-words"><span className="font-medium text-purple-300">No of Openings:</span> {job.noOfOpening}</p>
-              <p className="break-words"><span className="font-medium text-purple-300">Location:</span> {job.location}</p>
-              <p className="break-words"><span className="font-medium text-purple-300">Experience:</span> {job.experience}</p>
-              <p className="break-words">
-                <span className="font-medium text-purple-200">Status:</span>{" "}
-                <span
-                  className={`px-2 py-0.5 rounded text-xs ${job.status === "Open"
-                    ? "bg-emerald-800 text-emerald-200"
-                    : "bg-rose-800 text-rose-200"}`}>
-                  {job.status}
-                </span>
-              </p>
+    {loading ? (
+      <CommonLoader />
+    ) : pageItems.length === 0 ? (
+      <div className="text-center text-lg font-semibold">No job openings found</div>
+    ) : (
+      <div className="space-y-2">
+        {pageItems.map((job, idx) => (
+          <div
+            key={`${job.joId}-${idx}`}
+            className="bg-neutral-900 border border-neutral-700 rounded-md p-3 sm:p-4 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+            <div className="flex items-start sm:items-center gap-3 flex-1 min-w-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0">
+                <p className="break-all"><span className="font-medium text-purple-300">JoId:</span> {job.joId}</p>
+                <p className="break-words"><span className="font-medium text-purple-300">Title:</span> {job.title}</p>
+                <p className="break-words"><span className="font-medium text-purple-300">No of Openings:</span> {job.noOfOpening}</p>
+                <p className="break-words"><span className="font-medium text-purple-300">Location:</span> {job.location}</p>
+                <p className="break-words"><span className="font-medium text-purple-300">Experience:</span> {job.experience}</p>
+                <p className="break-words">
+                  <span className="font-medium text-purple-200">Status:</span>{" "}
+                  <span
+                    className={`px-2 py-0.5 rounded text-xs ${job.status === "Open"
+                      ? "bg-emerald-800 text-emerald-200"
+                      : "bg-rose-800 text-rose-200"}`}>
+                    {job.status}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            {/* View Button */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:ml-4 w-full sm:w-auto">
+              <button
+                className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs w-full sm:w-auto"
+                onClick={() => navigate(`/view-jobopening/${job.joId}`)}>
+                <Eye size={14} /> View
+              </button>
+
+              {/* Update & Delete Button */}
+              {!isViewer && (
+                <>
+                  <button
+                    className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs w-full sm:w-auto"
+                    onClick={() => handleUpdate(job.joId)}>
+                    <Edit size={14} /> Update
+                  </button>
+                  {job.status !== "Closed" && (
+                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs w-full sm:w-auto"
+                      onClick={() => handleDelete(job.joId)}>
+                      <Trash2 size={14} /> Delete
+                    </button>
+                  )}
+                </>
+              )}
             </div>
           </div>
-
-          {/* View Button */}
-          <div className="flex flex-col sm:flex-row gap-2 sm:ml-4 w-full sm:w-auto">
-            <button
-              className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs w-full sm:w-auto"
-              onClick={() => navigate(`/view-jobopening/${job.joId}`)}>
-              <Eye size={14} /> View
-            </button>
-
-            {/* Update & Delete Button */}
-            {!isViewer && (
-              <>
-                <button
-                  className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs w-full sm:w-auto"
-                  onClick={() => handleUpdate(job.joId)}>
-                  <Edit size={14} /> Update
-                </button>
-                {job.status !== "Closed" && (
-                  <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs w-full sm:w-auto"
-                    onClick={() => handleDelete(job.joId)}>
-                    <Trash2 size={14} /> Delete
-                  </button>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-
+        ))}
+      </div>
+    )}
     <CommonPagination
       totalItems={totalItems}
       pageSize={pageSize}

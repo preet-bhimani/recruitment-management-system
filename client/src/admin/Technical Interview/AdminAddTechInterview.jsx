@@ -64,7 +64,7 @@ const AdminAddTechInterview = () => {
                                     <p><span className="font-medium text-purple-300">Full Name:</span> {tech.fullName}</p>
                                     <p><span className="font-medium text-purple-300">Title:</span> {tech.title}</p>
                                     <p><span className="font-medium text-purple-300">Email:</span> {tech.email}</p>
-                                    <p><span className="font-medium text-purple-300">Last Round:</span> {tech.lastRound}</p>
+                                    <p><span className="font-medium text-purple-300">Last Round:</span> {tech.lastRound?.noOfROund}</p>
                                     
                                 </div>
                             </div>

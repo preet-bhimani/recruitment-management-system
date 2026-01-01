@@ -3,6 +3,7 @@ import { MapPin, ArrowLeft, Mail, Calendar } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const ViewJobApplication = () => {
   const navigate = useNavigate();
@@ -12,15 +13,20 @@ const ViewJobApplication = () => {
   const { id } = useParams();
   const [expanded, setExpanded] = useState(false);
   const [feedbackexpand, setFeedbackexpand] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Fetch Job Application Data by ID
   const fetchJobApplicationDataByID = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`https://localhost:7119/api/JobApplication/${id}`)
       setJobApp(res.data || []);
     }
     catch (err) {
       toast.error("Failed to load job application details!");
+    }
+    finally {
+      setLoading(false);
     }
   }
 
@@ -28,10 +34,20 @@ const ViewJobApplication = () => {
     fetchJobApplicationDataByID();
   }, []);
 
+  // Loading
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+        <CommonLoader />
+      </div>
+    );
+  }
+
+  // No Job Found
   if (!jobApp) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white">
-        Loading Job Application Details...
+        No Job Application Found
       </div>
     );
   }

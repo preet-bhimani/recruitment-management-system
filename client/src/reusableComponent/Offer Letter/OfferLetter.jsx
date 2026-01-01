@@ -4,19 +4,26 @@ import { Filter, Eye, Edit, Trash2, Download } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import CommonLoader from "../../components/CommonLoader";
 
 const OfferLetter = () => {
 
     const [offerLetters, setOfferLetters] = useState([]);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     // Fetch Offer Letters
     const fetchOfferLetters = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/OfferLetter`);
             setOfferLetters(res.data || []);
-        } catch (err) {
+        }
+        catch (err) {
             toast.error("Failed to fetch offer letters!");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -210,67 +217,69 @@ const OfferLetter = () => {
             )}
 
             {/* Candidates List */}
-            <div className="space-y-3">
-                {pageItems.length === 0 && (
-                    <div className="text-center py-6 text-neutral-400">No offer letters found.</div>
-                )}
+            {loading ? (<CommonLoader />) : (
+                <div className="space-y-3">
+                    {pageItems.length === 0 && (
+                        <div className="text-center py-6 text-neutral-400">No offer letters found</div>
+                    )}
 
-                {pageItems.map((offer) => (
-                    <div
-                        key={offer.olId}
-                        className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-                        {/* Candidate Details */}
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <img
-                                src={offer.photo}
-                                alt={offer.fullName}
-                                className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
+                    {pageItems.map((offer) => (
+                        <div
+                            key={offer.olId}
+                            className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+                            {/* Candidate Details */}
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <img
+                                    src={offer.photo}
+                                    alt={offer.fullName}
+                                    className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-1 flex-1 min-w-0">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-1 flex-1 min-w-0">
 
-                                <p><span className="font-medium text-purple-300">OLId:</span> {offer.olId}</p>
-                                <p><span className="font-medium text-purple-300">Name:</span> {offer.fullName}</p>
-                                <p><span className="font-medium text-purple-300">Title:</span> {offer.title}</p>
-                                <p><span className="font-medium text-purple-300">Email:</span> <span className="break-all">{offer.email || "-"}</span></p>
-                                <p><span className="font-medium text-purple-300">Salary:</span> {offer.salary}</p>
-                                <p><span className="font-medium text-purple-300">Joining:</span>{" "}{new Date(offer.joiningDate).toLocaleDateString("en-GB")}</p>
-                                <p><span className="font-medium text-purple-300">Template:</span>{" "}{offer.templateType}</p>
-                                <p><span className="font-medium text-purple-300">Status:</span>{" "}
-                                    <span
-                                        className={`px-2 py-0.5 rounded text-xs
+                                    <p><span className="font-medium text-purple-300">OLId:</span> {offer.olId}</p>
+                                    <p><span className="font-medium text-purple-300">Name:</span> {offer.fullName}</p>
+                                    <p><span className="font-medium text-purple-300">Title:</span> {offer.title}</p>
+                                    <p><span className="font-medium text-purple-300">Email:</span> <span className="break-all">{offer.email || "-"}</span></p>
+                                    <p><span className="font-medium text-purple-300">Salary:</span> {offer.salary}</p>
+                                    <p><span className="font-medium text-purple-300">Joining:</span>{" "}{new Date(offer.joiningDate).toLocaleDateString("en-GB")}</p>
+                                    <p><span className="font-medium text-purple-300">Template:</span>{" "}{offer.templateType}</p>
+                                    <p><span className="font-medium text-purple-300">Status:</span>{" "}
+                                        <span
+                                            className={`px-2 py-0.5 rounded text-xs
                                         ${offer.offerLetterStatus === "Accepted"
-                                                ? "bg-emerald-800 text-emerald-200"
-                                                : offer.OfferLetterStatus === "Rejected"
-                                                    ? "bg-red-800 text-red-200"
-                                                    : "bg-grey-800 text-grey-200"
-                                            }`}>
-                                        {offer.offerLetterStatus}
-                                    </span>
-                                </p>
+                                                    ? "bg-emerald-800 text-emerald-200"
+                                                    : offer.OfferLetterStatus === "Rejected"
+                                                        ? "bg-red-800 text-red-200"
+                                                        : "bg-grey-800 text-grey-200"
+                                                }`}>
+                                            {offer.offerLetterStatus}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-2 mt-2 sm:mt-0">
+                                <button className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
+                                    onClick={() => { navigate(`/view-offerletter/${offer.olId}`) }}>
+                                    <Eye size={14} /> View
+                                </button>
+
+                                <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                                    onClick={() => { navigate(`/admin-update-offerletter/${offer.olId}`) }}>
+                                    <Edit size={14} /> Update
+                                </button>
+                                {offer.offerLetterStatus !== "Hold" && (
+                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                        onClick={() => handleDelete(offer.olId)}>
+                                        <Trash2 size={14} /> Delete
+                                    </button>
+                                )}
                             </div>
                         </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-2 mt-2 sm:mt-0">
-                            <button className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
-                                onClick={() => { navigate(`/view-offerletter/${offer.olId}`) }}>
-                                <Eye size={14} /> View
-                            </button>
-
-                            <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                onClick={() => { navigate(`/admin-update-offerletter/${offer.olId}`) }}>
-                                <Edit size={14} /> Update
-                            </button>
-                            {offer.offerLetterStatus !== "Hold" && (
-                                <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
-                                    onClick={() => handleDelete(offer.olId)}>
-                                    <Trash2 size={14} /> Delete
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
 
             {/* Pagination */}
             <div className="mt-4">
@@ -278,7 +287,7 @@ const OfferLetter = () => {
                     totalItems={filtered.length}
                     pageSize={pageSize}
                     currentPage={currentPage}
-                    onPageChange={setCurrentPage}/>
+                    onPageChange={setCurrentPage} />
             </div>
         </div>
     );

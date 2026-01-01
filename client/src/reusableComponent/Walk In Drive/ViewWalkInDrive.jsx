@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
+import CommonLoader from "../../components/CommonLoader";
 
 function ViewWalkInDrive() {
 
@@ -11,12 +12,14 @@ function ViewWalkInDrive() {
     const { id } = useParams();
     const { token } = useAuth();
     const handleBack = () => navigate(-1);
+    const [loading, setLoading] = useState(false);
 
     const [walkInDrive, setWalkInDrive] = useState(null);
 
     // Fetch Walk In Drive Data
     const fetchWalkInDrive = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/WalkInDrive/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             })
@@ -25,16 +28,27 @@ function ViewWalkInDrive() {
         catch (err) {
             toast.error("Failed to load Walk In Drive details!")
         }
+        finally {
+            setLoading(false);
+        }
     }
 
     useEffect(() => {
         fetchWalkInDrive();
     }, []);
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
+
     if (!walkInDrive) {
         return (
             <div className="min-h-screen flex items-center justify-center text-white">
-                Loading Walk In Drive Details...
+                No Walk In Drive Found
             </div>
         );
     }

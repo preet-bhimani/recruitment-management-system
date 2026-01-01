@@ -57,10 +57,10 @@ const AdminAddHRInterview = () => {
                                     <p><span className="font-medium text-purple-300">Full Name:</span> {hr.fullName}</p>
                                     <p><span className="font-medium text-purple-300">Title:</span> {hr.title}</p>
                                     <p><span className="font-medium text-purple-300">Email:</span> {hr.email}</p>
-                                    <p><span className="font-medium text-purple-300">Last Round:</span> {hr.lastRound || "-"}</p>
+                                    <p><span className="font-medium text-purple-300">Last Round:</span> {hr.lastRound?.meetingSubject || "-"}</p>
                                     <div className="col-span-1 sm:col-span-2 md:col-span-4">
                                         <div className="font-medium text-purple-300">Feedback:</div>
-                                        <div className="text-neutral-200">{hr.hrFeedback || "-"}</div>
+                                        <div className="text-neutral-200">{hr.lastRound?.hrFeedback || "-"}</div>
                                     </div>
                                 </div>
                             </div>

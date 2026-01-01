@@ -5,6 +5,7 @@ import { Clock } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const AdminUpdateHRInterview = () => {
 
@@ -12,6 +13,8 @@ const AdminUpdateHRInterview = () => {
     const [selectedType, setSelectedType] = useState('hr');
     const { id } = useParams();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const [hrData, setHRData] = useState({
         hiId: "",
@@ -42,10 +45,15 @@ const AdminUpdateHRInterview = () => {
     // Fetch HR Interview Data
     const fetchHrIn = async () => {
         try {
+            setLoading(true)
             const res = await axios.get(`https://localhost:7119/api/HRInterview/${id}`);
             setHRData(res.data || []);
-        } catch (err) {
+        }
+        catch (err) {
             toast.error("Error fetching data!");
+        }
+        finally {
+            setLoading(false)
         }
     }
 
@@ -119,6 +127,7 @@ const AdminUpdateHRInterview = () => {
 
         // Create Playload as It has to be in JSON Format
         try {
+            setSubmitLoading(true);
             const payload = {
                 JOId: hrData.joId,
                 JAId: hrData.jaId,
@@ -142,11 +151,22 @@ const AdminUpdateHRInterview = () => {
         catch (err) {
             toast.error(err.response.data || "Something went wrong");
         }
+        finally {
+            setSubmitLoading(false);
+        }
     }
 
     useEffect(() => {
         fetchHrIn();
     }, []);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
 
     return <div className="flex flex-col h-screen bg-neutral-950 text-neutral-100">
         {/* Navbar */}
@@ -161,10 +181,20 @@ const AdminUpdateHRInterview = () => {
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white mb-4">Update HR Interview</h1>
                 </div>
+                {submitLoading && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                        <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                            <CommonLoader />
+                            <span className="text-neutral-200 text-sm">
+                                Updating HR Interview
+                            </span>
+                        </div>
+                    </div>
+                )}
 
                 {/* Meeting Form */}
                 <div className="max-w-5xl mx-auto">
-                    <form className="bg-neutral-900  rounded-md p-6 shadow-sm">
+                    <form onSubmit={handleHrinUpdate} className="bg-neutral-900  rounded-md p-6 shadow-sm">
 
                         {/* Interview Type Selection */}
                         <div className="mb-6">
@@ -374,7 +404,7 @@ const AdminUpdateHRInterview = () => {
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
-                                {/* hrRating */}
+                                {/* HRRating */}
                                 <div>
                                     <label className="block mb-1 text-sm font-medium">
                                         hrRating <span className="text-rose-500">*</span>
@@ -388,7 +418,7 @@ const AdminUpdateHRInterview = () => {
                                         className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 text-neutral-100 placeholder-neutral-400" />
                                 </div>
 
-                                {/* hrStatus */}
+                                {/* HRStatus */}
                                 <div>
                                     <label className="block mb-1 text-sm font-medium">hrStatus</label>
                                     <select
@@ -408,10 +438,8 @@ const AdminUpdateHRInterview = () => {
                         {/* Buttons */}
                         <div className="flex gap-3 justify-end mt-8 pt-6 border-t border-neutral-600">
                             <button
-                                type="button"
-                                onClick={handleHrinUpdate}
+                                type="submit"
                                 className="px-6 py-2 bg-purple-700 hover:bg-purple-600 rounded font-medium transition text-white flex items-center gap-2">
-
                                 + Update {selectedType === 'technical' ? 'Technical' : 'HR'} Interview
                             </button>
                         </div>

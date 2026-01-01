@@ -4,20 +4,26 @@ import { Filter, Download, Eye, Edit, Trash2 } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const TechnicalInterview = ({ role = "admin" }) => {
 
   const navigate = useNavigate();
 
   const [techin, setTechin] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchTechin = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`https://localhost:7119/api/TechnicalInterview`);
       setTechin(res.data || []);
     }
     catch (err) {
       toast.error("Error fetching data!");
+    }
+    finally {
+      setLoading(false);
     }
   }
 
@@ -135,7 +141,7 @@ const TechnicalInterview = ({ role = "admin" }) => {
               </select>
             </div>
 
-            {/* techStatus */}
+            {/* TechStatus */}
             <div>
               <label className="block text-xs text-neutral-300 mb-1">techStatus</label>
               <select
@@ -212,77 +218,80 @@ const TechnicalInterview = ({ role = "admin" }) => {
         </div>
       )}
 
-      <div className="space-y-3">
-        {pageItems.length === 0 && (
-          <div className="text-center py-6 text-neutral-400">No technical interviews found.</div>
-        )}
+      {/* Candidate Details */}
+      {loading ? (<CommonLoader />) : (
+        <div className="space-y-3">
+          {pageItems.length === 0 && (
+            <div className="text-center py-6 text-neutral-400">No technical interviews found.</div>
+          )}
 
-        {pageItems.map((tech) => (
-          <div
-            key={tech.tiId}
-            className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+          {pageItems.map((tech) => (
+            <div
+              key={tech.tiId}
+              className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
 
-            {/* Interview Details */}
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <img src={tech.photo} alt={tech.fullName} className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
+              {/* Interview Details */}
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <img src={tech.photo} alt={tech.fullName} className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0">
-                <p className="break-all"><span className="font-medium text-purple-300">TiId:</span> {tech.tiId}</p>
-                <p className="break-words"><span className="font-medium text-purple-300">Full Name:</span> {tech.fullName}</p>
-                <p className="break-words"><span className="font-medium text-purple-300">Title:</span> {tech.title}</p>
-                <p className="break-words"><span className="font-medium text-purple-300">Email:</span> {tech.email}</p>
-                <p className="break-words"><span className="font-medium text-purple-300">Date:</span> {tech.techDate}</p>
-                <p className="truncate"><span className="font-medium text-purple-300">No. of Rounds:</span> {tech.noOfRound}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-1 flex-1 min-w-0">
+                  <p className="break-all"><span className="font-medium text-purple-300">TiId:</span> {tech.tiId}</p>
+                  <p className="break-words"><span className="font-medium text-purple-300">Full Name:</span> {tech.fullName}</p>
+                  <p className="break-words"><span className="font-medium text-purple-300">Title:</span> {tech.title}</p>
+                  <p className="break-words"><span className="font-medium text-purple-300">Email:</span> {tech.email}</p>
+                  <p className="break-words"><span className="font-medium text-purple-300">Date:</span> {tech.techDate}</p>
+                  <p className="truncate"><span className="font-medium text-purple-300">No. of Rounds:</span> {tech.noOfRound}</p>
 
-                {/* techIsClear */}
-                <p>
-                  <span className="font-medium text-purple-300">TechIsClear:</span>{" "}
-                  <span
-                    className={`px-2 py-0.5 rounded text-xs ${tech.techIsClear === "Clear"
-                      ? "bg-emerald-800 text-emerald-200"
-                      : tech.techIsClear === "In Progress"
-                        ? "bg-yellow-800 text-yellow-200"
-                        : "bg-rose-800 text-rose-200"}`}>
-                    {tech.techIsClear}
-                  </span>
-                </p>
+                  {/* techIsClear */}
+                  <p>
+                    <span className="font-medium text-purple-300">TechIsClear:</span>{" "}
+                    <span
+                      className={`px-2 py-0.5 rounded text-xs ${tech.techIsClear === "Clear"
+                        ? "bg-emerald-800 text-emerald-200"
+                        : tech.techIsClear === "In Progress"
+                          ? "bg-yellow-800 text-yellow-200"
+                          : "bg-rose-800 text-rose-200"}`}>
+                      {tech.techIsClear}
+                    </span>
+                  </p>
 
-                {/* TechStatus */}
-                <p>
-                  <span className="font-medium text-purple-300">TechStatus:</span>{" "}
-                  <span
-                    className={`px-2 py-0.5 rounded text-xs ${tech.techStatus === "Clear"
-                      ? "bg-emerald-800 text-emerald-200"
-                      : tech.techStatus === "In Progress"
-                        ? "bg-yellow-800 text-yellow-200"
-                        : "bg-rose-800 text-rose-200"}`}>
-                    {tech.techStatus}
-                  </span>
-                </p>
+                  {/* TechStatus */}
+                  <p>
+                    <span className="font-medium text-purple-300">TechStatus:</span>{" "}
+                    <span
+                      className={`px-2 py-0.5 rounded text-xs ${tech.techStatus === "Clear"
+                        ? "bg-emerald-800 text-emerald-200"
+                        : tech.techStatus === "In Progress"
+                          ? "bg-yellow-800 text-yellow-200"
+                          : "bg-rose-800 text-rose-200"}`}>
+                      {tech.techStatus}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 mt-2 sm:mt-0">
+                <button className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs" onClick={() => navigate(`/view-techinterview/${tech.tiId}`)}>
+                  <Eye size={14} /> View
+                </button>
+
+                {role === "admin" && (
+                  <>
+                    <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                      onClick={() => navigate(`/admin-update-techinterview/${tech.tiId}`)}>
+                      <Edit size={14} /> Update
+                    </button>
+                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
+                      <Trash2 size={14} /> Delete
+                    </button>
+                  </>
+                )}
               </div>
             </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-2 mt-2 sm:mt-0">
-              <button className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs" onClick={() => navigate(`/view-techinterview/${tech.tiId}`)}>
-                <Eye size={14} /> View
-              </button>
-
-              {role === "admin" && (
-                <>
-                  <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                    onClick={() => navigate(`/admin-update-techinterview/${tech.tiId}`)}>
-                    <Edit size={14} /> Update
-                  </button>
-                  <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
-                    <Trash2 size={14} /> Delete
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Pagination */}
       <div className="mt-4">

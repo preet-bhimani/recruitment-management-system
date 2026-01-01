@@ -3,7 +3,7 @@ import { Clock } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import CommonLoader from "../../components/CommonLoader";
 
 const InterviewScheduling = ({ role = "admin" }) => {
 
@@ -11,7 +11,7 @@ const InterviewScheduling = ({ role = "admin" }) => {
 
     const location = useLocation();
     const data = location.state;
-    console.log(data);
+    const [loading, setLoading] = useState(false);
     const [selectedType, setSelectedType] = useState(() => {
         if (location.state?.overallStatus === "HR Interview") return "hr";
         return "technical";
@@ -101,11 +101,11 @@ const InterviewScheduling = ({ role = "admin" }) => {
         if (selectedType === "technical" && !formData.techDate.trim()) {
             newErrors.hrDate = "Technical Date is required";
             hasError = true;
-        } 
+        }
         else if (selectedType === "hr" && !formData.hrDate.trim()) {
             newErrors.hrDate = "HR Date is required";
             hasError = true;
-        } 
+        }
         else {
             newErrors.techDate = "";
             newErrors.hrDate = "";
@@ -115,16 +115,15 @@ const InterviewScheduling = ({ role = "admin" }) => {
         if (selectedType === "technical" && !formData.techTime.trim()) {
             newErrors.hrTime = "Technical Time is required";
             hasError = true;
-        } 
+        }
         else if (selectedType === "hr" && !formData.hrTime.trim()) {
             newErrors.hrTime = "HR Time is required";
             hasError = true;
-        } 
+        }
         else {
             newErrors.techTime = "";
             newErrors.hrTime = "";
         }
-
 
         // Validate Interviewer Email
         if (!formData.interviewerEmail.trim()) {
@@ -149,6 +148,7 @@ const InterviewScheduling = ({ role = "admin" }) => {
 
         // Create Playload as It has to be in JSON Format
         try {
+            setLoading(true);
             const payload = selectedType === "technical"
                 ? {
                     JOId: formData.joId,
@@ -182,7 +182,10 @@ const InterviewScheduling = ({ role = "admin" }) => {
             navigate(-1);
         }
         catch (err) {
-            toast.error(err.response.data.message || "Something went wrong");
+            toast.error(err.response?.data?.message || "Something went wrong");
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -206,6 +209,17 @@ const InterviewScheduling = ({ role = "admin" }) => {
     }, [data]);
 
     return <>
+        {loading && (
+            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                    <CommonLoader />
+                    <span className="text-neutral-200 text-sm">
+                        Scheduling interview & sending emails
+                    </span>
+                </div>
+            </div>
+        )}
+
         <form className="bg-neutral-900  rounded-md p-6 shadow-sm">
 
             {/* Interview Type Selection */}
@@ -399,8 +413,13 @@ const InterviewScheduling = ({ role = "admin" }) => {
                 <button
                     type="button"
                     onClick={handleMeeting}
-                    className="px-6 py-2 bg-purple-700 hover:bg-purple-600 rounded font-medium transition text-white flex items-center gap-2">
-                    + ADD {selectedType === 'technical' ? 'Technical' : 'HR'} Meeting
+                    disabled={loading}
+                    className={`px-6 py-2 rounded font-medium transition text-white flex items-center gap-2
+                    ${loading ? "bg-neutral-600 cursor-not-allowed" : "bg-purple-700 hover:bg-purple-600"}`}>
+                    {loading
+                        ? "Scheduling meeting..."
+                        : `+ ADD ${selectedType === 'technical' ? 'Technical' : 'HR'} Meeting`
+                    }
                 </button>
             </div>
         </form>

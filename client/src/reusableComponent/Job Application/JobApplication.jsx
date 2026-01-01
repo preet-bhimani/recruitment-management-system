@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const JobApplication = ({ role = "admin" }) => {
 
@@ -21,17 +22,21 @@ const JobApplication = ({ role = "admin" }) => {
     }[s] || "bg-yellow-600");
 
     const navigate = useNavigate();
-
+    const [loading, setLoading] = useState(false);
     const [jobapp, setJobApp] = useState([]);
 
     // Fetch Job Application
     const fetchJobApplications = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/JobApplication`)
             setJobApp(res.data || []);
         }
         catch (err) {
             toast.error("Error to fetch data!")
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -79,9 +84,11 @@ const JobApplication = ({ role = "admin" }) => {
 
     useEffect(() => {
         setCurrentPage(1);
+    }, [filters]);
+
+    useEffect(() => {
         fetchJobApplications();
-        [filters]
-    });
+    }, [])
 
     // Overall Staus Fileds
     const statusOptions = ["Applied", "Exam", "Shortlisted", "Rejected", "Hold"];
@@ -103,7 +110,7 @@ const JobApplication = ({ role = "admin" }) => {
             <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 justify-end">
 
                 {role == "admin" && (<button
-                    className="px-3 py-2 bg-emerald-700 hover:bg-emerald-600 rounded text-sm w-full sm:w-auto"
+                    className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm w-full sm:w-auto"
                     onClick={() => navigate("/admin-add-jobapplication")}>
                     + Add Job Application
                 </button>)}
@@ -222,59 +229,61 @@ const JobApplication = ({ role = "admin" }) => {
             )}
 
             {/* Cards List */}
-            <div className="space-y-2">
-                {pageItems.length === 0 && (
-                    <div className="text-center py-6 text-neutral-400">No job applications found.</div>
-                )}
+            {loading ? (<CommonLoader />) : (
+                <div className="space-y-2">
+                    {pageItems.length === 0 && (
+                        <div className="text-center py-6 text-neutral-400">No job applications found</div>
+                    )}
 
-                {pageItems.map((ja, idx) => {
-                    const appliedDate = ja.appliedDate || ja.examDate || "-";
-                    return (
-                        <div
-                            key={`${ja.jaId}-${idx}`}
-                            className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-                            {/* Photo */}
-                            <img
-                                src={ja.photo}
-                                alt={ja.fullName}
-                                className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover flex-shrink-0" />
+                    {pageItems.map((ja, idx) => {
+                        const appliedDate = ja.appliedDate || ja.examDate || "-";
+                        return (
+                            <div
+                                key={`${ja.jaId}-${idx}`}
+                                className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+                                {/* Photo */}
+                                <img
+                                    src={ja.photo}
+                                    alt={ja.fullName}
+                                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover flex-shrink-0" />
 
-                            {/* Candidate info */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-1 flex-1">
-                                <p><span className="font-medium text-purple-300">JAID:</span> {ja.jaId || "-"}</p>
-                                <p><span className="font-medium text-purple-300">Name:</span> {ja.fullName || "-"}</p>
-                                <p><span className="font-medium text-purple-300">Email:</span> <span className="break-all">{ja.email || "-"}</span></p>
-                                <p><span className="font-medium text-purple-300">Title:</span> {ja.title || "-"}</p>
-                                <p><span className="font-medium text-purple-300">Applied Date:</span> {ja.appliedDate || "-"}</p>
-                                <p><span className="font-medium text-purple-300">Overall Status:</span>{" "}
-                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium text-white ${badge(ja.overallStatus)}`}>{ja.overallStatus || "-"}</span></p>
-                                <p><span className="font-medium text-purple-300">Hold Status:</span> {ja.holdOverallStatus || "-"}</p>
-                            </div>
+                                {/* Candidate info */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-1 flex-1">
+                                    <p><span className="font-medium text-purple-300">JAID:</span> {ja.jaId || "-"}</p>
+                                    <p><span className="font-medium text-purple-300">Name:</span> {ja.fullName || "-"}</p>
+                                    <p><span className="font-medium text-purple-300">Email:</span> <span className="break-all">{ja.email || "-"}</span></p>
+                                    <p><span className="font-medium text-purple-300">Title:</span> {ja.title || "-"}</p>
+                                    <p><span className="font-medium text-purple-300">Applied Date:</span> {ja.appliedDate || "-"}</p>
+                                    <p><span className="font-medium text-purple-300">Overall Status:</span>{" "}
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium text-white ${badge(ja.overallStatus)}`}>{ja.overallStatus || "-"}</span></p>
+                                    <p><span className="font-medium text-purple-300">Hold Status:</span> {ja.holdOverallStatus || "-"}</p>
+                                </div>
 
-                            {/* Action Buttons */}
-                            <div className="flex gap-2 ml-0 sm:ml-4">
-                                <button
-                                    className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
-                                    onClick={() => navigate(`/view-jobapplication/${ja.jaId}`)}>
-                                    <Eye size={12} /> View
-                                </button>
-
-                                {role == "admin" && (<>
+                                {/* Action Buttons */}
+                                <div className="flex gap-2 ml-0 sm:ml-4">
                                     <button
-                                        className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                        onClick={() => navigate(`/admin-update-jobapplication/${ja.jaId}`)}>
-                                        <Edit size={12} /> Update
+                                        className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs"
+                                        onClick={() => navigate(`/view-jobapplication/${ja.jaId}`)}>
+                                        <Eye size={12} /> View
                                     </button>
 
-                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
-                                        <Trash2 size={12} /> Delete
-                                    </button>
-                                </>)}
+                                    {role == "admin" && (<>
+                                        <button
+                                            className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                                            onClick={() => navigate(`/admin-update-jobapplication/${ja.jaId}`)}>
+                                            <Edit size={12} /> Update
+                                        </button>
+
+                                        <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
+                                            <Trash2 size={12} /> Delete
+                                        </button>
+                                    </>)}
+                                </div>
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
+                        );
+                    })}
+                </div>
+            )}
 
             {/* Pagination */}
             <div className="mt-4">

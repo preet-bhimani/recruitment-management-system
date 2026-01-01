@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const AddJobOpening = () => {
+
+    const [loading, setLoading] = useState(false);
 
     // Form Data
     const [formData, setFormData] = useState({
@@ -125,10 +128,14 @@ const AddJobOpening = () => {
 
         // Fectch Data
         try {
+            setLoading(true);
             const res = await axios.post(`https://localhost:7119/api/JobOpening`, formData)
             toast.success(res.data.message || "Job opening added successfully!");
         } catch (error) {
             toast.error(error.response?.message || "Failed to add job opening!");
+        }
+        finally{
+            setLoading(false);
         }
     }
 

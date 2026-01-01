@@ -207,6 +207,8 @@ namespace server.Controllers
                 .Select(ja => new
                 {
                     ja.JAId,
+                    ja.UserId,
+                    ja.JOId,
                     ja.ExamDate,
                     ja.ExamResult,
                     AppliedDate = ja.CreatedAt.Date,

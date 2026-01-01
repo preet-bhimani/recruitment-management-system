@@ -4,20 +4,26 @@ import { Filter, Eye, Edit, Trash2, Download } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import CommonLoader from "../../components/CommonLoader";
 
 const Selection = ({ role = "admin" }) => {
 
     const [selection, setSelection] = useState([]);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     // Fetch Selected Candidates
     const fetchSelection = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/Selection`);
             setSelection(res.data || []);
         }
         catch (err) {
             toast.error("Failed to fetch selected candidates!");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -142,60 +148,62 @@ const Selection = ({ role = "admin" }) => {
             )}
 
             {/* Selected Candidates List */}
-            <div className="space-y-3">
-                {pageItems.length === 0 && (
-                    <div className="text-center py-6 text-neutral-400">No selected candidates found.</div>
-                )}
+            {loading ? (<CommonLoader />) : (
+                <div className="space-y-3">
+                    {pageItems.length === 0 && (
+                        <div className="text-center py-6 text-neutral-400">No selected candidates found.</div>
+                    )}
 
-                {pageItems.map((c) => (
-                    <div key={c.selectionId}
-                        className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-                        {/* Candidate Details */}
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <img
-                                src={c.photo}
-                                alt={c.fullName}
-                                className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
+                    {pageItems.map((c) => (
+                        <div key={c.selectionId}
+                            className="bg-neutral-900 border border-neutral-700 rounded-md p-3 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+                            {/* Candidate Details */}
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <img
+                                    src={c.photo}
+                                    alt={c.fullName}
+                                    className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-1 flex-1 min-w-0">
-                                <p><span className="font-medium text-purple-300">ID:</span> {c.selectionId}</p>
-                                <p><span className="font-medium text-purple-300">Name:</span> {c.fullName}</p>
-                                <p><span className="font-medium text-purple-300">Email:</span><span className="break-all">{" "}{c.email}</span></p>
-                                <p><span className="font-medium text-purple-300">Title:</span> {c.title}</p>
-                                <p><span className="font-medium text-purple-300">Status:</span>
-                                    <span
-                                        className={`ml-2 px-2 py-0.5 rounded text-xs 
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-1 flex-1 min-w-0">
+                                    <p><span className="font-medium text-purple-300">ID:</span> {c.selectionId}</p>
+                                    <p><span className="font-medium text-purple-300">Name:</span> {c.fullName}</p>
+                                    <p><span className="font-medium text-purple-300">Email:</span><span className="break-all">{" "}{c.email}</span></p>
+                                    <p><span className="font-medium text-purple-300">Title:</span> {c.title}</p>
+                                    <p><span className="font-medium text-purple-300">Status:</span>
+                                        <span
+                                            className={`ml-2 px-2 py-0.5 rounded text-xs 
                                         ${c.selectionStatus === "Selected"
-                                                ? "bg-blue-800 text-blue-200"
-                                                : c.selectionStatus === "Joined"
-                                                    ? "bg-emerald-800 text-emerald-200"
-                                                    : "bg-rose-800 text-rose-200"
-                                            }`}>
-                                        {c.selectionStatus}
-                                    </span>
-                                </p>
+                                                    ? "bg-blue-800 text-blue-200"
+                                                    : c.selectionStatus === "Joined"
+                                                        ? "bg-emerald-800 text-emerald-200"
+                                                        : "bg-rose-800 text-rose-200"
+                                                }`}>
+                                            {c.selectionStatus}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex gap-2 mt-2 sm:mt-0">
+                                <button className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs" onClick={() => navigate(`/view-selection/${c.selectionId}`)}>
+                                    <Eye size={14} /> View
+                                </button>
+                                <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                                    onClick={() => navigate(`/admin-update-selection/${c.selectionId}`)}>
+                                    <Edit size={14} /> Update
+                                </button>
+                                {c.selectionStatus !== "Hold" && (
+                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                        onClick={() => handleDelete(c.selectionId)}>
+                                        <Trash2 size={14} /> Delete
+                                    </button>
+                                )}
                             </div>
                         </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex gap-2 mt-2 sm:mt-0">
-                            <button className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs" onClick={() => navigate(`/view-selection/${c.selectionId}`)}>
-                                <Eye size={14} /> View
-                            </button>
-                            <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                onClick={() => navigate(`/admin-update-selection/${c.selectionId}`)}>
-                                <Edit size={14} /> Update
-                            </button>
-                            {c.selectionStatus !== "Hold" && (
-                                <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
-                                    onClick={() => handleDelete(c.selectionId)}>
-                                    <Trash2 size={14} /> Delete
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
 
             {/* Pagination */}
             <div className="mt-4">
