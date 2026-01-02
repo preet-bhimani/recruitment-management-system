@@ -6,8 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../components/CommonLoader";
 
 const UpdateProfile = () => {
+
+  const [loading, setLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   // Profile Data
   const [profileData, setProfileData] = useState({
@@ -36,6 +40,7 @@ const UpdateProfile = () => {
   // Fetch Users Data
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`https://localhost:7119/api/User/${userId}`);
       setProfileData((prev) => ({
         ...prev,
@@ -46,6 +51,9 @@ const UpdateProfile = () => {
     }
     catch (err) {
       toast.error("failed to load users")
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -155,12 +163,16 @@ const UpdateProfile = () => {
       formData.append("photo", profileData.photo);
 
     try {
+      setSubmitLoading(true);
       const res = await axios.put(`https://localhost:7119/api/User/update-profile/${userId}`, formData);
       toast.success(res.data.message || "User profile updated successfully!");
       navigate(-1);
     }
     catch (err) {
       toast.error(err.response.data || "Something went wrong!");
+    }
+    finally {
+      setSubmitLoading(false);
     }
   };
 
@@ -171,6 +183,14 @@ const UpdateProfile = () => {
   }, [userId]);
 
   const navigate = useNavigate();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+        <CommonLoader />
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950">
       {/* Navbar */}
@@ -184,9 +204,17 @@ const UpdateProfile = () => {
             <h1 className="text-4xl font-bold text-white mb-4">Update Profile</h1>
           </div>
 
+          {submitLoading && (
+            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+              <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                <CommonLoader />
+              </div>
+            </div>
+          )}
+
           {/* Form */}
           <div className="bg-neutral-900 rounded-lg p-8">
-            <form className="space-y-6">
+            <form className={`space-y-6${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
               {/* Profile Picture */}
               <div className="text-center mb-8">
                 <div className="relative inline-block">
@@ -201,7 +229,6 @@ const UpdateProfile = () => {
                       <User className="w-16 h-16 text-neutral-400" />
                     )}
                   </div>
-
 
                   <button
                     type="button"
@@ -309,10 +336,15 @@ const UpdateProfile = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-medium transition"
+                  disabled={submitLoading}
+                  className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-medium transition
+                    ${submitLoading
+                      ? "bg-neutral-600 cursor-not-allowed"
+                      : "bg-purple-600 hover:bg-purple-500"
+                    }`}
                   onClick={handleSubmit}>
                   <Save className="w-4 h-4" />
-                  Save Changes
+                  {submitLoading ? "Updating..." : "+ Update Profile "}
                 </button>
               </div>
             </form>

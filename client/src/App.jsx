@@ -20,7 +20,6 @@ import AdminUpdateTechInterview from './admin/Technical Interview/AdminUpdateTec
 import AdminAddHRInterview from './admin/HR Interview/AdminAddHRInterview';
 import AdminUpdateHRInterview from './admin/HR Interview/AdminUpdateHRInterview';
 import AdminSelection from './admin/selection/AdminSelection';
-import AdminSentMailSelection from './admin/selection/AdminSentMailSelection';
 import AdminUpdateSelection from './admin/selection/AdminUpdateSelection';
 import AdminDocuments from './admin/Documents/AdminDocuments';
 import AdminAddDocuments from './admin/Documents/AdminAddDocuments';
@@ -122,7 +121,6 @@ function App() {
           <Route path='/admin-update-hrinterview/:id' element={<AdminUpdateHRInterview />} />
           <Route path='/admin-add-meeting' element={<AdminMeetingSchedual />} />
           <Route path='/admin-selection' element={<AdminSelection />} />
-          <Route path='/admin-sentmail-selection' element={<AdminSentMailSelection />} />
           <Route path='/admin-update-selection/:id' element={<AdminUpdateSelection />} />
           <Route path='/admin-document' element={<AdminDocuments />} />
           <Route path='/admin-add-document' element={<AdminAddDocuments />} />

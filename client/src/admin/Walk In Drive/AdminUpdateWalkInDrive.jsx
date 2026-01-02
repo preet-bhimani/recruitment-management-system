@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
+import CommonLoader from "../../components/CommonLoader";
 
 function AdminUpdateWalkInDrive() {
 
@@ -12,6 +13,8 @@ function AdminUpdateWalkInDrive() {
     const { token } = useAuth();
     const navigate = useNavigate();
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         joId: "",
@@ -29,12 +32,17 @@ function AdminUpdateWalkInDrive() {
     // Fetch Walk In Drive Data By ID
     const fetchWalkInDriveByID = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/WalkInDrive/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setFormData(res.data || []);
-        } catch {
+        }
+        catch {
             toast.error("Failed to load walk in drive data!");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -66,13 +74,18 @@ function AdminUpdateWalkInDrive() {
 
         // Endpoint Logic
         try {
+            setSubmitLoading(true);
             const res = await axios.put(`https://localhost:7119/api/WalkInDrive/update/${id}`, formData, {
                 headers: { Authorization: `Bearer ${token}` }
             })
             navigate(-1);
             toast.success(res.data || "Walk In Drive updated successfully!");
-        } catch (err) {
+        }
+        catch (err) {
             toast.error(err.response?.data || "Failed to update walk in drive!");
+        }
+        finally {
+            setSubmitLoading(false);
         }
     };
 
@@ -81,6 +94,14 @@ function AdminUpdateWalkInDrive() {
             fetchWalkInDriveByID();
         }
     }, [token]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
 
     return <div className="flex flex-col h-screen">
         {/* Navbar */}
@@ -96,7 +117,22 @@ function AdminUpdateWalkInDrive() {
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white mb-4">Update Walk In Drive</h1>
                 </div>
-                <form onSubmit={handleUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
+
+                {submitLoading && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                        <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                            <CommonLoader />
+                            <span className="text-neutral-200 text-sm">
+                                Updating Walk In Drive
+                            </span>
+                        </div>
+                    </div>
+                )}
+
+                <form
+                    onSubmit={handleUpdate}
+                    className={`grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg
+                        ${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
 
                     {/* Job Opening ID */}
                     <div>
@@ -155,8 +191,13 @@ function AdminUpdateWalkInDrive() {
                     <div className="md:col-span-2">
                         <button
                             type="submit"
-                            className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                            Update Walk In Drive
+                            disabled={submitLoading}
+                            className={`w-full p-2 rounded font-medium transition
+                                ${submitLoading
+                                    ? "bg-neutral-600 cursor-not-allowed"
+                                    : "bg-purple-600 hover:bg-purple-500"
+                                }`}>
+                            {submitLoading ? "Updating..." : "+ Update Walk In Drive "}
                         </button>
                     </div>
                 </form>

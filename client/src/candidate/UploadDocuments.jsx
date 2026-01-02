@@ -7,6 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import Navbar from "../admin/Navbar";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../components/CommonLoader";
 
 const UploadDocuments = () => {
 
@@ -15,6 +16,8 @@ const UploadDocuments = () => {
   const [jaIdFinal, setJaIdFinal] = useState(jaId || "");
   const { userId } = useAuth();
   const { role } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   // Form Data
   const [formData, setFormData] = useState({
@@ -40,16 +43,14 @@ const UploadDocuments = () => {
   // Fetch Data if Already Exists
   const fetchExistingData = async (finalJAId) => {
     if (!finalJAId) {
-      console.warn("⚠ fetchExistingData called with empty JAId — skipping fetch");
       return;
     }
-    // console.log("Running fetchExistingData with JAId:", finalJAId);
+
     try {
+      setLoading(true);
       const res = await axios.get(`https://localhost:7119/api/DocumentList/${finalJAId}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-
-      // console.log("Fetched document response:", res.data);
 
       if (res.data) {
         setFormData((prev) => ({
@@ -64,28 +65,26 @@ const UploadDocuments = () => {
           expFile: res.data.experienceLetter ? { name: res.data.experienceLetter } : null,
         }));
       }
-    } catch (err) {
-      console.error("Error fetching existing document:", err.response?.data || err);
+    }
+    catch (err) {
+      toast.error(err.response?.data || "Somthing Went wrong!");
+    }
+    finally {
+      setLoading(false);
     }
   };
 
-
-  // 
   useEffect(() => {
     if (!role) return;
 
-    // console.log("Inside useEffect → jaId:", jaId, "role:", role);
-
     // Ftech Existing Data Based on Role
     const runFetch = async () => {
-      
+
       if (!jaId && role === "Candidate") {
         try {
           const pendingRes = await axios.get("https://localhost:7119/api/Candidate/pending", {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
           });
-
-          // console.log("Fetched pending response:", pendingRes.data);
 
           if (pendingRes.data?.length > 0) {
             const first = pendingRes.data[0];
@@ -96,31 +95,25 @@ const UploadDocuments = () => {
               userId: first.userId,
             }));
 
-            // fetch using this new jaId
             await fetchExistingData(first.jaId);
-          } else {
-            console.warn("No pending candidate data found.");
           }
         } catch (err) {
-          console.error("Error fetching candidate pending:", err);
+          toast.error(err.response?.data || "Somthing Went Wrong! ");
         }
       }
 
       else if (jaId) {
-        // console.log("Fetching document for JAId:", jaId);
         await fetchExistingData(jaId);
       }
 
       // If no JAId Found
       else {
-        console.warn("No JAId found to fetch documents.");
+        toast.error("No JAId found to fetch documents!");
       }
     };
 
     runFetch();
   }, [jaId, role]);
-
-
 
   // Handle Submit
   const handleSubmit = async (e) => {
@@ -166,7 +159,6 @@ const UploadDocuments = () => {
       hasError = true;
     }
 
-
     setErrors(newErrors);
     if (hasError) return;
 
@@ -187,6 +179,7 @@ const UploadDocuments = () => {
       data.append("ExperienceFile", formData.expFile);
 
     try {
+      setSubmitLoading(true);
       const res = await axios.post(`https://localhost:7119/api/DocumentList`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -199,11 +192,20 @@ const UploadDocuments = () => {
 
     }
     catch (err) {
-     // console.log(err);
-     // console.log(err.response.data);
-      toast.error(err.response.data || "Failed to upload documents.");
+      toast.error(err.response?.data || "Failed to upload documents!");
+    }
+    finally {
+      setSubmitLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+        <CommonLoader />
+      </div>
+    );
+  }
 
   return <div className="min-h-screen flex flex-col bg-neutral-950">
 
@@ -221,11 +223,19 @@ const UploadDocuments = () => {
           <h1 className="text-4xl font-bold text-white mb-4">
             {role === "Admin" ? "Upload Candidate Documents" : "Upload Your Documents"}
           </h1>
-
-          <p className="text-neutral-400">Please upload the required documents</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {submitLoading && (
+          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+            <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+              <CommonLoader />
+            </div>
+          </div>
+        )}
+
+        <form
+          onSubmit={handleSubmit}
+          className={`space-y-6 ${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
 
           {/* Document Uploads */}
           <div className="bg-neutral-900 rounded-lg p-6">
@@ -354,12 +364,16 @@ const UploadDocuments = () => {
 
               <button
                 type="submit"
-                className="px-6 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-medium transition">
-                Submit Documents
+                disabled={submitLoading}
+                className={`px-6 py-2 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-medium transition
+                  ${submitLoading
+                    ? "bg-neutral-600 cursor-not-allowed"
+                    : "bg-purple-600 hover:bg-purple-500"
+                  }`}>
+                {submitLoading ? "Adding..." : "+ Add Documents "}
               </button>
             </div>
           </div>
-
         </form>
       </div>
     </main>

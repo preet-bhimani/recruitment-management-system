@@ -3,8 +3,11 @@ import { User, Eye, EyeOff } from "lucide-react";
 import axios from 'axios';
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import CommonLoader from "./CommonLoader";
 
 const Register = () => {
+
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   // All Form Data Fileds
   const [formData, setFormData] = useState({
@@ -16,7 +19,6 @@ const Register = () => {
     country: "",
     dob: "",
     reference: "",
-    cdid: "",
     photo: null
   });
 
@@ -30,7 +32,6 @@ const Register = () => {
     country: "",
     dob: "",
     reference: "",
-    cdid: "",
     photo: ""
   });
 
@@ -156,15 +157,6 @@ const Register = () => {
       newErrors.reference = "";
     }
 
-    // CDID Validation
-    if (formData.reference === "Campus drive" && !formData.cdid) {
-      newErrors.cdid = "Please enter Campus Drive ID";
-      hasError = true;
-    }
-    else {
-      newErrors.cdid = "";
-    }
-
     // Photo Validation
     if (!formData.photo) {
       newErrors.photo = "Please upload photo";
@@ -187,10 +179,10 @@ const Register = () => {
     submitData.append("country", formData.country);
     submitData.append("dob", formData.dob);
     submitData.append("reference", formData.reference);
-    if (formData.reference === "Campus drive") submitData.append("cdid", formData.cdid);
     submitData.append("photo", formData.photo);
 
     try {
+      setSubmitLoading(true);
       const res = await axios.post(`https://localhost:7119/api/Auth/register`, submitData);
 
       // Show Success Message and Jump to Login Page
@@ -199,6 +191,9 @@ const Register = () => {
     }
     catch (err) {
       toast.error(err.response?.data || "Registration failed!");
+    }
+    finally {
+      setSubmitLoading(false);
     }
   }
 
@@ -215,11 +210,20 @@ const Register = () => {
             <h1 className="text-2xl font-bold text-white">Registration</h1>
           </div>
           <h2 className="text-xl font-semibold text-white mb-2">Welcome, Candidate</h2>
-          <p className="text-neutral-400">Create a account to Apply Jobs</p>
         </div>
 
+        {submitLoading && (
+          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+            <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+              <CommonLoader />
+            </div>
+          </div>
+        )}
+
         {/* Form Details */}
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form
+          className={`space-y-4 ${submitLoading ? "pointer-events-none opacity-70" : ""}`}
+          onSubmit={handleSubmit}>
 
           {/* Full Name */}
           <div>
@@ -334,20 +338,6 @@ const Register = () => {
             {errors.reference && (<p className="text-rose-500 text-sm mt-1">{errors.reference}</p>)}
           </div>
 
-          {/* CDID */}
-          {formData.reference === "Campus drive" && (
-            <div>
-              <label className="block text-sm font-medium text-neutral-300 mb-2">Campus Drive ID <span className="text-rose-500">*</span></label>
-              <input
-                type="text"
-                placeholder="Enter Campus Drive ID"
-                value={formData.cdid}
-                onChange={(e) => setFormData({ ...formData, cdid: e.target.value })}
-                className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500" />
-              {errors.cdid && (<p className="text-rose-500 text-sm mt-1">{errors.cdid}</p>)}
-            </div>
-          )}
-
           {/* Profile Picture */}
           <div>
             <label className="block text-sm font-medium text-neutral-300 mb-2">Photo <span className="text-rose-500">*</span></label>
@@ -362,9 +352,14 @@ const Register = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-purple-700 hover:bg-purple-800 text-white font-medium py-3 rounded-lg transition duration-200 flex items-center justify-center gap-2">
+            disabled={submitLoading}
+            className={`w-full bg-purple-700 hover:bg-purple-800 text-white font-medium py-3 rounded-lg transition duration-200 flex items-center justify-center gap-2
+              ${submitLoading
+                ? "bg-neutral-600 cursor-not-allowed"
+                : "bg-purple-600 hover:bg-purple-500"
+              }`}>
             <User className="w-5 h-5" />
-            Register
+            {submitLoading ? "Registering..." : "Register"}
           </button>
         </form>
 

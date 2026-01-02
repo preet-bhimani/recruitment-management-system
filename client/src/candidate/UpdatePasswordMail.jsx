@@ -5,11 +5,13 @@ import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../components/CommonLoader";
 
 const UpdatePasswordMail = () => {
 
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
 
     // Send OTP
     const sendOtp = async (e) => {
@@ -21,6 +23,7 @@ const UpdatePasswordMail = () => {
         }
 
         try {
+            setLoading(true);
             const res = await axios.post(`https://localhost:7119/api/Auth/send-otp`, { email: email });
             toast.success("OTP sent to your email!");
             navigate('/update-password-otp', { state: { email } });
@@ -28,7 +31,18 @@ const UpdatePasswordMail = () => {
         catch (err) {
             toast.error(err.response.data || "Something went wrong!");
         }
+        finally {
+            setLoading(false);
+        }
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex flex-col bg-neutral-950">

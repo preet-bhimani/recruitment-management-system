@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Upload, FileSpreadsheet } from "lucide-react";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import CommonLoader from "../../components/CommonLoader";
 
 const AddUserExcel = () => {
 
@@ -41,15 +42,22 @@ const AddUserExcel = () => {
     };
 
     return <>
+        {loading && (
+            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                    <CommonLoader />
+                    <span className="text-neutral-200 text-sm">
+                        Adding Campus Drive
+                    </span>
+                </div>
+            </div>
+        )}
         {/* File Upload Card */}
         <div className="max-w-2xl mx-auto">
             <div className="bg-neutral-900 p-4 sm:p-6 lg:p-8 rounded-lg shadow-md">
                 <div className="text-center">
                     <FileSpreadsheet className="mx-auto mb-3 sm:mb-4 text-neutral-400" size={40} />
                     <h2 className="text-lg sm:text-xl font-semibold mb-2">Upload Excel File</h2>
-                    <p className="text-neutral-400 mb-4 sm:mb-6 text-sm sm:text-base">
-                        Select a CSV or Excel file to bulk add users
-                    </p>
 
                     {/* File Upload Area */}
                     <div className="border-2 border-dashed border-neutral-600 rounded-lg p-6 sm:p-8 mb-4 hover:border-neutral-500 transition">

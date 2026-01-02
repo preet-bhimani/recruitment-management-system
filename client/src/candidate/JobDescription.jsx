@@ -19,7 +19,7 @@ const JobDescription = () => {
   const [selectedCampusId, setSelectedCampusId] = useState("");
   const [selectedWalkId, setSelectedWalkId] = useState("");
 
-  const aboutCompany = "xxxyyyzzz has a crystal-clear vision. Our mission is to help our clients to achieve sustainable results through cutting-edge supply chain software and services. Our clients can expect noteworthy benefits like increased profitability, resilience, and long-term growth.";
+  const aboutCompany = "Roima has a crystal-clear vision. Our mission is to help our clients to achieve sustainable results through cutting-edge supply chain software and services. Our clients can expect noteworthy benefits like increased profitability, resilience, and long-term growth.";
   const { id } = useParams();
   const navigate = useNavigate();
   const fetchJob = async () => {
@@ -221,11 +221,11 @@ const JobDescription = () => {
               <p className="text-neutral-300">{jobData?.comment || "No comments available."}</p>
             </div>
 
-            {/* About xxxyyyzzz */}
+            {/* About Roima */}
             <div className="bg-neutral-900 rounded-lg p-6">
               <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                 <Building2 className="w-6 h-6 text-indigo-400" />
-                About xxxyyyzzz
+                About Roima
               </h2>
               <p className="text-neutral-300 leading-relaxed">{aboutCompany}</p>
             </div>

@@ -6,12 +6,15 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import CommonLoader from "../../components/CommonLoader";
 
 const AdminUpdateTechInterview = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [selectedType, setSelectedType] = useState('technical');
     const { id } = useParams();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const [techData, setTechData] = useState({
         tiId: "",
@@ -42,10 +45,15 @@ const AdminUpdateTechInterview = () => {
     // Fetch Technical Interview Data
     const fetchTechin = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/TechnicalInterview/${id}`);
             setTechData(res.data || []);
-        } catch (err) {
+        }
+        catch (err) {
             toast.error("Error fetching data!");
+        }
+        finally {
+            setLoading(false);
         }
     }
 
@@ -115,6 +123,7 @@ const AdminUpdateTechInterview = () => {
 
         // Create Playload as It has to be in JSON Format
         try {
+            setSubmitLoading(true);
             const payload = {
                 JOId: techData.joId,
                 JAId: techData.jaId,
@@ -130,7 +139,7 @@ const AdminUpdateTechInterview = () => {
                 TechFeedback: techData.techFeedback,
                 TechRating: techData.techRating,
             };
-            const res = await axios.put(`https://localhost:7119/api/TechnicalInterview/update/${id}`, 
+            const res = await axios.put(`https://localhost:7119/api/TechnicalInterview/update/${id}`,
                 payload, { headers: { "Content-Type": "application/json" } });
             toast.success(res.data.message || "Technical interview updated successfully!");
             navigate(-1);
@@ -138,11 +147,22 @@ const AdminUpdateTechInterview = () => {
         catch (err) {
             toast.error(err.response.data || "Something went wrong");
         }
+        finally {
+            setSubmitLoading(false);
+        }
     }
 
     useEffect(() => {
         fetchTechin();
     }, [])
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
 
     return <div className="flex flex-col h-screen bg-neutral-950 text-neutral-100">
         {/* Navbar */}
@@ -158,9 +178,21 @@ const AdminUpdateTechInterview = () => {
                     <h1 className="text-4xl font-bold text-white mb-4">Update Technical Interview Meeting</h1>
                 </div>
 
+                {submitLoading && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                        <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                            <CommonLoader />
+                            <span className="text-neutral-200 text-sm">
+                                Updating Technical Interview
+                            </span>
+                        </div>
+                    </div>
+                )}
+
                 {/* Meeting Form */}
                 <div className="max-w-5xl mx-auto">
-                    <form className="bg-neutral-900  rounded-md p-6 shadow-sm">
+                    <form className={`bg-neutral-900 rounded-md p-6 shadow-sm
+                            ${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
 
                         {/* Interview Type Selection */}
                         <div className="mb-6">
@@ -408,8 +440,13 @@ const AdminUpdateTechInterview = () => {
                             <button
                                 type="button"
                                 onClick={handleTechinUpdate}
-                                className="px-6 py-2 bg-purple-700 hover:bg-purple-600 rounded font-medium transition text-white flex items-center gap-2">
-                                + Update {selectedType === 'technical' ? 'Technical' : 'HR'} Interview
+                                disabled={submitLoading}
+                                className={`px-6 py-2 rounded font-medium transition text-white flex items-center gap-2
+                                    ${submitLoading
+                                        ? "bg-neutral-600 cursor-not-allowed"
+                                        : "bg-purple-700 hover:bg-purple-600"
+                                    }`}>
+                                {submitLoading ? "Updating..." : "+ Update Technical Interview "}
                             </button>
                         </div>
                     </form>

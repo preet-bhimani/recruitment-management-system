@@ -5,24 +5,29 @@ import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import Footer from "../components/Footer";
 import { toast } from "react-toastify";
+import CommonLoader from "../components/CommonLoader";
 
 const Notifications = () => {
 
   const [expandedJobs, setExpandedJobs] = useState({});
-
+  const [loading, setLoading] = useState(false);
   const [jobNotifications, setJobNotifications] = useState({});
   const { userId, token } = useAuth();
 
   // Fetch Notifications
   const fetchNotifications = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`https://localhost:7119/api/Candidate/notification`, {
         headers: { Authorization: `Bearer ${token}`, }
       });
       setJobNotifications(res.data);
     }
     catch (err) {
-      toast.error("Error fetching notifications:", err);
+      toast.error(err.response?.data || "Error fetching notifications!");
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -93,6 +98,14 @@ const Notifications = () => {
       })
     };
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+        <CommonLoader />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950">

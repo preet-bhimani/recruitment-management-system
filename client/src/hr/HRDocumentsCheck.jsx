@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import CommonLoader from '../components/CommonLoader';
 
 // Find File Type
 const getFileType = (url) => {
@@ -68,6 +69,8 @@ const HRDocumentsCheckContent = () => {
     const { candidateId } = useParams();
     const navigate = useNavigate();
     const { candidates } = useCandidates();
+    const [loading, setLoading] = useState(false);
+
     const candidate = useMemo(() => {
         if (!candidateId) return null;
         return candidates.find(c => String(c.jaId) === String(candidateId)) ?? null;
@@ -78,6 +81,7 @@ const HRDocumentsCheckContent = () => {
     // Document Review Handlers 
     const handleApproveClick = async () => {
         try {
+            setLoading(true);
             await axios.put(
                 `https://localhost:7119/api/DocumentList/review/${candidate.jaId}`,
                 { status: "Approved" },
@@ -90,10 +94,14 @@ const HRDocumentsCheckContent = () => {
             console.error(err);
             toast.error(err.response?.data || "Failed to approve documents!");
         }
+        finally {
+            setLoading(false);
+        }
     };
 
     const handleRejectClick = async () => {
         try {
+            setLoading(true);
             await axios.put(
                 `https://localhost:7119/api/DocumentList/review/${candidate.jaId}`,
                 { status: "Rejected" },
@@ -106,6 +114,9 @@ const HRDocumentsCheckContent = () => {
         catch (err) {
             console.error(err);
             toast.error(err.response?.data || "Failed to reject documents!");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -123,6 +134,17 @@ const HRDocumentsCheckContent = () => {
 
             {/* Main Layout */}
             <main className="flex-1 container mx-auto px-4 py-6">
+
+                {loading && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                        <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                            <CommonLoader />
+                            <span className="text-neutral-200 text-sm">
+                                Loading
+                            </span>
+                        </div>
+                    </div>
+                )}
 
                 {/* If Candidate Not Found */}
                 {!candidate ? (

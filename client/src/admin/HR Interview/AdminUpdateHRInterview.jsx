@@ -194,7 +194,10 @@ const AdminUpdateHRInterview = () => {
 
                 {/* Meeting Form */}
                 <div className="max-w-5xl mx-auto">
-                    <form onSubmit={handleHrinUpdate} className="bg-neutral-900  rounded-md p-6 shadow-sm">
+                    <form
+                        onSubmit={handleHrinUpdate}
+                        className={`bg-neutral-900 rounded-md p-6 shadow-sm
+                            ${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
 
                         {/* Interview Type Selection */}
                         <div className="mb-6">
@@ -439,8 +442,13 @@ const AdminUpdateHRInterview = () => {
                         <div className="flex gap-3 justify-end mt-8 pt-6 border-t border-neutral-600">
                             <button
                                 type="submit"
-                                className="px-6 py-2 bg-purple-700 hover:bg-purple-600 rounded font-medium transition text-white flex items-center gap-2">
-                                + Update {selectedType === 'technical' ? 'Technical' : 'HR'} Interview
+                                disabled={submitLoading}
+                                className={`px-6 py-2 rounded font-medium transition text-white flex items-center gap-2
+                                    ${submitLoading
+                                        ? "bg-neutral-600 cursor-not-allowed"
+                                        : "bg-purple-700 hover:bg-purple-600"
+                                    }`}>
+                                {submitLoading ? "Updating..." : "+ Update HR Interview "}
                             </button>
                         </div>
                     </form>

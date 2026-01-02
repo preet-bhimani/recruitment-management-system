@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const AddUser = ({ role = "admin" }) => {
 
@@ -51,6 +52,7 @@ const AddUser = ({ role = "admin" }) => {
 
     // Password Visibility Toggle
     const [showPassword, setShowPassword] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     // Photo Submit Validation
     const handlePhotoChange = (e) => {
@@ -110,7 +112,7 @@ const AddUser = ({ role = "admin" }) => {
                 setAllSkills(res.data || []);
             }
             catch (err) {
-                toast.error(err || "Failed to load skills");
+                toast.error(err.response?.data || "Failed to load skills");
             }
         };
         fetchSkills();
@@ -283,7 +285,7 @@ const AddUser = ({ role = "admin" }) => {
         submitData.append("Country", formData.country.trim());
         submitData.append("DOB", formData.dob);
         submitData.append("Reference", formData.reference);
-        submitData.append("Role", "Candidate");
+        submitData.append("Role", formData.role);
         submitData.append("photo", formData.photo);
         submitData.append("IsActive", formData.isActive ? "true" : "false");
 
@@ -319,6 +321,7 @@ const AddUser = ({ role = "admin" }) => {
         }
 
         try {
+            setSubmitLoading(true);
             const res = await axios.post(
                 "https://localhost:7119/api/User/create",
                 submitData
@@ -328,10 +331,28 @@ const AddUser = ({ role = "admin" }) => {
         catch (err) {
             toast.error(err.response?.data?.message || "User creation failed!");
         }
+        finally {
+            setSubmitLoading(false);
+        }
     };
 
     return <>
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg" onSubmit={handleSubmit}>
+        {submitLoading && (
+            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                    <CommonLoader />
+                    <span className="text-neutral-200 text-sm">
+                        Adding User
+                    </span>
+                </div>
+            </div>
+        )}
+
+        <form
+            className={`grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg
+                ${submitLoading ? "pointer-events-none opacity-70" : ""}`}
+            onSubmit={handleSubmit}>
+
             {/* Full Name */}
             <div>
                 <label className="block mb-1 text-sm font-medium">
@@ -673,8 +694,13 @@ const AddUser = ({ role = "admin" }) => {
             <div className="md:col-span-2">
                 <button
                     type="submit"
-                    className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                    + Add Candidate
+                    disabled={submitLoading}
+                    className={`w-full p-2 rounded font-medium transition
+                        ${submitLoading
+                            ? "bg-purple-400 cursor-not-allowed"
+                            : "bg-purple-600 hover:bg-purple-500"
+                        }`}>
+                    {submitLoading ? "Adding..." : "+ Add User"}
                 </button>
             </div>
         </form>

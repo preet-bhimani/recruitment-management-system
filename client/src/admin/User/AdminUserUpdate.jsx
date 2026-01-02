@@ -4,21 +4,25 @@ import Sidebar from "../Sidebar";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const AdminUserUpdate = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [password, setPassword] = useState("");
 
   // Set Users Data State
   const [userData, setUserData] = useState({
     userId: "",
     fullName: "",
     email: "",
-    password: "",
     phoneNumber: "",
     city: "",
+    country: "",
     dob: "",
     role: "",
     isActive: "",
@@ -35,7 +39,6 @@ const AdminUserUpdate = () => {
     yearsOfExperience: "",
     preCompanyName: "",
     preCompanyTitle: "",
-    cdid: ""
   });
 
   // Error Messages for Each Fields
@@ -48,7 +51,6 @@ const AdminUserUpdate = () => {
     country: "",
     dob: "",
     reference: "",
-    cdid: "",
     photo: "",
     company: "",
     resume: "",
@@ -59,14 +61,18 @@ const AdminUserUpdate = () => {
   // Fetch Users Data
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`https://localhost:7119/api/User/${id}`);
       const names = (res.data.skills ?? []).map(s => s.skillName);
       setSelectedSkills(names);
       setUserData(res.data || {});
-
+      setPassword("");
     }
     catch (err) {
       toast.error("failed to load users")
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -90,7 +96,6 @@ const AdminUserUpdate = () => {
       skill.skillName.toLowerCase().includes(inputValue.toLowerCase()) &&
       !selectedSkills.includes(skill.skillName)
   );
-
 
   const addSkill = (skillName) => {
     if (!selectedSkills.includes(skillName)) {
@@ -184,7 +189,7 @@ const AdminUserUpdate = () => {
     // Password Validation
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-    if (userData.password && !passwordRegex.test(userData.password)) {
+    if (password && !passwordRegex.test(password)) {
       newErrors.password =
         "Password must be 8+ chars, include one lowercase, uppercase, number, and symbol";
       hasError = true;
@@ -243,15 +248,6 @@ const AdminUserUpdate = () => {
       newErrors.reference = "";
     }
 
-    // CDID Validation
-    if (userData.reference === "Campus drive" && !userData.cdid) {
-      newErrors.cdid = "Please enter Campus Drive ID";
-      hasError = true;
-    }
-    else {
-      newErrors.cdid = "";
-    }
-
     // Bachelor Percentage Validation
     if (!/^\d{1,3}(\.\d{1,2})?$/.test(userData.bachelorPercentage)) {
       newErrors.bachelorPercentage = "Maximum 2 digits allowed after decimal.";
@@ -276,7 +272,9 @@ const AdminUserUpdate = () => {
     const submitData = new FormData();
     submitData.append("FullName", userData.fullName.trim());
     submitData.append("Email", userData.email.trim());
-    submitData.append("Password", userData.password);
+    if (password.trim() !== "") {
+      submitData.append("Password", password);
+    }
     submitData.append("PhoneNumber", userData.phoneNumber.trim());
     submitData.append("City", userData.city.trim());
     submitData.append("Country", userData.country.trim());
@@ -284,9 +282,6 @@ const AdminUserUpdate = () => {
     submitData.append("Reference", userData.reference);
     if (userData.photo instanceof File)
       submitData.append("photo", userData.photo);
-
-    if (userData.reference === "Campus Drive" && userData.cdid)
-      submitData.append("CDID", userData.cdid);
 
     // Optional Fiedls
     if (userData.bachelorDegree)
@@ -309,7 +304,7 @@ const AdminUserUpdate = () => {
       submitData.append("PreCompanyTitle", userData.preCompanyTitle);
     if (userData.resume)
       submitData.append("resume", userData.resume);
-    if (userData.role) 
+    if (userData.role)
       submitData.append("Role", userData.role);
 
     selectedSkills.forEach(skillName => {
@@ -322,6 +317,7 @@ const AdminUserUpdate = () => {
     }
 
     try {
+      setSubmitLoading(true);
       const res = await axios.put(
         `https://localhost:7119/api/User/update/${id}`,
         submitData
@@ -332,12 +328,23 @@ const AdminUserUpdate = () => {
     catch (err) {
       toast.error(err.response?.data?.message || "User update failed!");
     }
+    finally {
+      setSubmitLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchUsers();
     fetchSkills();
   }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+        <CommonLoader />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen">
@@ -355,9 +362,20 @@ const AdminUserUpdate = () => {
             <h1 className="text-4xl font-bold text-white mb-4">Admin User Update</h1>
           </div>
 
+          {submitLoading && (
+            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+              <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                <CommonLoader />
+              </div>
+            </div>
+          )}
+
           {/* User Update Form */}
           <div className="max-w-6xl mx-auto">
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg">
+            <form
+              onSubmit={handleSubmit}
+              className={`grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg
+                ${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
 
               {/* User ID */}
               <div className="md:col-span-2">
@@ -408,8 +426,8 @@ const AdminUserUpdate = () => {
                 <input
                   type="password"
                   name="password"
-                  value={userData.password}
-                  onChange={handleChange}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
                   className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
                 {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
@@ -674,19 +692,6 @@ const AdminUserUpdate = () => {
                 {errors.reference && <p className="text-red-500 text-xs">{errors.reference}</p>}
               </div>
 
-              {/* CDID */}
-              <div>
-                <label className="block mb-1 text-sm font-medium">CDID</label>
-                <input
-                  type="text"
-                  name="cdid"
-                  placeholder="Enter CDID"
-                  value={userData.cdid}
-                  onChange={handleChange}
-                  className="w-full p-2 rounded bg-neutral-800 border border-neutral-600 text-neutral-100 placeholder-neutral-400" />
-                {errors.cdid && <p className="text-red-500 text-xs">{errors.cdid}</p>}
-              </div>
-
               {/* Role */}
               <div>
                 <label className="block mb-1 text-sm font-medium">Role</label>
@@ -723,8 +728,13 @@ const AdminUserUpdate = () => {
               <div className="md:col-span-2">
                 <button
                   type="submit"
-                  className="w-full bg-purple-600 hover:bg-purple-500 p-3 rounded font-medium transition text-white">
-                  Update User
+                  disabled={submitLoading}
+                  className={`w-full p-2 rounded font-medium transition
+                        ${submitLoading
+                      ? "bg-neutral-600 cursor-not-allowed"
+                      : "bg-purple-600 hover:bg-purple-500"
+                    }`}>
+                  {submitLoading ? "Updating..." : "+ Update User "}
                 </button>
               </div>
             </form>

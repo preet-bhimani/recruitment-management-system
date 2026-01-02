@@ -3,11 +3,14 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
+import CommonLoader from "../../components/CommonLoader";
 
 const UpdateOfferLetter = ({ id }) => {
 
     const navigate = useNavigate();
     const { token } = useAuth();
+    const [loading, setLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     // Form Data
     const [formData, setFormData] = useState({
@@ -40,6 +43,7 @@ const UpdateOfferLetter = ({ id }) => {
     // Fetch Offer Letter Details
     const fetchOfferLetter = async () => {
         try {
+            setLoading(true);
             const result = await axios.get(
                 `https://localhost:7119/api/OfferLetter/details/${id}`
             );
@@ -66,6 +70,9 @@ const UpdateOfferLetter = ({ id }) => {
         }
         catch (err) {
             toast.error("Failed to load offer letter details.");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -137,6 +144,7 @@ const UpdateOfferLetter = ({ id }) => {
         if (hasError) return;
 
         try {
+            setSubmitLoading(true);
             const res = await axios.put(
                 `https://localhost:7119/api/OfferLetter/update/${id}`,
                 formData, {
@@ -147,119 +155,146 @@ const UpdateOfferLetter = ({ id }) => {
             navigate(-1);
         }
         catch (err) {
-            console.log(err);
             toast.error(err.response?.data || "Failed to update offer letter!");
+        }
+        finally {
+            setSubmitLoading(false);
         }
     };
 
-    return <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg text-neutral-100">
-        {/* Offer Letter Status */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Offer Letter Status <span className="text-rose-500">*</span>
-            </label>
-            <select
-                value={formData.offerLetterStatus}
-                onChange={(e) => setFormData({ ...formData, offerLetterStatus: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700">
-                <option value="" disabled>
-                    Select Status
-                </option>
-                <option value="Sent">Update</option>
-                <option value="Accepted">Accepted</option>
-                <option value="Rejected">Rejected</option>
-                <option value="Hold">Hold</option>
-            </select>
-            {errors.offerLetterStatus && (<p className="text-rose-500 text-sm mt-1">{errors.offerLetterStatus}</p>)}
-        </div>
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
 
-        {/* Joining Date */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Joining Date {isEditable && <span className="text-rose-500">*</span>}
-            </label>
-            <input
-                type="date"
-                disabled={!isEditable}
-                value={formData.joiningDate}
-                onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
-                className={`w-full p-2 rounded bg-neutral-800 border border-neutral-700 ${!isEditable ? "opacity-50 cursor-not-allowed" : ""}`} />
-            {errors.joiningDate && (<p className="text-rose-500 text-sm mt-1">{errors.joiningDate}</p>)}
-        </div>
+    return <>
+        {submitLoading && (
+            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                    <CommonLoader />
+                </div>
+            </div>
+        )}
 
-        {/* End Date */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                End Date (Only for Internship)
-            </label>
-            <input
-                type="date"
-                disabled={!isEditable}
-                value={formData.endDate}
-                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                className={`w-full p-2 rounded bg-neutral-800 border border-neutral-700 ${!isEditable ? "opacity-50 cursor-not-allowed" : ""}`} />
-        </div>
+        <form
+            onSubmit={handleSubmit}
+            className={`grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg
+                ${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
 
-        {/* Bond Time */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Bond Time {isEditable && <span className="text-rose-500">*</span>}
-            </label>
-            <input
-                type="text"
-                disabled={!isEditable}
-                placeholder="e.g. 6 months"
-                value={formData.bondTime}
-                onChange={(e) => setFormData({ ...formData, bondTime: e.target.value })}
-                className={`w-full p-2 rounded bg-neutral-800 border border-neutral-700 ${!isEditable ? "opacity-50 cursor-not-allowed" : ""}`} />
-            {errors.bondTime && (<p className="text-rose-500 text-sm mt-1">{errors.bondTime}</p>)}
-        </div>
+            {/* Offer Letter Status */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Offer Letter Status <span className="text-rose-500">*</span>
+                </label>
+                <select
+                    value={formData.offerLetterStatus}
+                    onChange={(e) => setFormData({ ...formData, offerLetterStatus: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700">
+                    <option value="" disabled>
+                        Select Status
+                    </option>
+                    <option value="Sent">Update</option>
+                    <option value="Accepted">Accepted</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Hold">Hold</option>
+                </select>
+                {errors.offerLetterStatus && (<p className="text-rose-500 text-sm mt-1">{errors.offerLetterStatus}</p>)}
+            </div>
 
-        {/* Salary */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Salary (INR) {isEditable && <span className="text-rose-500">*</span>}
-            </label>
-            <input
-                type="number"
-                disabled={!isEditable}
-                placeholder="Enter Salary"
-                value={formData.salary}
-                onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
-                className={`w-full p-2 rounded bg-neutral-800 border border-neutral-700 ${!isEditable ? "opacity-50 cursor-not-allowed" : ""}`} />
-            {errors.salary && (<p className="text-rose-500 text-sm mt-1">{errors.salary}</p>)}
-        </div>
+            {/* Joining Date */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Joining Date {isEditable && <span className="text-rose-500">*</span>}
+                </label>
+                <input
+                    type="date"
+                    disabled={!isEditable}
+                    value={formData.joiningDate}
+                    onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
+                    className={`w-full p-2 rounded bg-neutral-800 border border-neutral-700 ${!isEditable ? "opacity-50 cursor-not-allowed" : ""}`} />
+                {errors.joiningDate && (<p className="text-rose-500 text-sm mt-1">{errors.joiningDate}</p>)}
+            </div>
 
-        {/* Template Type */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Template Type {isEditable && <span className="text-rose-500">*</span>}
-            </label>
-            <select
-                disabled={!isEditable}
-                value={formData.templateType}
-                onChange={(e) => setFormData({ ...formData, templateType: e.target.value })}
-                className={`w-full p-2 rounded bg-neutral-800 border border-neutral-700 ${!isEditable ? "opacity-50 cursor-not-allowed" : ""}`}>
-                <option value="" disabled>
-                    Select Template Type
-                </option>
-                <option value="Internship">Internship</option>
-                <option value="Job">Job</option>
-            </select>
-            {errors.templateType && (<p className="text-rose-500 text-sm mt-1">{errors.templateType}</p>)}
-        </div>
+            {/* End Date */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    End Date (Only for Internship)
+                </label>
+                <input
+                    type="date"
+                    disabled={!isEditable}
+                    value={formData.endDate}
+                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                    className={`w-full p-2 rounded bg-neutral-800 border border-neutral-700 ${!isEditable ? "opacity-50 cursor-not-allowed" : ""}`} />
+            </div>
 
-        {/* Submit Button */}
-        <div className="md:col-span-2">
-            <button
-                type="submit"
-                className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                Update Offer Letter
-            </button>
-        </div>
-    </form>;
+            {/* Bond Time */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Bond Time {isEditable && <span className="text-rose-500">*</span>}
+                </label>
+                <input
+                    type="text"
+                    disabled={!isEditable}
+                    placeholder="e.g. 6 months"
+                    value={formData.bondTime}
+                    onChange={(e) => setFormData({ ...formData, bondTime: e.target.value })}
+                    className={`w-full p-2 rounded bg-neutral-800 border border-neutral-700 ${!isEditable ? "opacity-50 cursor-not-allowed" : ""}`} />
+                {errors.bondTime && (<p className="text-rose-500 text-sm mt-1">{errors.bondTime}</p>)}
+            </div>
+
+            {/* Salary */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Salary (INR) {isEditable && <span className="text-rose-500">*</span>}
+                </label>
+                <input
+                    type="number"
+                    disabled={!isEditable}
+                    placeholder="Enter Salary"
+                    value={formData.salary}
+                    onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+                    className={`w-full p-2 rounded bg-neutral-800 border border-neutral-700 ${!isEditable ? "opacity-50 cursor-not-allowed" : ""}`} />
+                {errors.salary && (<p className="text-rose-500 text-sm mt-1">{errors.salary}</p>)}
+            </div>
+
+            {/* Template Type */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Template Type {isEditable && <span className="text-rose-500">*</span>}
+                </label>
+                <select
+                    disabled={!isEditable}
+                    value={formData.templateType}
+                    onChange={(e) => setFormData({ ...formData, templateType: e.target.value })}
+                    className={`w-full p-2 rounded bg-neutral-800 border border-neutral-700 ${!isEditable ? "opacity-50 cursor-not-allowed" : ""}`}>
+                    <option value="" disabled>
+                        Select Template Type
+                    </option>
+                    <option value="Internship">Internship</option>
+                    <option value="Job">Job</option>
+                </select>
+                {errors.templateType && (<p className="text-rose-500 text-sm mt-1">{errors.templateType}</p>)}
+            </div>
+
+            {/* Submit Button */}
+            <div className="md:col-span-2">
+                <button
+                    type="submit"
+                    disabled={submitLoading}
+                    className={`w-full p-2 rounded font-medium transition
+                        ${submitLoading
+                            ? "bg-neutral-600 cursor-not-allowed"
+                            : "bg-purple-600 hover:bg-purple-500"
+                        }`}>
+                    {submitLoading ? "Updating..." : "+ Update Offer Letter "}
+                </button>
+            </div>
+        </form>
+    </>;
 };
 
 export default UpdateOfferLetter;

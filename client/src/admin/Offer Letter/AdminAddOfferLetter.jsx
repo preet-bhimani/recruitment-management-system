@@ -5,20 +5,26 @@ import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const AdminAddOfferLetter = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [candidates, setCandidates] = useState([]);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     // Fetch All Pending Offer Letters
     const fetchPendingOfferLetters = async () => {
         try {
+            setLoading(true);
             const res = await axios.get(`https://localhost:7119/api/OfferLetter/pending`);
             setCandidates(res.data || []);
         }
         catch (err) {
             toast.error("Failed to fetch pending offer letters.");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -40,47 +46,46 @@ const AdminAddOfferLetter = () => {
                     <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
                         Generate Offer Letters
                     </h1>
-                    <p className="text-neutral-400 text-sm">
-                        Review candidates pending offer letters and generate their official PDFs.
-                    </p>
                 </div>
 
                 {/* Candidates Details */}
-                <div className="space-y-4">
-                    {candidates.length === 0 && (
-                        <div className="text-center py-6 text-neutral-300 border border-neutral-700 rounded-md bg-neutral-900">
-                            No candidates pending offer letter.
-                        </div>
-                    )}
+                {loading ? (<CommonLoader />) : (
+                    <div className="space-y-4">
+                        {candidates.length === 0 && (
+                            <div className="text-center py-6 text-neutral-300 border border-neutral-700 rounded-md bg-neutral-900">
+                                No candidates pending offer letter.
+                            </div>
+                        )}
 
-                    {candidates.map((cand) => (
-                        <div
-                            key={cand.jaId}
-                            className="bg-neutral-900 border border-neutral-700 rounded-md p-3 md:p-4 shadow-sm hover:shadow-md transition flex flex-col md:flex-row md:items-center md:justify-between text-sm gap-4">
-                            <div className="flex flex-col md:flex-row items-start md:items-center gap-3 flex-1">
-                                <img
-                                    src={cand.photo}
-                                    alt={cand.fullName}
-                                    className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 flex-1 text-xs md:text-sm">
-                                    <p><span className="font-medium text-purple-300">Full Name:</span>{" "}{cand.fullName}</p>
-                                    <p><span className="font-medium text-purple-300">Email:</span>{" "}{cand.email}</p>
-                                    <p><span className="font-medium text-purple-300">Title:</span>{" "}{cand.title}</p>
-                                    <p><span className="font-medium text-purple-300">Overall Status:</span>{" "}{cand.overallStatus}</p>
+                        {candidates.map((cand) => (
+                            <div
+                                key={cand.jaId}
+                                className="bg-neutral-900 border border-neutral-700 rounded-md p-3 md:p-4 shadow-sm hover:shadow-md transition flex flex-col md:flex-row md:items-center md:justify-between text-sm gap-4">
+                                <div className="flex flex-col md:flex-row items-start md:items-center gap-3 flex-1">
+                                    <img
+                                        src={cand.photo}
+                                        alt={cand.fullName}
+                                        className="w-14 h-14 rounded-full border border-neutral-600 flex-shrink-0" />
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2 flex-1 text-xs md:text-sm">
+                                        <p><span className="font-medium text-purple-300">Full Name:</span>{" "}{cand.fullName}</p>
+                                        <p><span className="font-medium text-purple-300">Email:</span>{" "}{cand.email}</p>
+                                        <p><span className="font-medium text-purple-300">Title:</span>{" "}{cand.title}</p>
+                                        <p><span className="font-medium text-purple-300">Overall Status:</span>{" "}{cand.overallStatus}</p>
+                                    </div>
+                                </div>
+
+                                {/* Generate Offer Letter Button */}
+                                <div className="flex gap-2 mt-3 md:mt-0 md:ml-4 flex-shrink-0">
+                                    <button
+                                        className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs w-full md:w-auto justify-center"
+                                        onClick={() => navigate(`/admin-sent-offerletter/${cand.jaId}`)}>
+                                        <Plus size={14} /> Generate Offer Letter
+                                    </button>
                                 </div>
                             </div>
-
-                            {/* Generate Offer Letter Button */}
-                            <div className="flex gap-2 mt-3 md:mt-0 md:ml-4 flex-shrink-0">
-                                <button
-                                    className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs w-full md:w-auto justify-center"
-                                    onClick={() => navigate(`/admin-sent-offerletter/${cand.jaId}`)}>
-                                    <Plus size={14} /> Generate Offer Letter
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     </div>;

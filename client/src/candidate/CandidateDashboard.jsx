@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { toast } from "react-toastify";
 import UploadDocumentPopup from "./UploadDocumentPopup ";
+import CommonLoader from "../components/CommonLoader";
 
 const CandidateDashboard = () => {
 
@@ -14,15 +15,20 @@ const CandidateDashboard = () => {
   const [pendingJAId, setPendingJAId] = useState(null);
   const [pendingList, setPendingList] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Fetch Jobs
   const fetchJobs = async () => {
     try {
+      setLoading(true);
       const res = await axios.get(`https://localhost:7119/api/JobOpening/jobopen`)
       setJobs(res.data || []);
     }
     catch (err) {
       toast.error("Error to fectch jobs!")
+    }
+    finally {
+      setLoading(false);
     }
   }
 
@@ -89,10 +95,17 @@ const CandidateDashboard = () => {
 
   const navigate = useNavigate();
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+        <CommonLoader />
+      </div>
+    );
+  }
+
   return <div className="min-h-screen flex flex-col bg-neutral-950">
     {/* Navbar */}
     <CommonNavbar hasPendingDocuments={hasPendingDocuments} pendingJAId={pendingJAId} openUploadPopup={() => setShowPopup(true)} />
-
 
     {/* Main Layout */}
     <main className="flex-1 py-8 px-4">
@@ -149,6 +162,9 @@ const CandidateDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredJobs.length === 0 && (
+            <div className="md:col-span-2 text-center py-10 text-neutral-400">No Jobs Found</div>
+          )}
           {filteredJobs.map(job => (
             <div key={job.id} className="bg-neutral-900 border border-neutral-800 rounded-lg p-6 hover:border-neutral-600 transition">
 

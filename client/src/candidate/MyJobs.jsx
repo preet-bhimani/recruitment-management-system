@@ -5,10 +5,13 @@ import { Calendar, Briefcase, CheckCircle, XCircle, Clock, Eye } from "lucide-re
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
+import { toast } from "react-toastify";
+import CommonLoader from "../components/CommonLoader";
 
 const MyJobs = () => {
 
     const [statusFilter, setStatusFilter] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const statusOptions = [
         "All Status",
@@ -25,13 +28,17 @@ const MyJobs = () => {
     // Fetch Prevoius Applied Jobs
     const fetchMyJobs = async () => {
         try {
+            setLoading(true);
             const res = await axios.get("https://localhost:7119/api/Candidate/myjobs", {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setAppliedJobs(res.data);
         }
         catch (err) {
-            console.error("Error fetching jobs:", err);
+            toast.error(err.response?.data || "Failded to Fetch Data!")
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -78,6 +85,14 @@ const MyJobs = () => {
         });
     };
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen flex flex-col bg-neutral-950">
             {/* Navbar */}
@@ -88,7 +103,6 @@ const MyJobs = () => {
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-8">
                         <h1 className="text-4xl font-bold text-white mb-4">My Jobs</h1>
-                        <p className="text-neutral-400">Track job applications and their status</p>
                     </div>
 
                     {/* Status Filter */}

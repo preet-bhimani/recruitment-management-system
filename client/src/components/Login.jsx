@@ -4,12 +4,13 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
+import CommonLoader from "./CommonLoader";
 
 const Login = () => {
 
     const navigate = useNavigate();
     const { login } = useAuth();
-
+    const [submitLoading, setSubmitLoading] = useState(false);
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [errors, setErrors] = useState({ email: "", password: "" });
 
@@ -54,6 +55,7 @@ const Login = () => {
         if (hasError) return;
 
         try {
+            setSubmitLoading(true);
             const res = await axios.post(`https://localhost:7119/api/Auth/login`, {
                 email: formData.email.trim(),
                 password: formData.password
@@ -94,6 +96,9 @@ const Login = () => {
         catch (err) {
             toast.error(err.response?.data || "Login failed!");
         }
+        finally {
+            setSubmitLoading(false);
+        }
     };
 
     return (
@@ -109,8 +114,15 @@ const Login = () => {
                         <h1 className="text-2xl font-bold text-white">Login Portal</h1>
                     </div>
                     <h2 className="text-xl font-semibold text-white mb-2">Welcome Back</h2>
-                    <p className="text-neutral-400">Enter your email and password to access your account</p>
                 </div>
+
+                {submitLoading && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                        <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                            <CommonLoader />
+                        </div>
+                    </div>
+                )}
 
                 {/* Form Details */}
                 <form className="space-y-5" onSubmit={handleSubmit}>
@@ -161,13 +173,18 @@ const Login = () => {
                             Forgot password?
                         </button>
                     </div>
-                    
+
                     {/* Submit */}
                     <button
                         type="submit"
-                        className="w-full bg-purple-700 hover:bg-purple-800 text-white font-medium py-3 rounded-lg transition duration-200 flex items-center justify-center gap-2">
+                        disabled={submitLoading}
+                        className={`w-full bg-purple-700 hover:bg-purple-800 text-white font-medium py-3 rounded-lg transition duration-200 flex items-center justify-center gap-2
+                            ${submitLoading
+                                ? "bg-neutral-600 cursor-not-allowed"
+                                : "bg-purple-600 hover:bg-purple-500"
+                            }`}>
                         <LogIn className="w-5 h-5" />
-                        Login
+                        {submitLoading ? "Login..." : "Login"}
                     </button>
                 </form>
 

@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../components/CommonLoader";
 
 const UpdatePassword = () => {
 
@@ -13,7 +14,7 @@ const UpdatePassword = () => {
     // Password States
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-
+    const [submitLoading, setSubmitLoading] = useState(false);
     const location = useLocation();
     const email = location.state?.email || "";
 
@@ -32,6 +33,7 @@ const UpdatePassword = () => {
         }
 
         try {
+            setSubmitLoading(true);
             const res = await axios.post(`https://localhost:7119/api/Auth/reset-password`, {
                 email: email,
                 newPassword: newPassword
@@ -42,6 +44,9 @@ const UpdatePassword = () => {
         }
         catch (err) {
             toast.error(err.response.data || "Something went wrong!");
+        }
+        finally {
+            setSubmitLoading(false);
         }
     };
 
@@ -59,9 +64,17 @@ const UpdatePassword = () => {
                         <p className="text-neutral-400">Create New Password</p>
                     </div>
 
+                    {submitLoading && (
+                        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                            <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                                <CommonLoader />
+                            </div>
+                        </div>
+                    )}
+
                     {/* Form */}
                     <div className="bg-neutral-900 rounded-lg p-8">
-                        <form className="space-y-6">
+                        <form className={`space-y-6 ${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
 
                             {/* New Password */}
                             <div>
@@ -95,10 +108,14 @@ const UpdatePassword = () => {
                             <div className="pt-4">
                                 <button
                                     type="submit"
+                                    disabled={submitLoading}
                                     onClick={handleUpdatePassword}
-                                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-medium transition">
-                                    <Save className="w-4 h-4" />
-                                    Update Password
+                                    className={`w-full flex items-center justify-center gap-2 px-6 py-3 bg-purple-700 hover:bg-purple-800 text-white rounded-lg font-medium transition
+                                        ${submitLoading
+                                            ? "bg-neutral-600 cursor-not-allowed"
+                                            : "bg-purple-600 hover:bg-purple-500"
+                                        }`}>
+                                    {submitLoading ? "Updating..." : "+ Update Password "}
                                 </button>
                             </div>
                         </form>

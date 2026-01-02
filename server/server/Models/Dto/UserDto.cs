@@ -11,8 +11,8 @@ namespace server.Models.Dto
         [Required, EmailAddress, StringLength(256)]
         public string Email { get; set; }
 
-        [Required, StringLength(512)]
-        public string Password { get; set; }
+        [StringLength(512)]
+        public string? Password { get; set; }
 
         [Required]
         [RegularExpression(@"^\+[1-9]\d{7,14}$", ErrorMessage = "Phone must start with + and country code.")]

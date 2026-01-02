@@ -3,10 +3,12 @@ import Sidebar from "../Sidebar";
 import Navbar from "../Navbar";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const AdminAddSkill = () => {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     // Skill Form Data
     const [formData, setFormData] = useState({
@@ -39,6 +41,7 @@ const AdminAddSkill = () => {
 
         // Fetch Data if No Errors Found
         try {
+            setSubmitLoading(true);
             const res = await axios.post(`https://localhost:7119/api/Skill`, {
                 skillName: formData.skillName.trim(),
             });
@@ -48,6 +51,9 @@ const AdminAddSkill = () => {
         }
         catch (err) {
             toast.error(err.response?.data || "Failed to add skill");
+        }
+        finally {
+            setSubmitLoading(false);
         }
     };
 
@@ -66,7 +72,21 @@ const AdminAddSkill = () => {
                     <h1 className="text-4xl font-bold text-white mb-4">Add Skill</h1>
                 </div>
 
-                <form className="grid grid-cols-1 md:grid-cols-1 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg" onSubmit={handleSubmit}>
+                {submitLoading && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                        <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                            <CommonLoader />
+                            <span className="text-neutral-200 text-sm">
+                                Skill
+                            </span>
+                        </div>
+                    </div>
+                )}
+
+                <form
+                    className={`grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg
+                        ${submitLoading ? "pointer-events-none opacity-70" : ""}`}
+                    onSubmit={handleSubmit}>
 
                     {/* Skill Name */}
                     <div>
@@ -86,8 +106,13 @@ const AdminAddSkill = () => {
                     <div className="md:col-span-2">
                         <button
                             type="submit"
-                            className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                            + Add Skill
+                            disabled={submitLoading}
+                            className={`w-full p-2 rounded font-medium transition
+                            ${submitLoading
+                                    ? "bg-purple-400 cursor-not-allowed"
+                                    : "bg-purple-600 hover:bg-purple-500"
+                                }`}>
+                            {submitLoading ? "Adding Skill..." : "+ Add Skill"}
                         </button>
                     </div>
                 </form>

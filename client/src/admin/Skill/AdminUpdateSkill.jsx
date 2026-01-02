@@ -4,10 +4,13 @@ import Navbar from "../Navbar";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import CommonLoader from "../../components/CommonLoader";
 
 const AdminUpdateSkill = () => {
 
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const { id } = useParams();
     const navigate = useNavigate();
@@ -25,24 +28,45 @@ const AdminUpdateSkill = () => {
             return;
         }
         try {
+            setSubmitLoading(true);
             const res = await axios.put(`https://localhost:7119/api/Skill/${skillData.skillId}`,
                 { skillName: skillData.skillName });
             toast.success("Skill updated successfully");
             navigate("/admin-skill");
         }
-        catch (err) { toast.error(err.response?.data || "Something went wrong"); }
+        catch (err) {
+            toast.error(err.response?.data || "Something went wrong");
+        }
+        finally {
+            setSubmitLoading(false);
+        }
     };
 
     // Fetch Skills
     useEffect(() => {
         const fetchSkill = async () => {
             try {
+                setLoading(true);
                 const res = await axios.get(`https://localhost:7119/api/Skill/${id}`);
                 setSkillData(res.data);
-            } catch (err) { toast.error("Failed to fetch skill data"); }
+            }
+            catch (err) {
+                toast.error("Failed to fetch skill data");
+            }
+            finally {
+                setLoading(false);
+            }
         };
         fetchSkill();
     }, [id]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-neutral-950">
+                <CommonLoader />
+            </div>
+        );
+    }
 
     return <div className="flex flex-col h-screen">
         {/* Navbar */}
@@ -59,7 +83,21 @@ const AdminUpdateSkill = () => {
                     <h1 className="text-4xl font-bold text-white mb-4">Update Skill</h1>
                 </div>
 
-                <form className="grid grid-cols-1 md:grid-cols-1 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg" onSubmit={handleUpdate}>
+                {submitLoading && (
+                    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                        <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                            <CommonLoader />
+                            <span className="text-neutral-200 text-sm">
+                                Updating Skill
+                            </span>
+                        </div>
+                    </div>
+                )}
+
+                <form
+                    className={`grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg
+                        ${submitLoading ? "pointer-events-none opacity-70" : ""}`}
+                    onSubmit={handleUpdate}>
 
                     {/* Skill ID */}
                     <div className="md:col-span-2">
@@ -90,8 +128,13 @@ const AdminUpdateSkill = () => {
                     <div className="md:col-span-2">
                         <button
                             type="submit"
-                            className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                            Update Skill
+                            disabled={submitLoading}
+                            className={`w-full p-2 rounded font-medium transition
+                                ${submitLoading
+                                    ? "bg-neutral-600 cursor-not-allowed"
+                                    : "bg-purple-600 hover:bg-purple-500"
+                                }`}>
+                            {submitLoading ? "Updating..." : "+ Update Skill "}
                         </button>
                     </div>
                 </form>
