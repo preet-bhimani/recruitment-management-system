@@ -145,7 +145,7 @@ namespace server.Controllers
         [HttpGet("visible/{joId:guid}")]
         public async Task<IActionResult> GetVisibleWalkInDrivesForCandidate(Guid joId)
         {
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var today = DateOnly.FromDateTime(DateTime.Now);
             var visibleFromDays = 1;
 
             var drives = await dbContext.WalkInDrives

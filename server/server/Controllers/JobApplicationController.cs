@@ -104,7 +104,7 @@ namespace server.Controllers
             }
 
             // Fetch today date
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var today = DateOnly.FromDateTime(DateTime.Now);
             var hasActiveCampus = await dbContext.CampusDrives
                 .AnyAsync(cd => cd.JOId == jaDto.JOId && cd.IsActive && cd.DriveDate >= today);
 
@@ -166,6 +166,7 @@ namespace server.Controllers
         public async Task<IActionResult> GetAllJobApplications()
         {
             var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+            var baseUrlResume = $"{Request.Scheme}://{Request.Host}/User_Upload_Resumes/";
 
             var jobapplication = await dbContext.JobApplications
                 .Include(ja => ja.User)
@@ -184,6 +185,7 @@ namespace server.Controllers
                     ja.HoldOverallStatus,
                     ja.Status,
                     Photo = !string.IsNullOrEmpty(ja.User.Photo) ? baseUrl + ja.User.Photo : null,
+                    Resume = !string.IsNullOrEmpty(ja.User.Resume) ? baseUrlResume + ja.User.Resume : null,
                     ja.User.FullName,
                     ja.User.Email,
                     ja.User.PhoneNumber,
@@ -199,6 +201,7 @@ namespace server.Controllers
         public async Task<IActionResult> GetJobApplicationById(Guid id)
         {
             var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
+            var baseUrlResume = $"{Request.Scheme}://{Request.Host}/User_Upload_Resumes/";
 
             var jobapp = await dbContext.JobApplications
                 .Where(ja => ja.JAId == id)
@@ -218,6 +221,7 @@ namespace server.Controllers
                     ja.User.Email,
                     ja.User.FullName,
                     Photo = !string.IsNullOrEmpty(ja.User.Photo) ? baseUrl + ja.User.Photo : null,
+                    Resume = !string.IsNullOrEmpty(ja.User.Resume) ? baseUrlResume + ja.User.Resume : null,
                     ja.JobOpening.Title
                 })
                 .FirstOrDefaultAsync();
@@ -242,7 +246,7 @@ namespace server.Controllers
                 return NotFound("Job opening not available");
             }
 
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var today = DateOnly.FromDateTime(DateTime.Now);
 
             // Campus Drives
             var campusDrives = await dbContext.CampusDrives
@@ -297,7 +301,7 @@ namespace server.Controllers
             }
 
             // Fetch today date for comapre exam date
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var today = DateOnly.FromDateTime(DateTime.Now);
 
             JobApplicationDto SendDto(JobApplication j) => new()
             {

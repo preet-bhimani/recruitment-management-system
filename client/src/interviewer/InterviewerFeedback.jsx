@@ -201,7 +201,7 @@ const InterviewerFeedbackContent = () => {
 
         try {
             await updateTechnicalResult(tiId, payload);
-        } 
+        }
         catch (err) {
             return;
         }
@@ -213,6 +213,16 @@ const InterviewerFeedbackContent = () => {
         setRatings(r => { const o = { ...r }; delete o[id]; return o; });
         setHoverRating(h => { const o = { ...h }; delete o[id]; return o; });
     };
+
+    // Reusme Viewing
+    const openResume = (candidates) => {
+        if (!candidates.resume) {
+            toast.error("No resume found for this candidate!");
+            return;
+        }
+
+        window.open(candidates.resume, "_blank", "noopener,noreferrer");
+    }
 
     const goToPage = (p) => setCurrentPage(Math.min(Math.max(1, p), totalPages));
     const goToMeetings = () => navigate('/interview-meeting-details', { state: { role: 'Interviewer' } });
@@ -279,7 +289,9 @@ const InterviewerFeedbackContent = () => {
                                     </div>
 
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <button disabled className="px-2 py-1 bg-neutral-800 text-neutral-500 border border-neutral-700 rounded text-xs flex items-center gap-1">
+                                        <button
+                                            onClick={() => openResume(c)}
+                                            className="px-2 py-1 bg-neutral-800 text-white border border-neutral-700 rounded text-xs flex items-center gap-1">
                                             <FileText size={14} /> CV
                                         </button>
 

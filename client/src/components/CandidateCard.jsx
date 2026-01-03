@@ -527,6 +527,16 @@ const CandidateCard = ({ candidate }) => {
     });
   };
 
+  // Viewing Resume
+  const openResume = (candidates) => {
+    if (!candidates.resume) {
+      toast.error("No resume found for this candidate!");
+      return;
+    }
+
+    window.open(candidates.resume, "_blank", "noopener,noreferrer");
+  }
+
   useEffect(() => {
     setPendingStatus(candidate.status);
   }, [candidate.status]);
@@ -535,8 +545,10 @@ const CandidateCard = ({ candidate }) => {
   const ControlBar = () => {
     return (
       <div className="flex items-center justify-end gap-2 flex-wrap sm:flex-nowrap">
-        <button disabled title="CV (coming soon)" className="px-2 py-1 bg-neutral-800 text-neutral-500 border border-neutral-700 rounded text-xs flex items-center gap-1">
-          <FileDown size={12} />
+        <button
+          onClick={() => openResume(candidate)}
+          className="px-2 py-1 bg-neutral-800 text-white border border-neutral-700 rounded text-xs flex items-center gap-1">
+          <FileDown size={14} />
         </button>
 
         {/* Show JobApplication Status DropDown */}

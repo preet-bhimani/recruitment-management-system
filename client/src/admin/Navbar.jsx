@@ -1,13 +1,20 @@
-import React from "react";
-import { Search } from "lucide-react";
+import React, { useState } from "react";
+import { ChevronDown, Search, User, LogOut, Settings, Key } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Settings } from 'lucide-react';
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useAuth } from "../contexts/AuthContext";
 
 const Navbar = () => {
 
+  const [ProfileDropdown, setProfileDropdown] = useState(false);
+  const { logout } = useAuth();
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   // Send the Request to the API Endpoint for Google OAuth
   const handleMeetSettingClick = () => {
@@ -17,16 +24,15 @@ const Navbar = () => {
       ux_mode: "popup",
       redirect_uri: "http://localhost:5173",
       callback: async (response) => {
-        try{
-        await axios.post(
-          "https://localhost:7119/api/GoogleAuth/exchange",
-          { code: response.code },
-          { headers: { "Content-Type": "application/json" } }
-        );
-        toast.success("You have successfully logged in!");
+        try {
+          await axios.post(
+            "https://localhost:7119/api/GoogleAuth/exchange",
+            { code: response.code },
+            { headers: { "Content-Type": "application/json" } }
+          );
+          toast.success("You have successfully logged in!");
         }
-        catch(err)
-        {
+        catch (err) {
           toast.error("An error occurred while logging in.");
         }
       },
@@ -60,14 +66,53 @@ const Navbar = () => {
           <Settings size={14} />
           <span>Meet Setting</span>
         </button>
+
         <span className="hidden sm:inline text-sm text-neutral-300">
           Admin
         </span>
-        <img
-          src="https://img.favpng.com/2/20/9/google-logo-google-search-search-engine-optimization-google-images-png-favpng-mrjKbWHacks0WiKXmVVZugyri.jpg"
-          className="w-10 h-10 rounded-full border-2 border-neutral-600"
-          alt="profile"
-        />
+
+        {/* Profile Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setProfileDropdown(!ProfileDropdown)}
+            className="flex items-center gap-2 p-2 rounded-lg hover:bg-neutral-800 transition">
+            <div className="w-8 h-8 bg-neutral-700 rounded-full flex items-center justify-center">
+              <User className="w-5 h-5 text-neutral-300" />
+            </div>
+            <ChevronDown className="w-4 h-4 text-neutral-400" />
+          </button>
+
+          {ProfileDropdown && (
+            <div className="absolute right-0 mt-2 w-56 bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg z-50">
+              <div className="py-2">
+
+                {/* DropDown */}
+                <a
+                  href="/update-profile"
+                  className="flex items-center gap-3 px-4 py-2 text-neutral-300 hover:bg-neutral-800 hover:text-white transition">
+                  <User className="w-4 h-4" />
+                  Update Profile
+                </a>
+                <a
+                  href="/update-password-mail"
+                  className="flex items-center gap-3 px-4 py-2 text-neutral-300 hover:bg-neutral-800 hover:text-white transition">
+                  <Key className="w-4 h-4" />
+                  Update Password
+                </a>
+
+                {/* Logout */}
+                <div className="border-t border-neutral-800 mt-2 pt-2">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-neutral-800 hover:text-red-300 transition w-full text-left">
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

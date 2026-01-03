@@ -5,6 +5,7 @@ import { UIProvider, useUI } from '../contexts/UIContext';
 import CommonNavbar from '../components/CommonNavbar';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -189,6 +190,16 @@ const HRFeedbackContent = () => {
     });
   };
 
+  // Resume Viewing
+  const openResume = (candidates) => {
+    if (!candidates.resume) {
+      toast.error("No resume found for this candidate!");
+      return;
+    }
+
+    window.open(candidates.resume, "_blank", "noopener,noreferrer");
+  }
+
   const goToPage = (p) => setCurrentPage(Math.min(Math.max(1, p), totalPages));
 
   return (
@@ -287,7 +298,9 @@ const HRFeedbackContent = () => {
 
                   <div className="flex items-center gap-2">
                     {/* CV */}
-                    <button disabled className="px-2 py-1 bg-neutral-800 text-neutral-500 border border-neutral-700 rounded text-xs flex items-center gap-1">
+                    <button
+                      onClick={() => openResume(c)}
+                      className="px-2 py-1 bg-neutral-800 text-white border border-neutral-700 rounded text-xs flex items-center gap-1">
                       <FileText size={14} /> CV
                     </button>
 

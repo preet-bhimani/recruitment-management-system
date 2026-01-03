@@ -73,9 +73,6 @@ function AddWalkInDrive() {
             <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
                 <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
                     <CommonLoader />
-                    <span className="text-neutral-200 text-sm">
-                        Adding Walk In Drive
-                    </span>
                 </div>
             </div>
         )}
