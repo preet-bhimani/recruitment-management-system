@@ -38,7 +38,6 @@ import UpdatePassword from './candidate/UpdatePassword';
 import Notifications from './candidate/Notifications';
 import MyJobs from './candidate/MyJobs';
 import UploadDocuments from './candidate/UploadDocuments';
-import RecruiterDashboard from './recruiter/RecruiterDashboard';
 import RecruiterCandidate from './recruiter/RecruiterCandidate';
 import RecruiterAddUser from './recruiter/RecruiterAddUser';
 import ReviewerDashboard from './reviewer/ReviewerDashboard';
@@ -152,7 +151,6 @@ function App() {
           <Route path='/notifications' element={<Notifications />} />
           <Route path='/myjobs' element={<MyJobs />} />
           <Route path='/upload-documents/:id' element={<UploadDocuments />} />
-          <Route path='/recruiter-dashboard' element={<RecruiterDashboard />} />
           <Route path='/recruiter-candidate' element={<RecruiterCandidate />} />
           <Route path='/recruiter-add-candidate' element={<RecruiterAddUser />} />
           <Route path='/recruiter-add-candidate-excel' element={<RecruiterAddUserExcel />} />

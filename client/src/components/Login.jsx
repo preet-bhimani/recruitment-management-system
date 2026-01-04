@@ -73,7 +73,7 @@ const Login = () => {
                     navigate("/admin", { replace: true });
                     break;
                 case "recruiter":
-                    navigate("/recruiter-dashboard", { replace: true });
+                    navigate("/recruiter-candidate", { replace: true });
                     break;
                 case "hr":
                     navigate("/hr-feedback", { replace: true });

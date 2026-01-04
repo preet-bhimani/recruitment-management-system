@@ -5,6 +5,7 @@ import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import * as XLSX from "xlsx";
 
 const DocumentList = ({ role = "admin" }) => {
 
@@ -14,7 +15,6 @@ const DocumentList = ({ role = "admin" }) => {
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState({
         jobTitle: "",
-        bankName: "",
     });
 
     // Fetch Data from Backend
@@ -40,13 +40,11 @@ const DocumentList = ({ role = "admin" }) => {
 
     // Filter Options
     const jobTitles = useMemo(() => Array.from(new Set(documents.map((d) => d.title))).sort(), [documents]);
-    const bankNames = useMemo(() => Array.from(new Set(documents.map((d) => d.bankName).filter(Boolean))).sort(), [documents]);
 
     // Filter Logic
     const filtered = useMemo(() => {
         return documents.filter((d) => {
             if (filters.jobTitle && d.title !== filters.jobTitle) return false;
-            if (filters.bankName && d.bankName !== filters.bankName) return false;
             return true;
         });
     }, [documents, filters]);
@@ -59,6 +57,16 @@ const DocumentList = ({ role = "admin" }) => {
         [filtered, currentPage, pageSize]
     );
     useEffect(() => setCurrentPage(1), [filters]);
+
+    // Export Excel File
+    const handleExport = () => {
+        var wb = XLSX.utils.book_new();
+        var ws = XLSX.utils.json_to_sheet(filtered);
+
+        XLSX.utils.book_append_sheet(wb, ws, "Document List");
+
+        XLSX.writeFile(wb, "Document List.xlsx");
+    }
 
     return (
         <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
@@ -104,35 +112,17 @@ const DocumentList = ({ role = "admin" }) => {
                                 ))}
                             </select>
                         </div>
-
-                        {/* Bank Name */}
-                        <div>
-                            <label className="block text-xs text-neutral-300 mb-1">
-                                Bank Name
-                            </label>
-                            <select
-                                value={filters.bankName}
-                                onChange={(e) => setFilters((f) => ({ ...f, bankName: e.target.value }))}
-                                className="w-full bg-neutral-800 border border-neutral-700 rounded px-2 py-2 text-sm text-white">
-                                <option value="">All</option>
-                                {bankNames.map((b) => (
-                                    <option key={b} value={b}>
-                                        {b}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
                     </div>
 
                     <div className="mt-3 flex gap-2 justify-end">
                         <button
                             className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 rounded text-sm"
                             onClick={() =>
-                                setFilters({ jobTitle: "", bankName: "" })}>
+                                setFilters({ jobTitle: "" })}>
                             Clear
                         </button>
 
-                        <button className="flex items-center gap-2 px-3 py-1 bg-purple-700 hover:bg-purple-600 rounded text-sm">
+                        <button className="flex items-center gap-2 px-3 py-1 bg-purple-700 hover:bg-purple-600 rounded text-sm" onClick={handleExport}>
                             <Download size={14} /> Download
                         </button>
                     </div>

@@ -1,13 +1,14 @@
 import React from 'react';
-import { Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { Filter, ChevronDown, ChevronUp, Download } from 'lucide-react';
 import { useFilters } from '../contexts/FilterContext';
+import * as XLSX from "xlsx";
 
 const FilterSection = () => {
   const {
     filters, setFilters,
     advancedFilters, setAdvancedFilters,
     showAdvancedFilters, setShowAdvancedFilters,
-    uniqueJobs, getStatusCount, clearAllFilters
+    uniqueJobs, getStatusCount, clearAllFilters, filteredCandidates
   } = useFilters();
 
   const statusOptions = [
@@ -26,6 +27,16 @@ const FilterSection = () => {
     { key: 'hold', label: 'Hold' }
   ];
 
+  // Export Excel File
+  const handleExport = () => {
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.json_to_sheet(filteredCandidates);
+
+    XLSX.utils.book_append_sheet(wb, ws, "Recruiter");
+
+    XLSX.writeFile(wb, "Recruiter.xlsx");
+  }
+
   return (
     <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-4 mb-6">
       <div className="flex flex-wrap gap-1.5 mb-4">
@@ -42,11 +53,11 @@ const FilterSection = () => {
       </div>
 
       {/* Job Title Filter */}
-      <div className="flex flex-wrap gap-3 items-center">
+      <div className="flex flex-wrap gap-2 items-center">
         <select
           value={filters.jobTitle}
           onChange={(e) => setFilters({ ...filters, jobTitle: e.target.value })}
-          className="px-3 py-2 bg-neutral-800 border border-neutral-600 rounded text-sm text-white">
+          className="px-1 py-2 bg-neutral-800 border border-neutral-600 rounded text-sm text-white">
           <option value="all">All Jobs</option>
           {uniqueJobs.map(j => <option key={j} value={j}>{j}</option>)}
         </select>
@@ -55,7 +66,7 @@ const FilterSection = () => {
         <select
           value={filters.dateType}
           onChange={(e) => setFilters({ ...filters, dateType: e.target.value })}
-          className="px-3 py-2 bg-neutral-800 border border-neutral-600 rounded text-sm text-white">
+          className="px-1 py-2 bg-neutral-800 border border-neutral-600 rounded text-sm text-white">
           <option value="applied">Applied Date</option>
           <option value="exam">Exam Date</option>
           <option value="tech-interview">Tech Interview Date</option>
@@ -67,27 +78,32 @@ const FilterSection = () => {
           type="date"
           value={filters.fromDate}
           onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
-          className="px-3 py-2 bg-neutral-800 border border-neutral-600 rounded text-sm text-white"
-          placeholder="From"/>
+          className="px-1 py-2 bg-neutral-800 border border-neutral-600 rounded text-sm text-white"
+          placeholder="From" />
 
         {/* To Dates */}
         <input
           type="date"
           value={filters.toDate}
           onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
-          className="px-3 py-2 bg-neutral-800 border border-neutral-600 rounded text-sm text-white"
-          placeholder="To"/>
+          className="px-1 py-2 bg-neutral-800 border border-neutral-600 rounded text-sm text-white"
+          placeholder="To" />
 
         {/* Filter Button */}
         <button
           onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-          className="flex items-center gap-2 px-3 py-2 bg-neutral-700 hover:bg-neutral-600 rounded text-sm text-white transition-colors">
+          className="flex items-center gap-2 px-2 py-2 bg-neutral-700 hover:bg-neutral-600 rounded text-sm text-white transition-colors">
           <Filter size={16} /> Advanced Filters {showAdvancedFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
 
         {/* Clear All */}
         <button onClick={clearAllFilters} className="px-3 py-2 bg-red-700 hover:bg-red-600 rounded text-sm text-white">
           Clear All
+        </button>
+
+        {/* Excel Download */}
+        <button className="flex items-center gap-2 px-3 py-2 bg-purple-700 hover:bg-purple-600 rounded text-sm" onClick={handleExport}>
+          <Download size={14} /> Download
         </button>
       </div>
 

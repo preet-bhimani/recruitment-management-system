@@ -5,6 +5,7 @@ import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import * as XLSX from "xlsx";
 
 const TechnicalInterview = ({ role = "admin" }) => {
 
@@ -73,6 +74,16 @@ const TechnicalInterview = ({ role = "admin" }) => {
     fetchTechin();
     setCurrentPage(1);
   }, [filters]);
+
+  // Export Excel File
+  const handleExport = () => {
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.json_to_sheet(filtered);
+
+    XLSX.utils.book_append_sheet(wb, ws, "Technical Interview");
+
+    XLSX.writeFile(wb, "Technical Interview.xlsx");
+  }
 
   return (
     <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
@@ -211,7 +222,7 @@ const TechnicalInterview = ({ role = "admin" }) => {
               Clear
             </button>
 
-            <button className="flex items-center gap-2 px-3 py-1 bg-purple-700 hover:bg-purple-600 rounded text-sm">
+            <button className="flex items-center gap-2 px-3 py-1 bg-purple-700 hover:bg-purple-600 rounded text-sm" onClick={handleExport}>
               <Download size={14} /> Download
             </button>
           </div>

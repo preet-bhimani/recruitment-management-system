@@ -5,6 +5,7 @@ import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import * as XLSX from "xlsx";
 
 const JobOpening = ({ role = "admin" }) => {
 
@@ -104,6 +105,16 @@ const JobOpening = ({ role = "admin" }) => {
     fetchJobOpening();
   }, []);
 
+  // Export Excel File
+  const handleExport = () => {
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.json_to_sheet(filteredJobs);
+
+    XLSX.utils.book_append_sheet(wb, ws, "Job Opening");
+
+    XLSX.writeFile(wb, "Job Opening.xlsx");
+  }
+
   return <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 max-w-7xl mx.auto w-full min-w-0">
 
     {/* Main Layout */}
@@ -202,7 +213,7 @@ const JobOpening = ({ role = "admin" }) => {
             })}>
             Clear
           </button>
-          <button className="flex items-center gap-2 px-3 py-1 bg-purple-700 hover:bg-purple-600 rounded text-sm">
+          <button className="flex items-center gap-2 px-3 py-1 bg-purple-700 hover:bg-purple-600 rounded text-sm" onClick={handleExport}>
             <Download size={14} /> Download
           </button>
         </div>

@@ -1,11 +1,12 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { CheckCircle, XCircle, FileText } from 'lucide-react';
+import { CheckCircle, XCircle, FileText, Download } from 'lucide-react';
 import { CandidateProvider, useCandidates } from '../contexts/CandidateContext';
 import { UIProvider, useUI } from '../contexts/UIContext';
 import CommonNavbar from '../components/CommonNavbar';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import * as XLSX from "xlsx";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -111,6 +112,15 @@ const HRFeedbackContent = () => {
     });
   }, [candidates, jobTitleFilter, fromDate, toDate, selectedFilter]);
 
+  // Clear Filter
+  const handleClearFilter = () => {
+    setJobTitleFilter("all");
+    setFromDate("");
+    setToDate("");
+    setSelectedFilter("All");
+    setCurrentPage(1);
+  }
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE);
   useEffect(() => setCurrentPage(1), [jobTitleFilter, fromDate, toDate, selectedFilter]);
@@ -202,6 +212,16 @@ const HRFeedbackContent = () => {
 
   const goToPage = (p) => setCurrentPage(Math.min(Math.max(1, p), totalPages));
 
+  // Export Excel File
+  const handleExport = () => {
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.json_to_sheet(filtered);
+
+    XLSX.utils.book_append_sheet(wb, ws, "HR View");
+
+    XLSX.writeFile(wb, "HR View.xlsx");
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-neutral-950 text-white">
       {/* Navbar */}
@@ -253,6 +273,18 @@ const HRFeedbackContent = () => {
                   {s}
                 </button>
               ))}
+            </div>
+
+            <div className="mt-2 flex gap-2 ml-auto">
+              <button
+                className="px-3 py-1 bg-neutral-700 hover:bg-neutral-600 rounded text-sm"
+                onClick={handleClearFilter}>
+                Clear
+              </button>
+
+              <button className="flex items-center gap-2 px-3 py-1 bg-purple-700 hover:bg-purple-600 rounded text-sm" onClick={handleExport}>  
+                <Download size={14} /> Download
+              </button>
             </div>
           </div>
         </div>

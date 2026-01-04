@@ -5,6 +5,7 @@ import CommonPagination, { paginate } from "../CommonPagination";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import * as XLSX from "xlsx";
 
 const AllUsers = ({ role = "admin" }) => {
 
@@ -83,6 +84,16 @@ const AllUsers = ({ role = "admin" }) => {
         fetchUsers();
         setCurrentPage(1);
     }, [filters]);
+
+    // Export Excel File
+    const handleExport = () => {
+        var wb = XLSX.utils.book_new();
+        var ws = XLSX.utils.json_to_sheet(filteredUsers);
+
+        XLSX.utils.book_append_sheet(wb, ws, "User");
+
+        XLSX.writeFile(wb, "User.xlsx");
+    }
 
     return <>
         <div className="flex-1 p-4 overflow-y-auto">
@@ -167,7 +178,7 @@ const AllUsers = ({ role = "admin" }) => {
                         <div className="flex items-end gap-2">
                             <button
                                 className="px-3 py-1 bg-purple-700 hover:bg-purple-600 rounded text-sm"
-                                onClick={() => setShowFilters(false)}>
+                                onClick={handleExport}>
                                 Download
                             </button>
                             <button
