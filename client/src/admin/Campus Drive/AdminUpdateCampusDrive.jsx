@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import { useAuth } from "../../contexts/AuthContext";
 
 const AdminUpdateCampusDrive = () => {
 
@@ -14,6 +15,7 @@ const AdminUpdateCampusDrive = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [submitLoading, setSubmitLoading] = useState(false);
+    const { token } = useAuth();
 
     const [campusdrive, setCampusDrive] = useState({
         cdid: "",
@@ -33,7 +35,9 @@ const AdminUpdateCampusDrive = () => {
     const fetchCampusDrive = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/CampusDrive/${id}`)
+            const res = await axios.get(`https://localhost:7119/api/CampusDrive/${id}`, {
+                headers: { Authorization: `Bearer ${token}`, }
+            })
             setCampusDrive(res.data || []);
         }
         catch (err) {
@@ -81,7 +85,9 @@ const AdminUpdateCampusDrive = () => {
         // Endpoint Logic
         try {
             setSubmitLoading(true);
-            const res = await axios.put(`https://localhost:7119/api/CampusDrive/update/${id}`, campusdrive)
+            const res = await axios.put(`https://localhost:7119/api/CampusDrive/update/${id}`, campusdrive, {
+                headers: { Authorization: `Bearer ${token}`, }
+            })
 
             toast.success(res.data.message || "Campus Drive updated successfully!");
             navigate(-1);
@@ -124,9 +130,6 @@ const AdminUpdateCampusDrive = () => {
                     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
                         <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
                             <CommonLoader />
-                            <span className="text-neutral-200 text-sm">
-                                Updating Campus Drive
-                            </span>
                         </div>
                     </div>
                 )}

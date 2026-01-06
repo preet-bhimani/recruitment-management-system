@@ -92,6 +92,7 @@ import ViewWalkInDrive from './reusableComponent/Walk In Drive/ViewWalkInDrive';
 import ViewOfferLetter from './reusableComponent/Offer Letter/ViewOfferLetter';
 import ViewerWalkInDrive from './viewer/ViewerWalkInDrive';
 import ViewerOfferLetter from './viewer/ViewerOfferLetter';
+import AdminRoutes from './routes/AdminRoutes';
 
 function App() {
   return (
@@ -128,7 +129,7 @@ function App() {
           <Route path='/admin-add-offerletter' element={<AdminAddOfferLetter />} />
           <Route path='/admin-sent-offerletter/:id' element={<AdminSentOfferLetter />} />
           <Route path='/admin-update-offerletter/:id' element={<AdminUpdateOfferLetter />} />
-          <Route path='/admin-campusdrive' element={<AdminCampusDrive />} />
+          {/* <Route path='/admin-campusdrive' element={<AdminCampusDrive />} /> */}
           <Route path='/admin-add-campusdrive' element={<AdminAddJobCampusDrive />} />
           <Route path='/admin-add-campusdrive/:id' element={<AdminAddCampusDrive />} />
           <Route path='/admin-update-campusdrive/:id' element={<AdminUpdateCampusDrive />} />
@@ -192,6 +193,7 @@ function App() {
           <Route path='/viewer-walkindrive' element={<ViewerWalkInDrive />} />
           <Route path='/view-offerletter/:id' element={<ViewOfferLetter />} />
           <Route path='viewer-offerletter' element={<ViewerOfferLetter />} />
+          <AdminRoutes />
         </Routes>
       </Router>
     </>

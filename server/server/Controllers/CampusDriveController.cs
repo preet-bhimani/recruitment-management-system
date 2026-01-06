@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Models.Dto;
 using server.Models.Entities;
+using System.Security.Claims;
 
 namespace server.Controllers
 {
@@ -19,12 +21,19 @@ namespace server.Controllers
         }
 
         // Add campus drive
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPost]
         public async Task<IActionResult> AddCampusDrive(CampusDriveDto cdDto)
         {
             // Model state validation
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
 
             // Drive date cannot be in the past
             if (cdDto.DriveDate < DateOnly.FromDateTime(DateTime.UtcNow))
@@ -54,9 +63,16 @@ namespace server.Controllers
         }
 
         // Fetch campus drive all along with title
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpGet]
         public async Task<IActionResult> GetAllCampusDrive()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var campusDrives = await dbContext.CampusDrives
                 .Include(cd => cd.JobOpening)
                 .Select(cd => new
@@ -74,9 +90,16 @@ namespace server.Controllers
         }
 
         // Get campus drive by id
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetCampusDriveById(Guid id)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var camp = await dbContext.CampusDrives
                 .Where(c => c.CDID == id)
                 .Include(c => c.JobOpening)
@@ -100,9 +123,16 @@ namespace server.Controllers
         }
 
         // Get job opening which is pending to add campus drive
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpGet("add-campus")]
         public async Task<IActionResult> GetPendingJobsCampusDrive()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var jobs = await dbContext.JobOpenings
                 .Where(j => j.Status == "Open")
                 .Select(j => new
@@ -119,9 +149,16 @@ namespace server.Controllers
         }
 
         // Get visible campus drives for candidate
+        [Authorize(Roles = "Candidate")]
         [HttpGet("visible/{joId:guid}")]
         public async Task<IActionResult> GetVisibleCampusDrivesForCandidate(Guid joId)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var today = DateOnly.FromDateTime(DateTime.Now);
             var visibleFromDays = 1;
 
@@ -144,9 +181,16 @@ namespace server.Controllers
         }
 
         // Update campus drive
+        [Authorize(Roles = "Admin")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateCampusDrive(CampusDriveDto cdDto, Guid id)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+            var userId = Guid.Parse(userIdClaim);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -176,9 +220,16 @@ namespace server.Controllers
         }
 
         // Delete or Inactive Campus Drive
+        [Authorize(Roles = "Admin")]
         [HttpDelete("delete/{id:guid}")]
         public async Task<IActionResult> DeleteCampusDriveById(Guid id)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var camp = await dbContext.CampusDrives.FindAsync(id);
 
             // If Campus drive not found

@@ -20,7 +20,7 @@ function AdminAddJobCampusDrive() {
 
             {/* Page Content */}
             <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
-                <ShowAddCampusDrive role="admin" id={id} />
+                <ShowAddCampusDrive role="Admin" id={id} />
             </main>
         </div>
     </div >;

@@ -21,7 +21,7 @@ const AdminAddCampusDrive = () => {
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white mb-4">Add Campus Drive</h1>
                 </div>
-                <AddCampusDrive role="admin" />
+                <AddCampusDrive role="Admin" />
             </main>
         </div>
     </div>;

@@ -10,14 +10,16 @@ function ShowAddCampusDrive() {
 
     const [jobs, SetJobs] = useState([]);
     const navigate = useNavigate();
-    const { role } = useAuth();
+    const { role, token } = useAuth();
     const [loading, setLoading] = useState(false);
 
     // Fetch Jobs Pending for Campus Drive
     const fetchJobsPendingForCampusDrive = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/CampusDrive/add-campus`)
+            const res = await axios.get(`https://localhost:7119/api/CampusDrive/add-campus`, {
+                headers: { Authorization: `Bearer ${token}`, }
+            })
             SetJobs(res.data || []);
         }
         catch (err) {

@@ -3,11 +3,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import CommonLoader from "../../components/CommonLoader";
+import { useAuth } from "../../contexts/AuthContext";
 
 function AddCampusDrive() {
 
     const { id } = useParams();
     const [submitLoading, setSubmitLoading] = useState(false);
+    const { token } = useAuth();
 
     const [formData, setFormData] = useState({
         joId: id,
@@ -51,7 +53,9 @@ function AddCampusDrive() {
         // Endpoint Logic
         try {
             setSubmitLoading(true);
-            const res = await axios.post(`https://localhost:7119/api/CampusDrive`, formData)
+            const res = await axios.post(`https://localhost:7119/api/CampusDrive`, formData, {
+                headers: { Authorization: `Bearer ${token}`, }
+            })
             toast.success(res.data || "Campus Drive added successfully!");
 
             // Clear FormData
@@ -89,7 +93,7 @@ function AddCampusDrive() {
             onSubmit={handleSubmit}
             className={`grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg
                 ${submitLoading ? "pointer-events-none opacity-70" : ""}`}>
-                    
+
             {/* Job Opening ID */}
             <div>
                 <label className="block mb-1 text-sm font-medium">

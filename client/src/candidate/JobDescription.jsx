@@ -22,6 +22,8 @@ const JobDescription = () => {
   const aboutCompany = "Roima has a crystal-clear vision. Our mission is to help our clients to achieve sustainable results through cutting-edge supply chain software and services. Our clients can expect noteworthy benefits like increased profitability, resilience, and long-term growth.";
   const { id } = useParams();
   const navigate = useNavigate();
+  const { userId, role, token } = useAuth();
+
   const fetchJob = async () => {
     try {
       const res = await axios.get(`https://localhost:7119/api/JobOpening/${id}`);
@@ -41,8 +43,6 @@ const JobDescription = () => {
       setLoading(false);
     }
   }
-
-  const { userId, role, token } = useAuth();
 
   // Submit Job Application
   const submitApplication = async () => {
@@ -86,7 +86,9 @@ const JobDescription = () => {
   useEffect(() => {
     if (!showApplyModal) return;
 
-    axios.get(`https://localhost:7119/api/CampusDrive/visible/${id}`)
+    axios.get(`https://localhost:7119/api/CampusDrive/visible/${id}`, {
+      headers: { Authorization: `Bearer ${token}`, }
+    })
       .then(res => setCampusDrives(res.data || []));
 
     axios.get(`https://localhost:7119/api/WalkInDrive/visible/${id}`)

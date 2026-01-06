@@ -37,7 +37,7 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
       title: "Campus Drive",
       icon: <University size={20} />,
       children: [
-        { name: "Admin Campus Drive", path: "/recruiter-campusdrive" },
+        { name: "Campus Drive", path: "/recruiter-campusdrive" },
         { name: "Add Campus Drive ", path: "/recruiter-add-campusdrive" },
       ],
     },
@@ -45,7 +45,7 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
       title: "Walk In Drive",
       icon: <Footprints size={20} />,
       children: [
-        { name: "Admin Walk In Drive", path: "/recruiter-walkindrive" },
+        { name: "Walk In Drive", path: "/recruiter-walkindrive" },
         { name: "Add Walk In Drive ", path: "/recruiter-add-walkindrive" },
       ],
     },

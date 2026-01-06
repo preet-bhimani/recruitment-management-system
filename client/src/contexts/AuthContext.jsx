@@ -5,24 +5,10 @@ const AuthContext = createContext();
 
 // Create Provider
 export const AuthProvider = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [role, setRole] = useState("");
-    const [userId, setUserId] = useState(null);
-    const [token, setToken] = useState("");
-
-    // Load login state from localStorage on page refresh
-    useEffect(() => {
-        const storedtoken = localStorage.getItem("token");
-        const userRole = localStorage.getItem("role");
-        const storedUserId = localStorage.getItem("userId");
-        
-        if (storedtoken) {
-            setToken(storedtoken);
-            setIsLoggedIn(true);
-            setRole(userRole);
-            setUserId(storedUserId);
-        }
-    }, []);
+    const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("token"));
+    const [role, setRole] = useState(() => localStorage.getItem("role") || "");
+    const [userId, setUserId] = useState(() => localStorage.getItem("userId"));
+    const [token, setToken] = useState(() => localStorage.getItem("token") || "")
 
     // Login function
     const login = (token, userRole, userId) => {
@@ -49,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ token,isLoggedIn, role, userId, login, logout }}>
+        <AuthContext.Provider value={{ token, isLoggedIn, role, userId, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

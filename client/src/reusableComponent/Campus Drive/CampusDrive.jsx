@@ -6,19 +6,23 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
+import { useAuth } from "../../contexts/AuthContext";
 
-const CampusDrive = ({ role = "admin" }) => {
+const CampusDrive = () => {
 
     const navigate = useNavigate();
 
     const [campus, setCampus] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { token, role } = useAuth();
 
     // Fetch Campus Drive
     const fetchCampusDrive = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/CampusDrive`)
+            const res = await axios.get(`https://localhost:7119/api/CampusDrive`, {
+                headers: { Authorization: `Bearer ${token}`, }
+            });
             setCampus(res.data || []);
         }
         catch (err) {
@@ -63,10 +67,10 @@ const CampusDrive = ({ role = "admin" }) => {
     }, [campus, filters]);
 
     const handleAddNavigate = () => {
-        if (role == "admin") {
+        if (role == "Admin") {
             navigate("/admin-add-campusdrive")
         }
-        else if (role == "recruiter") {
+        else if (role == "Recruiter") {
             navigate("/recruiter-add-campusdrive")
         }
     }
@@ -76,7 +80,9 @@ const CampusDrive = ({ role = "admin" }) => {
         const confirmDelete = window.confirm("Are you sure you want to inactive campus drive ?");
         if (!confirmDelete) return;
         try {
-            await axios.delete(`https://localhost:7119/api/CampusDrive/delete/${id}`);
+            await axios.delete(`https://localhost:7119/api/CampusDrive/delete/${id}`, {
+                headers: { Authorization: `Bearer ${token}`, }
+            });
             toast.success('Campus Drive Inactive Successfully!');
             await fetchCampusDrive();
         }
@@ -86,8 +92,11 @@ const CampusDrive = ({ role = "admin" }) => {
     }
 
     useEffect(() => {
+        if(!token){
+            return
+        }
         fetchCampusDrive();
-    }, [])
+    }, [token])
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -223,7 +232,7 @@ const CampusDrive = ({ role = "admin" }) => {
                                     <Eye size={14} /> View
                                 </button>
 
-                                {role === "admin" && (
+                                {role === "Admin" && (
                                     <>
                                         <button
                                             className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
