@@ -21,7 +21,7 @@ namespace server.Controllers
         }
 
         // Add walk in drive
-        [Authorize(Roles = "Admin, Recruiter")]
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPost]
         public async Task<IActionResult> AddWalkInDrive(WalkInDriveDto walkDto)
         {
@@ -62,7 +62,7 @@ namespace server.Controllers
         }
 
         // Fetch all walk in drive
-        [Authorize(Roles = "Admin, Recruiter, HR, Viewer")]
+        [Authorize(Roles = "Admin,Recruiter,HR,Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllWalkInDrives()
         {
@@ -90,9 +90,16 @@ namespace server.Controllers
         }
 
         // Get Job opening for schedule walk in drive
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpGet("add-walk")]
         public async Task<IActionResult> GetPendingWalkInDrive()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var jobs = await dbContext.JobOpenings
                 .Where(j => j.Status == "Open")
                 .Select(j => new
@@ -109,7 +116,7 @@ namespace server.Controllers
         }
 
         // get walk in drive by ID
-        [Authorize(Roles = "Admin, Viewer")]
+        [Authorize(Roles = "Admin,Viewer,Recruiter")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetWalkInDriveByID(Guid id)
         {
@@ -142,9 +149,16 @@ namespace server.Controllers
         }
 
         // Get visible walk in drives for candidate
+        [Authorize(Roles = "Candidate")]
         [HttpGet("visible/{joId:guid}")]
         public async Task<IActionResult> GetVisibleWalkInDrivesForCandidate(Guid joId)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var today = DateOnly.FromDateTime(DateTime.Now);
             var visibleFromDays = 1;
 
@@ -167,7 +181,7 @@ namespace server.Controllers
         }
 
         // Update walk in drive
-        [Authorize(Roles = "Admin, Recruiter")]
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateWalkInDrive(Guid id, WalkInDriveDto walkdto)
         {
@@ -195,7 +209,7 @@ namespace server.Controllers
         }
 
         // Inactive the walk in drive
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpDelete("delete/{id:guid}")]
         public async Task<IActionResult> HoldWalkInDriveById(Guid id)
         {

@@ -2,11 +2,11 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Eye, Edit, Trash2, Filter, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CommonPagination, { paginate } from "../CommonPagination";
-import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
 import { useAuth } from "../../contexts/AuthContext";
+import axiosInstance from "../../routes/axiosInstance";
 
 const CampusDrive = () => {
 
@@ -20,9 +20,7 @@ const CampusDrive = () => {
     const fetchCampusDrive = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/CampusDrive`, {
-                headers: { Authorization: `Bearer ${token}`, }
-            });
+            const res = await axiosInstance.get("CampusDrive");
             setCampus(res.data || []);
         }
         catch (err) {
@@ -80,9 +78,7 @@ const CampusDrive = () => {
         const confirmDelete = window.confirm("Are you sure you want to inactive campus drive ?");
         if (!confirmDelete) return;
         try {
-            await axios.delete(`https://localhost:7119/api/CampusDrive/delete/${id}`, {
-                headers: { Authorization: `Bearer ${token}`, }
-            });
+            await axiosInstance.delete(`CampusDrive/delete/${id}`);
             toast.success('Campus Drive Inactive Successfully!');
             await fetchCampusDrive();
         }
@@ -92,11 +88,8 @@ const CampusDrive = () => {
     }
 
     useEffect(() => {
-        if(!token){
-            return
-        }
         fetchCampusDrive();
-    }, [token])
+    }, [])
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);

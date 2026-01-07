@@ -19,7 +19,7 @@ function AdminAddJobWalkInDrive() {
 
             {/* Page Content */}
             <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
-                <ShowAddWalkInDrive role="admin" id={id} />
+                <ShowAddWalkInDrive id={id} />
             </main>
         </div>
     </div >;

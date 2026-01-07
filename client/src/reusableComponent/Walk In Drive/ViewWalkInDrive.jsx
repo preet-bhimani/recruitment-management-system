@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
-import { useAuth } from "../../contexts/AuthContext";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 function ViewWalkInDrive() {
 
     const navigate = useNavigate();
     const { id } = useParams();
-    const { token } = useAuth();
     const handleBack = () => navigate(-1);
     const [loading, setLoading] = useState(false);
 
@@ -20,9 +18,7 @@ function ViewWalkInDrive() {
     const fetchWalkInDrive = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/WalkInDrive/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
+            const res = await axiosInstance.get(`WalkInDrive/${id}`)
             setWalkInDrive(res.data || []);
         }
         catch (err) {

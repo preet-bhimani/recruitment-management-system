@@ -22,7 +22,7 @@ const AdminJobOpening = () => {
           <div className="text-center mt-8 mb-8">
             <h1 className="text-4xl font-bold text-center text-white mb-4">Admin Job Opening</h1>
           </div>
-          <JobOpening role="admin"/>
+          <JobOpening />
         </main>
       </div>
     </div>

@@ -23,7 +23,7 @@ function AdminAddWalkInDrive() {
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white mb-4">Walk In Drive</h1>
                 </div>
-                <AddWalkInDrive role="admin" id={id} />
+                <AddWalkInDrive id={id} />
             </main>
         </div>
     </div >;

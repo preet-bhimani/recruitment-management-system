@@ -1,9 +1,9 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MapPin, Briefcase, Clock, Users, Tag, ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const ViewJobOpening = () => {
 
@@ -22,7 +22,7 @@ const ViewJobOpening = () => {
     const fetchJobOpeningByID = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/JobOpening/${id}`)
+            const res = await axiosInstance.get(`JobOpening/${id}`)
             setJobsData(res.data || []);
         }
         catch (err) {

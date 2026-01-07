@@ -22,7 +22,7 @@ const RecruiterJobOpening = () => {
                 <div className="text-center mt-8 mb-8">
                     <h1 className="text-4xl font-bold text-center text-white mb-4">Job Opening</h1>
                 </div>
-                <JobOpening role="recruiter"/>
+                <JobOpening />
             </main>
         </div>
         {/* Footer */}

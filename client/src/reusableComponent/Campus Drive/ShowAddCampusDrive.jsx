@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
 import { Plus } from "lucide-react";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 function ShowAddCampusDrive() {
 
     const [jobs, SetJobs] = useState([]);
     const navigate = useNavigate();
-    const { role, token } = useAuth();
+    const { role } = useAuth();
     const [loading, setLoading] = useState(false);
 
     // Fetch Jobs Pending for Campus Drive
     const fetchJobsPendingForCampusDrive = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/CampusDrive/add-campus`, {
-                headers: { Authorization: `Bearer ${token}`, }
-            })
+            const res = await axiosInstance.get(`CampusDrive/add-campus`)
             SetJobs(res.data || []);
         }
         catch (err) {

@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import CommonLoader from "../../components/CommonLoader";
-import { useAuth } from "../../contexts/AuthContext";
+import axiosInstance from "../../routes/axiosInstance";
 
 function AddCampusDrive() {
 
     const { id } = useParams();
     const [submitLoading, setSubmitLoading] = useState(false);
-    const { token } = useAuth();
 
     const [formData, setFormData] = useState({
         joId: id,
@@ -53,9 +51,7 @@ function AddCampusDrive() {
         // Endpoint Logic
         try {
             setSubmitLoading(true);
-            const res = await axios.post(`https://localhost:7119/api/CampusDrive`, formData, {
-                headers: { Authorization: `Bearer ${token}`, }
-            })
+            const res = await axiosInstance.post("CampusDrive", formData);
             toast.success(res.data || "Campus Drive added successfully!");
 
             // Clear FormData

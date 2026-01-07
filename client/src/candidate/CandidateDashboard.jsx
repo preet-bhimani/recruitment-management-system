@@ -3,10 +3,10 @@ import CommonNavbar from "../components/CommonNavbar";
 import Footer from "../components/Footer";
 import { MapPin, Briefcase, Plus } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
 import { toast } from "react-toastify";
 import UploadDocumentPopup from "./UploadDocumentPopup ";
 import CommonLoader from "../components/CommonLoader";
+import axiosInstance from "../routes/axiosInstance";
 
 const CandidateDashboard = () => {
 
@@ -21,7 +21,7 @@ const CandidateDashboard = () => {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`https://localhost:7119/api/JobOpening/jobopen`)
+      const res = await axiosInstance.get(`JobOpening/jobopen`)
       setJobs(res.data || []);
     }
     catch (err) {
@@ -35,11 +35,7 @@ const CandidateDashboard = () => {
   // Fetch Pending Documents
   const fetchPendingDocuments = async () => {
     try {
-      const res = await axios.get(`https://localhost:7119/api/Candidate/pending`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      });
+      const res = await axiosInstance.get(`Candidate/pending`)
 
       if (res.data && res.data.length > 0) {
         setHasPendingDocuments(true);

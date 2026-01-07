@@ -19,7 +19,7 @@ function RecruiterAddShowCampusDrive() {
 
             {/* Main Content */}
             <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
-                <ShowAddCampusDrive role="Recruiter" />
+                <ShowAddCampusDrive />
             </main>
         </div>
         {/* Footer */}

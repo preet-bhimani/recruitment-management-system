@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
-import { useAuth } from "../../contexts/AuthContext";
+import axiosInstance from "../../routes/axiosInstance";
+
 const ViewCampusDrive = () => {
 
     const navigate = useNavigate();
     const { id } = useParams();
     const [loading, setLoading] = useState(false);
-    const { token, role, logout } = useAuth();
-    console.log(role);
     const handleBack = () => navigate(-1);
-
     const [campusdrive, setCampusDrive] = useState(null);
 
     // If There are Missing Data
@@ -27,24 +24,10 @@ const ViewCampusDrive = () => {
     const fetchCampusDrive = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/CampusDrive/${id}`, {
-                headers: { Authorization: `Bearer ${token}`, }
-            })
+            const res = await axiosInstance.get(`CampusDrive/${id}`);
             setCampusDrive(res.data || []);
         }
         catch (err) {
-            if(err.response?.status === 401){
-                toast.error("Session Expire Login Again");
-                logout();
-                navigate("/login");
-                return;
-            }
-            else if(err.response?.status === 403){
-                toast.error("You Have No Access of It");
-                logout();
-                navigate("/login");
-                return;
-            }
             toast.error("Failed to load Campus Drive details!")
         }
         finally {
@@ -53,11 +36,8 @@ const ViewCampusDrive = () => {
     }
 
     useEffect(() => {
-        if(!token){
-            return;
-        }
         fetchCampusDrive();
-    }, [id, token]);
+    }, [id]);
 
     // Loding
     if (loading) {

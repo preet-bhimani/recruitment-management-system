@@ -8,14 +8,14 @@ import Navbar from "../admin/Navbar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../components/CommonLoader";
+import axiosInstance from "../routes/axiosInstance";
 
 const UploadDocuments = () => {
 
   const { jaId } = useParams();
   const navigate = useNavigate();
   const [jaIdFinal, setJaIdFinal] = useState(jaId || "");
-  const { userId } = useAuth();
-  const { role } = useAuth();
+  const { userId, role } = useAuth();
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -48,9 +48,7 @@ const UploadDocuments = () => {
 
     try {
       setLoading(true);
-      const res = await axios.get(`https://localhost:7119/api/DocumentList/${finalJAId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const res = await axiosInstance.get(`DocumentList/${finalJAId}`)
 
       if (res.data) {
         setFormData((prev) => ({
@@ -82,9 +80,7 @@ const UploadDocuments = () => {
 
       if (!jaId && role === "Candidate") {
         try {
-          const pendingRes = await axios.get("https://localhost:7119/api/Candidate/pending", {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-          });
+          const pendingRes = await axios.get(`Candidate/pending`)
 
           if (pendingRes.data?.length > 0) {
             const first = pendingRes.data[0];

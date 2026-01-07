@@ -7,6 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../components/CommonLoader";
+import axiosInstance from "../routes/axiosInstance";
 
 const MyJobs = () => {
 
@@ -29,9 +30,7 @@ const MyJobs = () => {
     const fetchMyJobs = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("https://localhost:7119/api/Candidate/myjobs", {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await axiosInstance.get(`Candidate/myjobs`)
             setAppliedJobs(res.data);
         }
         catch (err) {

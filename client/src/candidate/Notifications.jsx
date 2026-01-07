@@ -2,25 +2,23 @@ import React, { useState, useEffect } from "react";
 import { Bell, CheckCircle, XCircle, Clock, Calendar, Users, FileCheck, Target, MessageSquare, ChevronDown, ChevronUp, Video } from "lucide-react";
 import CommonNavbar from "../components/CommonNavbar";
 import { useAuth } from "../contexts/AuthContext";
-import axios from "axios";
 import Footer from "../components/Footer";
 import { toast } from "react-toastify";
 import CommonLoader from "../components/CommonLoader";
+import axiosInstance from "../routes/axiosInstance";
 
 const Notifications = () => {
 
   const [expandedJobs, setExpandedJobs] = useState({});
   const [loading, setLoading] = useState(false);
   const [jobNotifications, setJobNotifications] = useState({});
-  const { userId, token } = useAuth();
+  const { userId } = useAuth();
 
   // Fetch Notifications
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`https://localhost:7119/api/Candidate/notification`, {
-        headers: { Authorization: `Bearer ${token}`, }
-      });
+      const res = await axiosInstance.get(`Candidate/notification`)
       setJobNotifications(res.data);
     }
     catch (err) {

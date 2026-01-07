@@ -1,9 +1,9 @@
 import React from "react";
 import { useAuth } from "../contexts/AuthContext";;
 import { Navigate, Outlet } from "react-router-dom"
-import { getRedirectPathByRole } from "../components/getRedirectPathByRole";
+import getRedirectPathByRole from "../components/getRedirectPathByRole";
 
-function ProtectedRoute() {
+function ProtectedRoute({ allowedRoles }) {
     const { token, role } = useAuth();
 
     // If No Token Found Send Them to Login Page

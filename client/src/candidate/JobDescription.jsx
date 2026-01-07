@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
+import axiosInstance from "../routes/axiosInstance";
 
 const JobDescription = () => {
 
@@ -26,7 +27,7 @@ const JobDescription = () => {
 
   const fetchJob = async () => {
     try {
-      const res = await axios.get(`https://localhost:7119/api/JobOpening/${id}`);
+      const res = await axiosInstance.get(`JobOpening/${id}`)
       const data = res.data;
       setJobData({
         ...data,
@@ -56,11 +57,7 @@ const JobDescription = () => {
         walkId: selectedMode === "WALKIN" ? selectedWalkId : null,
       };
 
-      await axios.post(
-        "https://localhost:7119/api/JobApplication",
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axiosInstance.post(`JobApplication`, payload)
 
       toast.success("Application submitted successfully!");
       setShowApplyModal(false);
@@ -81,17 +78,15 @@ const JobDescription = () => {
 
   useEffect(() => {
     fetchJob();
-  }, [])
+  }, [id])
 
   useEffect(() => {
     if (!showApplyModal) return;
 
-    axios.get(`https://localhost:7119/api/CampusDrive/visible/${id}`, {
-      headers: { Authorization: `Bearer ${token}`, }
-    })
+    axiosInstance.get(`CampusDrive/visible/${id}`)
       .then(res => setCampusDrives(res.data || []));
 
-    axios.get(`https://localhost:7119/api/WalkInDrive/visible/${id}`)
+    axiosInstance.get(`WalkInDrive/visible/${id}`)
       .then(res => setWalkInDrives(res.data || []));
 
   }, [showApplyModal]);

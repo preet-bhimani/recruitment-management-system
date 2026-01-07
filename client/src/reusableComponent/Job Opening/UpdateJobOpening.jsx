@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const UpdateJobOpening = ({ id }) => {
 
@@ -43,7 +43,7 @@ const UpdateJobOpening = ({ id }) => {
     const fetchJobOpening = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/JobOpening/${id}`)
+            const res = await axiosInstance.get(`JobOpening/${id}`)
             setJobsData(res.data || []);
         }
         catch (err) {
@@ -148,7 +148,7 @@ const UpdateJobOpening = ({ id }) => {
         // Fectch Data
         try {
             setSubmitLoading(true);
-            const res = await axios.put(`https://localhost:7119/api/JobOpening/update/${id}`, jobsData)
+            const res = await axiosInstance.post(`JobOpening/update/${id}`, jobsData)
             toast.success(res.data.message || "Job opening updated successfully!");
             navigate(-1);
         }

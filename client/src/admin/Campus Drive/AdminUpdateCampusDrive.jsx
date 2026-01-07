@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
 import { useAuth } from "../../contexts/AuthContext";
+import axiosInstance from "../../routes/axiosInstance";
 
 const AdminUpdateCampusDrive = () => {
 
@@ -35,9 +35,7 @@ const AdminUpdateCampusDrive = () => {
     const fetchCampusDrive = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/CampusDrive/${id}`, {
-                headers: { Authorization: `Bearer ${token}`, }
-            })
+            const res = await axiosInstance.get(`CampusDrive/${id}`)
             setCampusDrive(res.data || []);
         }
         catch (err) {
@@ -85,9 +83,7 @@ const AdminUpdateCampusDrive = () => {
         // Endpoint Logic
         try {
             setSubmitLoading(true);
-            const res = await axios.put(`https://localhost:7119/api/CampusDrive/update/${id}`, campusdrive, {
-                headers: { Authorization: `Bearer ${token}`, }
-            })
+            const res = await axiosInstance.put(`CampusDrive/update/${id}`, campusdrive)
 
             toast.success(res.data.message || "Campus Drive updated successfully!");
             navigate(-1);

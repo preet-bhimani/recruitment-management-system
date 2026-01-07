@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Models.Dto;
 using server.Models.Entities;
+using System.Security.Claims;
 
 namespace server.Controllers
 {
@@ -19,12 +21,19 @@ namespace server.Controllers
         }
 
         // Add job opening
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPost]
         public async Task<IActionResult> AddJobOpening(JobOpeningDto jobDto)
         {
             // Model state validation
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
 
             var job = new JobOpening
             {
@@ -52,16 +61,30 @@ namespace server.Controllers
         }
 
         // Get all Job opening
+        [Authorize(Roles ="Admin,Recruiter,Candidate,Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllJobOpening()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             return Ok(dbContext.JobOpenings.ToList());
         }
 
         // Get Job opening by Id
+        [Authorize(Roles = "Admin,Recruiter,Candidate,Viewer")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetJobOpeningById(Guid id)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var job = await dbContext.JobOpenings.FindAsync(id);
 
             if (job == null)
@@ -73,9 +96,16 @@ namespace server.Controllers
         }
 
         // Fetch Job Opening only which status is open
+        [Authorize(Roles = "Admin,Recruiter,Candidate,Viewer")]
         [HttpGet("jobopen")]
         public async Task<IActionResult> GetJobOpeningStatusOpen()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var job = await dbContext.JobOpenings.Where(j => j.Status == "Open").ToListAsync();
 
             if(!job.Any())
@@ -87,12 +117,19 @@ namespace server.Controllers
         }
 
         // Update Job opening
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateJobOpening(JobOpeningDto jobDto, Guid id)
         {
             // Model state validation
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
 
             var existingJob = await dbContext.JobOpenings.FindAsync(id);
 
@@ -125,9 +162,16 @@ namespace server.Controllers
         }
 
         // Delete or closed job opening
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpDelete("delete/{id:guid}")]
         public async Task<IActionResult> DeleteJobOpening(Guid id)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var existingJob = await dbContext.JobOpenings.FindAsync(id);
 
             if (existingJob == null)

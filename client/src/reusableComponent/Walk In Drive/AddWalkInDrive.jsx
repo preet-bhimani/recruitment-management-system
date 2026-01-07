@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 function AddWalkInDrive() {
 
     const { id } = useParams();
-    const { token } = useAuth();
     const navigate = useNavigate();
     const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -54,9 +52,7 @@ function AddWalkInDrive() {
         // Endpoint Logic
         try {
             setSubmitLoading(true);
-            const res = await axios.post(`https://localhost:7119/api/WalkInDrive`, formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
+            const res = await axiosInstance.post(`WalkInDrive`, formData)
             navigate(-1);
             toast.success(res.data || "Walk In Drive added successfully!");
         }

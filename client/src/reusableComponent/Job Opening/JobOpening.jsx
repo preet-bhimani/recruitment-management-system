@@ -6,17 +6,20 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
+import axiosInstance from "../../routes/axiosInstance";
+import { useAuth } from "../../contexts/AuthContext";
 
-const JobOpening = ({ role = "admin" }) => {
+const JobOpening = () => {
 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { role } = useAuth();
 
   // Fetch Job Opening Data
   const fetchJobOpening = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`https://localhost:7119/api/JobOpening`)
+      const res = await axiosInstance.get(`JobOpening`)
       setJobs(res.data || []);
     }
     catch (err) {
@@ -74,16 +77,16 @@ const JobOpening = ({ role = "admin" }) => {
   const navigate = useNavigate();
 
   // Role Based Access
-  const r = String(role || "").toLowerCase();
-  const isViewer = r === "viewer";
+  const r = role
+  const isViewer = r === "Viewer";
 
   const handleAddJob = () => {
-    const to = r === "recruiter" ? "/recruiter-add-jobopening" : "/admin-add-jobopening";
+    const to = r === "Recruiter" ? "/recruiter-add-jobopening" : "/admin-add-jobopening";
     navigate(to);
   };
 
   const handleUpdate = (id) => {
-    const to = r === "recruiter" ? `/recruiter-update-jobopening/${id}` : `/admin-update-jobopening/${id}`;
+    const to = r === "Recruiter" ? `/recruiter-update-jobopening/${id}` : `/admin-update-jobopening/${id}`;
     navigate(to);
   };
 
@@ -92,7 +95,7 @@ const JobOpening = ({ role = "admin" }) => {
     const confirmDelete = window.confirm("Are you sure you want to closed the job opening ?");
     if (!confirmDelete) return;
     try {
-      await axios.delete(`https://localhost:7119/api/JobOpening/delete/${joId}`);
+      await axiosInstance.delete(`JobOpening/delete/${joId}`)
       toast.success("Job opening closed Successfully!");
       await fetchJobOpening();
     }

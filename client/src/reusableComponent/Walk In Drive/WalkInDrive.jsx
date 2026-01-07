@@ -2,16 +2,16 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Eye, Edit, Trash2, Filter, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CommonPagination, { paginate } from "../CommonPagination";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
+import axiosInstance from "../../routes/axiosInstance";
 
-function WalkInDrive({ role = "admin" }) {
+function WalkInDrive() {
 
     const navigate = useNavigate();
-    const { token } = useAuth();
+    const { token, role } = useAuth();
     const [walkIns, setWalkIns] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -19,9 +19,7 @@ function WalkInDrive({ role = "admin" }) {
     const fetchWalkInDrives = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/WalkInDrive`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await axiosInstance.get(`WalkInDrive`)
             setWalkIns(res.data || []);
         }
         catch {
@@ -72,9 +70,7 @@ function WalkInDrive({ role = "admin" }) {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`https://localhost:7119/api/WalkInDrive/delete/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await axiosInstance.delete(`WalkInDrive/delete/${id}`)
             toast.success("Walk In Drive inactivated successfully!");
             fetchWalkInDrives();
         }
@@ -85,10 +81,10 @@ function WalkInDrive({ role = "admin" }) {
 
     // Navigation
     const navigateAddDrive = () => {
-        if (role == "admin") {
+        if (role == "Admin") {
             navigate("/admin-add-walkindrive")
         }
-        else if (role == "recruiter") {
+        else if (role == "Recruiter") {
             navigate("/recruiter-add-walkindrive")
         }
     }

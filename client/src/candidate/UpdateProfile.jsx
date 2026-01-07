@@ -7,6 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../components/CommonLoader";
+import axiosInstance from "../routes/axiosInstance";
 
 const UpdateProfile = () => {
 
@@ -41,7 +42,7 @@ const UpdateProfile = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`https://localhost:7119/api/User/${userId}`);
+      const res = await axiosInstance.get(`User/${userId}`);
       setProfileData((prev) => ({
         ...prev,
         ...res.data,
@@ -164,7 +165,7 @@ const UpdateProfile = () => {
 
     try {
       setSubmitLoading(true);
-      const res = await axios.put(`https://localhost:7119/api/User/update-profile/${userId}`, formData);
+      const res = await axiosInstance.post(`User/update-profile/${userId}`, formData)
       toast.success(res.data.message || "User profile updated successfully!");
       navigate(-1);
     }

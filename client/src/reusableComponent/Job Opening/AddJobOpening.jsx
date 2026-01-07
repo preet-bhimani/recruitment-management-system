@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const AddJobOpening = () => {
 
@@ -129,193 +129,212 @@ const AddJobOpening = () => {
         // Fectch Data
         try {
             setLoading(true);
-            const res = await axios.post(`https://localhost:7119/api/JobOpening`, formData)
+            const res = await axiosInstance.post(`JobOpening`, formData)
             toast.success(res.data.message || "Job opening added successfully!");
-        } catch (error) {
+        }
+        catch (error) {
             toast.error(error.response?.message || "Failed to add job opening!");
         }
-        finally{
+        finally {
             setLoading(false);
         }
     }
 
-    return <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
-        {/* Title */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Title <span className="text-rose-500">*</span>
-            </label>
-            <input
-                type="text"
-                placeholder="Enter Title"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-            {errors.title && (<p className="text-rose-500 text-sm mt-1">{errors.title}</p>)}
-        </div>
+    return <>
+        {loading && (
+            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+                <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+                    <CommonLoader />
+                </div>
+            </div>
+        )}
+        <form
+            onSubmit={handleSubmit}
+            className={`grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-4 sm:p-6 rounded-lg shadow-lg
+                ${loading ? "pointer-events-none opacity-70" : ""}`}>
+                    
+            {/* Title */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Title <span className="text-rose-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    placeholder="Enter Title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                {errors.title && (<p className="text-rose-500 text-sm mt-1">{errors.title}</p>)}
+            </div>
 
-        {/* No of Opening */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                No of Opening <span className="text-rose-500">*</span>
-            </label>
-            <input
-                type="number"
-                placeholder="Enter No of Opening"
-                value={formData.noOfOpening}
-                onChange={(e) => setFormData({ ...formData, noOfOpening: parseInt(e.target.value) })}
-                min="1"
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-            {errors.noOfOpening && (<p className="text-rose-500 text-sm mt-1">{errors.noOfOpening}</p>)}
-        </div>
+            {/* No of Opening */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    No of Opening <span className="text-rose-500">*</span>
+                </label>
+                <input
+                    type="number"
+                    placeholder="Enter No of Opening"
+                    value={formData.noOfOpening}
+                    onChange={(e) => setFormData({ ...formData, noOfOpening: parseInt(e.target.value) })}
+                    min="1"
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                {errors.noOfOpening && (<p className="text-rose-500 text-sm mt-1">{errors.noOfOpening}</p>)}
+            </div>
 
-        {/* Required Skills */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Required Skills <span className="text-rose-500">*</span>
-            </label>
-            <input
-                type="text"
-                placeholder="Enter Required Skills"
-                value={formData.requiredSkills}
-                onChange={(e) => setFormData({ ...formData, requiredSkills: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-            {errors.requiredSkills && (<p className="text-rose-500 text-sm mt-1">{errors.requiredSkills}</p>)}
-        </div>
+            {/* Required Skills */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Required Skills <span className="text-rose-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    placeholder="Enter Required Skills"
+                    value={formData.requiredSkills}
+                    onChange={(e) => setFormData({ ...formData, requiredSkills: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                {errors.requiredSkills && (<p className="text-rose-500 text-sm mt-1">{errors.requiredSkills}</p>)}
+            </div>
 
-        {/* Preferred Skills */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Preferred Skills
-            </label>
-            <input
-                type="text"
-                placeholder="Enter Preferred Skills"
-                value={formData.preferredSkills}
-                onChange={(e) => setFormData({ ...formData, preferredSkills: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-        </div>
+            {/* Preferred Skills */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Preferred Skills
+                </label>
+                <input
+                    type="text"
+                    placeholder="Enter Preferred Skills"
+                    value={formData.preferredSkills}
+                    onChange={(e) => setFormData({ ...formData, preferredSkills: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+            </div>
 
-        {/* Location */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">Location <span className="text-rose-500">*</span></label>
-            <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}>
-                <option value="" disabled>Select Location</option>
-                <option value="Säterinkatu">Säterinkatu</option>
-                <option value="Pori">Pori</option>
-                <option value="Seinäjoki">Seinäjoki</option>
-                <option value="Tampere">Tampere</option>
-                <option value="Turku">Turku</option>
-                <option value="Aalborg">Aalborg</option>
-                <option value="Aarhus">Aarhus</option>
-                <option value="Holte">Holte</option>
-                <option value="Göteborg">Göteborg</option>
-                <option value="Linköping">Linköping</option>
-                <option value="Västerås">Västerås</option>
-                <option value="Ahmedabad">Ahmedabad</option>
-                <option value="Mumbai">Mumbai</option>
-                <option value="Bloomingdale IL Chicago">Bloomingdale IL Chicago</option>
-            </select>
-            {errors.location && (<p className="text-rose-500 text-sm mt-1">{errors.location}</p>)}
-        </div>
+            {/* Location */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">Location <span className="text-rose-500">*</span></label>
+                <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700"
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}>
+                    <option value="" disabled>Select Location</option>
+                    <option value="Säterinkatu">Säterinkatu</option>
+                    <option value="Pori">Pori</option>
+                    <option value="Seinäjoki">Seinäjoki</option>
+                    <option value="Tampere">Tampere</option>
+                    <option value="Turku">Turku</option>
+                    <option value="Aalborg">Aalborg</option>
+                    <option value="Aarhus">Aarhus</option>
+                    <option value="Holte">Holte</option>
+                    <option value="Göteborg">Göteborg</option>
+                    <option value="Linköping">Linköping</option>
+                    <option value="Västerås">Västerås</option>
+                    <option value="Ahmedabad">Ahmedabad</option>
+                    <option value="Mumbai">Mumbai</option>
+                    <option value="Bloomingdale IL Chicago">Bloomingdale IL Chicago</option>
+                </select>
+                {errors.location && (<p className="text-rose-500 text-sm mt-1">{errors.location}</p>)}
+            </div>
 
-        {/* Experience */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Experience <span className="text-rose-500">*</span>
-            </label>
-            <input
-                type="number"
-                placeholder="Enter Experience"
-                value={formData.experience}
-                onChange={(e) => setFormData({ ...formData, experience: parseInt(e.target.value) })}
-                min="0"
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-            {errors.experience && (<p className="text-rose-500 text-sm mt-1">{errors.experience}</p>)}
-        </div>
+            {/* Experience */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Experience <span className="text-rose-500">*</span>
+                </label>
+                <input
+                    type="number"
+                    placeholder="Enter Experience"
+                    value={formData.experience}
+                    onChange={(e) => setFormData({ ...formData, experience: parseInt(e.target.value) })}
+                    min="0"
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                {errors.experience && (<p className="text-rose-500 text-sm mt-1">{errors.experience}</p>)}
+            </div>
 
-        {/* Description */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Description <span className="text-rose-500">*</span>
-            </label>
-            <textarea
-                placeholder="Enter Description"
-                rows="4"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 resize-none">
-            </textarea>
-            {errors.description && (<p className="text-rose-500 text-sm mt-1">{errors.description}</p>)}
-        </div>
+            {/* Description */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Description <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                    placeholder="Enter Description"
+                    rows="4"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 resize-none">
+                </textarea>
+                {errors.description && (<p className="text-rose-500 text-sm mt-1">{errors.description}</p>)}
+            </div>
 
-        {/* Comment */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Comment
-            </label>
-            <textarea
-                placeholder="Enter Comment"
-                rows="4"
-                value={formData.comment}
-                onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 resize-none">
-            </textarea>
-        </div>
+            {/* Comment */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Comment
+                </label>
+                <textarea
+                    placeholder="Enter Comment"
+                    rows="4"
+                    value={formData.comment}
+                    onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700 resize-none">
+                </textarea>
+            </div>
 
-        {/* Qualification */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Qualification <span className="text-rose-500">*</span>
-            </label>
-            <input
-                type="text"
-                placeholder="Enter Qualification"
-                value={formData.qualification}
-                onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
-                className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
-            {errors.qualification && (<p className="text-rose-500 text-sm mt-1">{errors.qualification}</p>)}
-        </div>
+            {/* Qualification */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Qualification <span className="text-rose-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    placeholder="Enter Qualification"
+                    value={formData.qualification}
+                    onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
+                    className="w-full p-2 rounded bg-neutral-800 border border-neutral-700" />
+                {errors.qualification && (<p className="text-rose-500 text-sm mt-1">{errors.qualification}</p>)}
+            </div>
 
-        {/* Job Type */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">
-                Job Type <span className="text-rose-500">*</span>
-            </label>
-            <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700"
-                value={formData.jobType}
-                onChange={(e) => setFormData({ ...formData, jobType: e.target.value })}>
-                <option value="" disabled>Select Job Type</option>
-                <option value="Full time job">Full time job</option>
-                <option value="Internship">Internship</option>
-            </select>
-            {errors.jobType && (<p className="text-rose-500 text-sm mt-1">{errors.jobType}</p>)}
-        </div>
+            {/* Job Type */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">
+                    Job Type <span className="text-rose-500">*</span>
+                </label>
+                <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700"
+                    value={formData.jobType}
+                    onChange={(e) => setFormData({ ...formData, jobType: e.target.value })}>
+                    <option value="" disabled>Select Job Type</option>
+                    <option value="Full time job">Full time job</option>
+                    <option value="Internship">Internship</option>
+                </select>
+                {errors.jobType && (<p className="text-rose-500 text-sm mt-1">{errors.jobType}</p>)}
+            </div>
 
-        {/* Status */}
-        <div>
-            <label className="block mb-1 text-sm font-medium">Status</label>
-            <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700"
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
-                <option value="Open">Open</option>
-                <option value="Closed">Closed</option>
-                <option value="Hold">Hold</option>
-            </select>
-            {errors.status && (<p className="text-rose-500 text-sm mt-1">{errors.status}</p>)}
-        </div >
+            {/* Status */}
+            <div>
+                <label className="block mb-1 text-sm font-medium">Status</label>
+                <select className="w-full p-2 rounded bg-neutral-800 border border-neutral-700"
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
+                    <option value="Open">Open</option>
+                    <option value="Closed">Closed</option>
+                    <option value="Hold">Hold</option>
+                </select>
+                {errors.status && (<p className="text-rose-500 text-sm mt-1">{errors.status}</p>)}
+            </div >
 
-        {/* Submit */}
-        < div className="md:col-span-2" >
-            <button
-                type="submit"
-                className="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-medium">
-                + Add Job Opening
-            </button>
-        </div >
-    </form >
+            {/* Submit */}
+            < div className="md:col-span-2" >
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className={`w-full p-2 rounded font-medium transition
+                    ${loading
+                            ? "bg-purple-400 cursor-not-allowed"
+                            : "bg-purple-600 hover:bg-purple-500"
+                        }`}>
+                    {loading ? "Adding..." : "+ Add Job Opening"}
+                </button>
+            </div >
+        </form >
+    </>
 };
 
 export default AddJobOpening;

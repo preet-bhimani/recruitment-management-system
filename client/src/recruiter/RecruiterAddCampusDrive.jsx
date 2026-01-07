@@ -22,7 +22,7 @@ function RecruiterAddCampusDrive() {
                 <div className="text-center mt-8 mb-8">
                     <h1 className="text-4xl font-bold text-center text-white mb-4">Add Campus Drive</h1>
                 </div>
-                <AddCampusDrive role="Recruiter" />
+                <AddCampusDrive />
             </main>
         </div>
         {/* Footer */}

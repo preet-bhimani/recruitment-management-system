@@ -63,7 +63,7 @@ namespace server.Controllers
         }
 
         // Fetch campus drive all along with title
-        [Authorize(Roles = "Admin,Recruiter")]
+        [Authorize(Roles = "Admin,Recruiter,Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllCampusDrive()
         {
@@ -90,7 +90,7 @@ namespace server.Controllers
         }
 
         // Get campus drive by id
-        [Authorize(Roles = "Admin,Recruiter")]
+        [Authorize(Roles = "Admin,Recruiter,Viewer")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetCampusDriveById(Guid id)
         {

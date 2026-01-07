@@ -21,7 +21,7 @@ function AdminWalkInDrive() {
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white mb-4">Wlak In Drive</h1>
                 </div>
-                <WalkInDrive role="admin" />
+                <WalkInDrive />
             </main>
         </div>
     </div >;

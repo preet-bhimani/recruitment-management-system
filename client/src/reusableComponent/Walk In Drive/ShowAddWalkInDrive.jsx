@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { Plus } from "lucide-react";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 function ShowAddWalkInDrive() {
 
@@ -17,7 +17,7 @@ function ShowAddWalkInDrive() {
     const fetchJobsForWalkIndrive = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/WalkInDrive/add-walk`)
+            const res = await axiosInstance.get(`WalkInDrive/add-walk`)
             SetJobs(res.data || []);
         }
         catch (err) {

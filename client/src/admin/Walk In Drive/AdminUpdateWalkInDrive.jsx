@@ -6,6 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 function AdminUpdateWalkInDrive() {
 
@@ -33,9 +34,7 @@ function AdminUpdateWalkInDrive() {
     const fetchWalkInDriveByID = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/WalkInDrive/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await axiosInstance.get(`WalkInDrive/${id}`)
             setFormData(res.data || []);
         }
         catch {
@@ -75,9 +74,7 @@ function AdminUpdateWalkInDrive() {
         // Endpoint Logic
         try {
             setSubmitLoading(true);
-            const res = await axios.put(`https://localhost:7119/api/WalkInDrive/update/${id}`, formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
+            const res = await axiosInstance.put(`WalkInDrive/update/${id}`, formData)
             navigate(-1);
             toast.success(res.data || "Walk In Drive updated successfully!");
         }
