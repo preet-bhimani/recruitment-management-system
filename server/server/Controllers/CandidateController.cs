@@ -21,7 +21,7 @@ namespace server.Controllers
         }
 
         // Apply for Job
-        [Authorize(Roles ="Admin,Candidate")]
+        [Authorize(Roles ="Candidate")]
         [HttpPost("apply")]
         public async Task<IActionResult> CandidateApplyForJob(JobApplyCandidateDto jaDto)
         {

@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const AdminUpdateTechInterview = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -46,7 +47,7 @@ const AdminUpdateTechInterview = () => {
     const fetchTechin = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/TechnicalInterview/${id}`);
+            const res = await axiosInstance.get(`TechnicalInterview/${id}`)
             setTechData(res.data || []);
         }
         catch (err) {
@@ -139,8 +140,7 @@ const AdminUpdateTechInterview = () => {
                 TechFeedback: techData.techFeedback,
                 TechRating: techData.techRating,
             };
-            const res = await axios.put(`https://localhost:7119/api/TechnicalInterview/update/${id}`,
-                payload, { headers: { "Content-Type": "application/json" } });
+            const res = await axiosInstance.put(`TechnicalInterview/update/${id}`, payload)
             toast.success(res.data.message || "Technical interview updated successfully!");
             navigate(-1);
         }

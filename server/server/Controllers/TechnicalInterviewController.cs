@@ -57,12 +57,19 @@ namespace server.Controllers
         }
 
         // Schedule meeting endpoint
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPost("schedule")]
         public async Task<IActionResult> ScheduleMeeting(ScheduleTechnicalInterviewDto stiDto)
         {
             // Model validation
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
 
             // Ensure Google is connected
             var setting = await dbContext.GoogleIntegrationSettings.FirstOrDefaultAsync();
@@ -214,9 +221,16 @@ namespace server.Controllers
         }
 
         // Fetch candidate whose overallstatus is Technical Interview
+        [Authorize(Roles = "Admin")]
         [HttpGet("waitinterview")]
         public async Task<IActionResult> GetAllCandidatesIsTechnicalInterview()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             // Fetch candidates whoes OverallStatus is Technical Interview
             var candidates = await dbContext.JobApplications
                 .Where(j => j.OverallStatus == "Technical Interview")
@@ -283,9 +297,16 @@ namespace server.Controllers
         }
 
         // Get candidates details from technical interview table
+        [Authorize(Roles = "Admin,Recruiter,Viewer,Interviewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllCandidatesfromTechnicalInterview()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
 
             var candidates = await dbContext.TechnicalInterviews
@@ -312,9 +333,16 @@ namespace server.Controllers
         }
 
         // Get technical interview by Id
+        [Authorize(Roles = "Admin,Recruiter,Viewer,Interviewer")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetTechnicalInterviewById(Guid id)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
 
             var techin = await dbContext.TechnicalInterviews
@@ -397,6 +425,7 @@ namespace server.Controllers
         }
 
         // Update technical interview
+        [Authorize(Roles = "Admin,Recruiter,Interviewer")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateTechnicalInterview(UpdateTechnicalInterviewDto utDto, Guid id)
         {
@@ -404,6 +433,12 @@ namespace server.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
             }
 
             var entity = await dbContext.TechnicalInterviews

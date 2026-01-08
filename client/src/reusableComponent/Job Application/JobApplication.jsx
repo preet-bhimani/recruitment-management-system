@@ -6,6 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
+import axiosInstance from "../../routes/axiosInstance";
 
 const JobApplication = ({ role = "admin" }) => {
 
@@ -19,7 +20,10 @@ const JobApplication = ({ role = "admin" }) => {
         Selected: "bg-green-600",
         Rejected: "bg-red-600",
         Hold: "bg-gray-600",
-        Shortlisted: "bg-indigo-600",
+        'Document Pending': 'bg-orange-600',
+        'Document Submitted': 'bg-cyan-600',
+        'Offer Letter Pending': 'bg-teal-600',
+        'Offer Letter Sent': 'bg-indigo-600',
     }[s] || "bg-yellow-600");
 
     const navigate = useNavigate();
@@ -30,7 +34,7 @@ const JobApplication = ({ role = "admin" }) => {
     const fetchJobApplications = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/JobApplication`)
+            const res = await axiosInstance.get(`JobApplication`)
             setJobApp(res.data || []);
         }
         catch (err) {
@@ -101,6 +105,10 @@ const JobApplication = ({ role = "admin" }) => {
         "Selected",
         "Rejected",
         "Hold",
+        'Document Pending',
+        'Document Submitted',
+        'Offer Letter Pending',
+        'Offer Letter Sent',
     ];
     const titles = Array.from(new Set(jobapp.map((j) => j.title))).sort();
 

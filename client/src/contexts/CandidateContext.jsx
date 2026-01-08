@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext";
+import axiosInstance from '../routes/axiosInstance';
 
 const CandidateContext = createContext();
 
@@ -32,7 +33,7 @@ export const CandidateProvider = ({ children }) => {
   // Fetch Candidates
   const fetchCandidates = async () => {
     try {
-      const res = await axios.get(`https://localhost:7119/api/JobApplication`);
+      const res = await axiosInstance.get(`JobApplication`)
       setCandidates((res.data || []).map(c => ({
         ...c,
         rejectionStage: c.rejectionStage ?? null,
@@ -150,7 +151,7 @@ export const CandidateProvider = ({ children }) => {
       holdOverallStatus: c.holdOverallStatus
     };
     try {
-      await axios.put(`https://localhost:7119/api/JobApplication/update/${id}`, dto);
+      await axiosInstance.put(`JobApplication/update/${id}`, dto)
       toast.success("Status updated successfully!");
       await fetchCandidates();
     }
@@ -226,11 +227,7 @@ export const CandidateProvider = ({ children }) => {
   // Fetch All Interviews Assigned to the Interviewer
   const fetchAssignedInterviews = async () => {
     try {
-      const res = await axios.get(
-        "https://localhost:7119/api/TechnicalInterview/interviewer", {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-      );
+      const res = await axiosInstance.get(`TechnicalInterview/interviewer`)
 
       const assigned = res.data || [];
 
@@ -255,7 +252,7 @@ export const CandidateProvider = ({ children }) => {
   // Now Recruiter Also Get All Candidates for Technical Interview
   const fetchTechInterviews = async () => {
     try {
-      const res = await axios.get("https://localhost:7119/api/TechnicalInterview");
+      const res = await axiosInstance.get(`TechnicalInterview`);
       const techList = res.data || [];
 
       setCandidates(prev =>
@@ -273,14 +270,7 @@ export const CandidateProvider = ({ children }) => {
   // Update Technical Result
   const updateTechnicalResult = async (tiId, payload) => {
     try {
-      await axios.put(`https://localhost:7119/api/TechnicalInterview/update/${tiId}`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        }
-      );
+      await axiosInstance.put(`TechnicalInterview/update/${tiId}`, payload)
 
       toast.success("Technical Interview result updated!");
       await fetchCandidates();

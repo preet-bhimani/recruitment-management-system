@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import Sidebar from "../Sidebar";
 import Navbar from "../Navbar";
-import axios from "axios";
 import { toast } from "react-toastify";
+import axiosInstance from "../../routes/axiosInstance";
+import CommonLoader from "../../components/CommonLoader";
 
 const AdminAddJobApplication = () => {
 
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const [formData, setFormData] = useState(
     {
@@ -62,11 +64,15 @@ const AdminAddJobApplication = () => {
 
     // Endpoint Logic
     try {
-      const res = await axios.post(`https://localhost:7119/api/JobApplication`, formData);
+      setSubmitLoading(true);
+      const res = await axiosInstance.post(`JobApplication/update/${id}`, formData)
       toast.success(res.data.message || "Job application submitted successfully!");
     }
     catch (err) {
       toast.error(err.response.data || "Failed to submit job application!");
+    }
+    finally {
+      setSubmitLoading(false);
     }
   }
 
@@ -84,6 +90,14 @@ const AdminAddJobApplication = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">Add Job Application</h1>
         </div>
+
+        {submitLoading && (
+          <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+            <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+              <CommonLoader />
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-neutral-900 p-6 rounded-lg shadow-lg">
           {/* User ID */}

@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const AdminAddTechInterview = () => {
 
@@ -19,7 +20,7 @@ const AdminAddTechInterview = () => {
     const fetchCandidatetoSetTechnicalInterviews = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/TechnicalInterview/waitinterview`)
+            const res = await axiosInstance.get(`TechnicalInterview/waitinterview`)
             setTechin(res.data || []);
         }
         catch (err) {

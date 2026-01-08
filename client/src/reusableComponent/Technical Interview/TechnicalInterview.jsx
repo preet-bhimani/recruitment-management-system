@@ -2,22 +2,23 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Filter, Download, Eye, Edit, Trash2 } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
-import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
+import axiosInstance from "../../routes/axiosInstance";
+import { useAuth } from "../../contexts/AuthContext";
 
-const TechnicalInterview = ({ role = "admin" }) => {
+const TechnicalInterview = () => {
 
   const navigate = useNavigate();
-
+  const { role } = useAuth();
   const [techin, setTechin] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const fetchTechin = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`https://localhost:7119/api/TechnicalInterview`);
+      const res = await axiosInstance.get(`TechnicalInterview`)
       setTechin(res.data || []);
     }
     catch (err) {
@@ -88,7 +89,7 @@ const TechnicalInterview = ({ role = "admin" }) => {
   return (
     <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
       <div className="flex flex-wrap items-center justify-end gap-3 mb-4">
-        {role === "admin" && (
+        {role === "Admin" && (
           <button
             className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm"
             onClick={() => navigate("/admin-add-techinterview")}>
@@ -287,7 +288,7 @@ const TechnicalInterview = ({ role = "admin" }) => {
                   <Eye size={14} /> View
                 </button>
 
-                {role === "admin" && (
+                {role === "Admin" && (
                   <>
                     <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
                       onClick={() => navigate(`/admin-update-techinterview/${tech.tiId}`)}>

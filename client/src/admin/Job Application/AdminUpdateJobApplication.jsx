@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from 'axios';
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const AdminUpdateJobApplication = () => {
 
@@ -34,7 +34,7 @@ const AdminUpdateJobApplication = () => {
     const fetchJobApplication = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/JobApplication/${id}`)
+            const res = await axiosInstance.get(`JobApplication/${id}`)
             setJobappData(res.data || []);
         }
         catch (err) {
@@ -66,7 +66,7 @@ const AdminUpdateJobApplication = () => {
         // Endpoint Logic
         try {
             setSubmitLoading(true);
-            const res = await axios.put(`https://localhost:7119/api/JobApplication/update/${id}`, jobapp);
+            const res = await axiosInstance.put(`JobApplication/update/${id}`, jobapp)
             toast.success(res.data.message || "Job application submitted successfully!");
             navigate(-1);
 

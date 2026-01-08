@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { MapPin, ArrowLeft, Mail, Calendar } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const ViewJobApplication = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const ViewJobApplication = () => {
   const fetchJobApplicationDataByID = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`https://localhost:7119/api/JobApplication/${id}`)
+      const res = await axiosInstance.get(`JobApplication/${id}`)
       setJobApp(res.data || []);
     }
     catch (err) {

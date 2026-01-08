@@ -6,14 +6,9 @@ import AdminAddUser from './admin/User/AdminAddUser';
 import AdminAddUserExcel from './admin/User/AdminAddUserExcel';
 import AdminAddUserResume from './admin/User/AdminAddUserResume';
 import AdminUserUpdate from './admin/User/AdminUserUpdate';
-import AdminJobApplication from './admin/Job Application/AdminJobApplication';
-import AdminAddJobApplication from './admin/Job Application/AdminAddJobApplication';
-import AdminUpdateJobApplication from './admin/Job Application/AdminUpdateJobApplication';
-import AdminTechInterview from './admin/Technical Interview/AdminTechInterview';
 import AdminHRInterview from './admin/HR Interview/AdminHRInterview';
 import AdminAddTechInterview from './admin/Technical Interview/AdminAddTechInterview';
 import AdminMeetingSchedual from './admin/Technical Interview/AdminMeetingSchedual';
-import AdminUpdateTechInterview from './admin/Technical Interview/AdminUpdateTechInterview';
 import AdminAddHRInterview from './admin/HR Interview/AdminAddHRInterview';
 import AdminUpdateHRInterview from './admin/HR Interview/AdminUpdateHRInterview';
 import AdminSelection from './admin/selection/AdminSelection';
@@ -35,17 +30,11 @@ import RecruiterAddUser from './recruiter/RecruiterAddUser';
 import ReviewerDashboard from './reviewer/ReviewerDashboard';
 import RecruiterAddUserExcel from './recruiter/RecruiterAddUserExcel';
 import RecruiterAddUserResume from './recruiter/RecruiterAddUserResume';
-import InterviewerFeedback from './interviewer/InterviewerFeedback';
-import InterviewerMeetingDetails from './interviewer/InterviewerMeetingDetails';
 import HRFeedback from './hr/HRFeedback';
 import HRDocumentsCheck from './hr/HRDocumentsCheck';
 import ViewUser from './reusableComponent/User/ViewUser';
 import ViewerUser from './viewer/ViewerUser';
 import RecruiterMeetingScheduling from './recruiter/RecruiterMeetingScheduling';
-import ViewerJobApplication from './viewer/ViewerJobApplication';
-import ViewJobApplication from './reusableComponent/Job Application/ViewJobApplication';
-import ViewerTechnicalInterview from './viewer/ViewerTechnicalInterview';
-import ViewTechnicalInterview from './reusableComponent/Technical Interview/ViewTechnicalInterview';
 import ViewerHRInterview from './viewer/ViewerHRInterview';
 import ViewHRInterview from './reusableComponent/Hr Interview/ViewHRInterview';
 import ViewerSelection from './viewer/ViewerSelection';
@@ -83,12 +72,7 @@ function App() {
           <Route path='/admin-add-user-excel' element={<AdminAddUserExcel />} />
           <Route path='/admin-add-user-resume' element={<AdminAddUserResume />} />
           <Route path='/admin-user-update/:id' element={<AdminUserUpdate />} />
-          <Route path='/admin-jobapplication' element={<AdminJobApplication />} />
-          <Route path='/admin-add-jobapplication' element={<AdminAddJobApplication />} />
-          <Route path='/admin-update-jobapplication/:id' element={<AdminUpdateJobApplication />} />
-          <Route path='/admin-techinterview' element={<AdminTechInterview />} />
           <Route path='/admin-add-techinterview' element={<AdminAddTechInterview />} />
-          <Route path='/admin-update-techinterview/:id' element={<AdminUpdateTechInterview />} />
           <Route path='/admin-hrinterview' element={<AdminHRInterview />} />
           <Route path='/admin-add-hrinterview' element={<AdminAddHRInterview />} />
           <Route path='/admin-update-hrinterview/:id' element={<AdminUpdateHRInterview />} />
@@ -122,16 +106,10 @@ function App() {
           <Route path='/recruiter-meeting-scheduling' element={<RecruiterMeetingScheduling />} />
           <Route path='/recruiter-sent-offer-letter/:id' element={<RecruiterSentOfferLetter />} />
           <Route path='/reviewer-dashboard' element={<ReviewerDashboard />} />
-          <Route path='/interviewer-feedback' element={<InterviewerFeedback />} />
-          <Route path='/interview-meeting-details' element={<InterviewerMeetingDetails />} />
           <Route path='/hr-feedback' element={<HRFeedback />} />
           <Route path='/hr-documents-check/:candidateId' element={<HRDocumentsCheck />} />
           <Route path='/view-user/:id' element={<ViewUser />} />
           <Route path='/viewer-user' element={<ViewerUser />} />
-          <Route path="/viewer-jobapplication" element={<ViewerJobApplication />} />
-          <Route path='/view-jobapplication/:id' element={<ViewJobApplication />} />
-          <Route path='/viewer-techinterview' element={<ViewerTechnicalInterview />} />
-          <Route path='/view-techinterview/:id' element={<ViewTechnicalInterview />} />
           <Route path='/viewer-hrinterview' element={<ViewerHRInterview />} />
           <Route path='/view-hrinterview/:id' element={<ViewHRInterview />} />
           <Route path='/viewer-selection' element={<ViewerSelection />} />
@@ -140,7 +118,7 @@ function App() {
           <Route path='/view-documentlist/:id' element={<ViewDocumentList />} />
           <Route path='/viewer-skill' element={<ViewerSkill />} />
           <Route path='/view-offerletter/:id' element={<ViewOfferLetter />} />
-          <Route path='viewer-offerletter' element={<ViewerOfferLetter />} />
+          <Route path='/viewer-offerletter' element={<ViewerOfferLetter />} />
           {AdminRoutes}
           {RecruiterRoutes}
           {ViewerRoutes}

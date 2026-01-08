@@ -12,6 +12,11 @@ import AdminUpdateCampusDrive from "../admin/Campus Drive/AdminUpdateCampusDrive
 import AdminJobOpening from "../admin/Job opening/AdminJobOpening";
 import AdminAddJobOpening from "../admin/Job opening/AdminAddJobOpening";
 import AdminUpdateJobOpening from "../admin/Job opening/AdminUpdateJobOpening";
+import AdminJobApplication from "../admin/Job Application/AdminJobApplication";
+import AdminAddJobApplication from "../admin/Job Application/AdminAddJobApplication";
+import AdminUpdateJobApplication from "../admin/Job Application/AdminUpdateJobApplication";
+import AdminTechInterview from "../admin/Technical Interview/AdminTechInterview";
+import AdminUpdateTechInterview from "../admin/Technical Interview/AdminUpdateTechInterview";
 
 const AdminRoutes = (
     <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
@@ -26,6 +31,11 @@ const AdminRoutes = (
         <Route path="/admin-jobopening" element={<AdminJobOpening />} />
         <Route path="/admin-add-jobopening" element={<AdminAddJobOpening />} />
         <Route path="/admin-update-jobopening/:id" element={<AdminUpdateJobOpening />} />
+        <Route path="/admin-jobapplication" element={<AdminJobApplication />} />
+        <Route path="/admin-add-jobapplication" element={<AdminAddJobApplication />} />
+        <Route path="/admin-update-jobapplication/:id" element={<AdminUpdateJobApplication />} />
+        <Route path="/admin-techinterview" element={<AdminTechInterview />} />
+        <Route path="/admin-update-techinterview/:id" element={<AdminUpdateTechInterview />} />
     </Route>
 );
 

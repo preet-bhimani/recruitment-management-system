@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Models.Dto;
 using server.Models.Entities;
+using System.Security.Claims;
 
 namespace server.Controllers
 {
@@ -18,6 +20,7 @@ namespace server.Controllers
             this.dbContext = dbContext;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddJobApplication(JobApplicationDto jaDto)
         {
@@ -25,6 +28,12 @@ namespace server.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
             }
 
             // If User is not exist
@@ -162,9 +171,16 @@ namespace server.Controllers
         }
 
         // Fetch all Job applications
+        [Authorize(Roles = "Admin,Recruiter,Reviewer,HR,Interviewer,Viewer,Candidate")]
         [HttpGet]
         public async Task<IActionResult> GetAllJobApplications()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
             var baseUrlResume = $"{Request.Scheme}://{Request.Host}/User_Upload_Resumes/";
 
@@ -197,9 +213,16 @@ namespace server.Controllers
         }
 
         // Get Job Application by Id
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetJobApplicationById(Guid id)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
             var baseUrlResume = $"{Request.Scheme}://{Request.Host}/User_Upload_Resumes/";
 
@@ -285,6 +308,7 @@ namespace server.Controllers
         }
 
         // Update job application based on its status
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateJobApplicationBasedItsStatus(Guid id, JobApplicationDto jaDto)
         {
@@ -292,6 +316,12 @@ namespace server.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
             }
 
             var jobapp = await dbContext.JobApplications.FindAsync(id);

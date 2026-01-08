@@ -21,7 +21,7 @@ const AdminTechInterview = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">Tech Interview</h1>
         </div>
-        <TechnicalInterview role="admin" />
+        <TechnicalInterview />
       </main>
     </div>
   </div >;
