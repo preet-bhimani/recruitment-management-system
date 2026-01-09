@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import axiosInstance from "../../routes/axiosInstance";
 
 const AdminAddDocuments = () => {
 
@@ -16,11 +17,10 @@ const AdminAddDocuments = () => {
     // Fetch Pending Candidates
     const fetchPending = async () => {
         try {
-            const res = await axios.get("https://localhost:7119/api/DocumentList/pending", {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
+            const res = await axiosInstance.get(`DocumentList/pending`);
             setDocument(res.data || []);
-        } catch (err) {
+        } 
+        catch (err) {
             toast.error("Failed to fetch pending candidates.");
         }
     };

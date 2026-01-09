@@ -22,7 +22,7 @@ function AdminUpdateOfferLetter() {
                 <div className="text-center mt-8 mb-8">
                     <h1 className="text-4xl font-bold text-center text-white mb-4">Update Offer Letter</h1>
                 </div>
-                <UpdateOfferLetter role="admin" id={id} />
+                <UpdateOfferLetter id={id} />
             </main>
         </div>
     </div>;

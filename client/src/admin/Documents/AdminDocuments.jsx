@@ -21,7 +21,7 @@ const AdminDocuments = () => {
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white mb-4">Doument List</h1>
                 </div>
-                <DocumentList role="admin" />
+                <DocumentList />
             </main>
         </div>
     </div >;

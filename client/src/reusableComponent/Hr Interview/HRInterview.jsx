@@ -6,18 +6,20 @@ import axios from "axios";
 import { toast } from 'react-toastify';
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
+import axiosInstance from "../../routes/axiosInstance";
+import { useAuth } from "../../contexts/AuthContext";
 
-const HRInterview = ({ role = "admin" }) => {
+const HRInterview = () => {
 
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-
+    const { role } =useAuth();
     const [hrin, setHrin] = useState([]);
 
     const fetchHrin = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/HRInterview`);
+            const res = await axiosInstance.get(`HRInterview`)
             setHrin(res.data || []);
         }
         catch (err) {
@@ -97,7 +99,7 @@ const HRInterview = ({ role = "admin" }) => {
 
     return <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
         <div className="flex flex-wrap items-center justify-end gap-3 mb-4">
-            {role === "admin" && (
+            {role === "Admin" && (
                 <button
                     className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm"
                     onClick={() => navigate("/admin-add-hrinterview")}>
@@ -301,7 +303,7 @@ const HRInterview = ({ role = "admin" }) => {
                                 <Eye size={14} /> View
                             </button>
 
-                            {role === "admin" && (
+                            {role === "Admin" && (
                                 <>
                                     <button
                                         className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"

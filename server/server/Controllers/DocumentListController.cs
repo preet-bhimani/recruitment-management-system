@@ -292,6 +292,7 @@ namespace server.Controllers
         }
 
         // Get selected items for viewer and admin by ID
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("fetch/{id:guid}")]
         public async Task<IActionResult> GetItemsForViewerAndAdmin(Guid id)
         {
@@ -337,7 +338,7 @@ namespace server.Controllers
         }
 
         // Get all documents list 
-        [Authorize(Roles = "Admin, Viewer")]
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllDocuments()
         {

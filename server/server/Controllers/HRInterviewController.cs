@@ -53,6 +53,7 @@ namespace server.Controllers
         }
 
         // Schedule meeting endpoint
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPost("schedule")]
         public async Task<IActionResult> ScheduleMeeting(ScheduleHRInterviewDto dto)
         {
@@ -60,6 +61,12 @@ namespace server.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
             }
 
             // Ensure Google is connected
@@ -210,9 +217,16 @@ namespace server.Controllers
         }
 
         // Fetch candidates who are waiting for HR interview scheduling
+        [Authorize(Roles = "Admin")]
         [HttpGet("waitinterview")]
         public async Task<IActionResult> GetAllCandidatesWaitingForHRInterview()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             // Only those still in HR stage
             var jobApps = await dbContext.JobApplications
                 .Where(j => j.OverallStatus == "HR Interview")
@@ -276,9 +290,16 @@ namespace server.Controllers
         }
 
         // Get candidates details from hr interview table
+        [Authorize(Roles = "Admin,Recruiter,HR,Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllCandidatesfromHRInterview()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
 
             var candidates = await dbContext.HRInterviews
@@ -314,9 +335,16 @@ namespace server.Controllers
         }
 
         // Get hr interview by Id
+        [Authorize(Roles = "Admin,Recruiter,HR,Viewer")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetHRInterviewById(Guid id)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
 
             var hrin = await dbContext.HRInterviews
@@ -401,6 +429,7 @@ namespace server.Controllers
         }
 
         // Update HR interview
+        [Authorize(Roles = "Admin,HR,Recruiter")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateHRInterview(UpdateHRInterviewDto dto, Guid id)
         {
@@ -408,6 +437,12 @@ namespace server.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
             }
 
             var entity = await dbContext.HRInterviews
@@ -649,6 +684,12 @@ namespace server.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetAllHRInterviewsForRecruiter()
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized("Invalid token. User ID not found");
+            }
+
             var baseUrl = $"{Request.Scheme}://{Request.Host}/User_Upload_Photos/";
 
             var interviews = await dbContext.HRInterviews

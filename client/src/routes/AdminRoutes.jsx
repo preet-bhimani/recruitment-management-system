@@ -17,6 +17,17 @@ import AdminAddJobApplication from "../admin/Job Application/AdminAddJobApplicat
 import AdminUpdateJobApplication from "../admin/Job Application/AdminUpdateJobApplication";
 import AdminTechInterview from "../admin/Technical Interview/AdminTechInterview";
 import AdminUpdateTechInterview from "../admin/Technical Interview/AdminUpdateTechInterview";
+import AdminAddTechInterview from "../admin/Technical Interview/AdminAddTechInterview";
+import AdminHRInterview from "../admin/HR Interview/AdminHRInterview";
+import AdminAddHRInterview from "../admin/HR Interview/AdminAddHRInterview";
+import AdminUpdateHRInterview from "../admin/HR Interview/AdminUpdateHRInterview";
+import AdminMeetingSchedual from "../admin/Technical Interview/AdminMeetingSchedual";
+import AdminDocuments from "../admin/Documents/AdminDocuments";
+import AdminOfferLetter from "../admin/Offer Letter/AdminOfferLetter";
+import AdminAddOfferLetter from "../admin/Offer Letter/AdminAddOfferLetter";
+import AdminSentOfferLetter from "../admin/Offer Letter/AdminSentOfferLetter";
+import AdminUpdateOfferLetter from "../admin/Offer Letter/AdminUpdateOfferLetter";
+import AdminAddDocuments from "../admin/Documents/AdminAddDocuments";
 
 const AdminRoutes = (
     <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
@@ -36,6 +47,17 @@ const AdminRoutes = (
         <Route path="/admin-update-jobapplication/:id" element={<AdminUpdateJobApplication />} />
         <Route path="/admin-techinterview" element={<AdminTechInterview />} />
         <Route path="/admin-update-techinterview/:id" element={<AdminUpdateTechInterview />} />
+        <Route path="/admin-add-techinterview" element={<AdminAddTechInterview />} />
+        <Route path="/admin-hrinterview" element={<AdminHRInterview />} />
+        <Route path="/admin-add-hrinterview" element={<AdminAddHRInterview />} />
+        <Route path="/admin-update-hrinterview/:id" element={<AdminUpdateHRInterview />} />
+        <Route path="/admin-add-meeting" element={<AdminMeetingSchedual />} />
+        <Route path="/admin-document" element={<AdminDocuments />} />
+        <Route path="/admin-add-document" element={<AdminAddDocuments />} />
+        <Route path="/admin-offer-letter" element={<AdminOfferLetter />} />
+        <Route path="/admin-add-offerletter" element={<AdminAddOfferLetter />} />
+        <Route path="/admin-sent-offerletter/:id" element={<AdminSentOfferLetter />} />
+        <Route path="/admin-update-offerletter/:id" element={<AdminUpdateOfferLetter />} />
     </Route>
 );
 

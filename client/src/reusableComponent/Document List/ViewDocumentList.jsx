@@ -4,6 +4,7 @@ import { ArrowLeft, Mail } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const ViewDocumentList = () => {
 
@@ -23,11 +24,10 @@ const ViewDocumentList = () => {
     const fetchDocumentListByID = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/DocumentList/fetch/${id}`)
+            const res = await axiosInstance.get(`DocumentList/fetch/${id}`)
             setDocumnet(res.data || []);
         }
         catch (err) {
-            console.log(err.data);
             toast.error("Failed to load Candidate Document details!")
         }
         finally {

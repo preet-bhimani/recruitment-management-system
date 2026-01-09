@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const ViewHRInterview = () => {
 
@@ -11,7 +12,6 @@ const ViewHRInterview = () => {
     const { id } = useParams();
     const handleBack = () => navigate(-1);
     const [loading, setLoading] = useState(false);
-
     const [interview, setInterview] = useState(null);
 
     const safe = (v) => (v === null || v === undefined || v === "" ? "-" : v);
@@ -41,7 +41,7 @@ const ViewHRInterview = () => {
     const fetchHRInterviewDataById = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/HRInterview/${id}`)
+            const res = await axiosInstance.get(`HRInterview/${id}`)
             setInterview(res.data || [])
         }
         catch (err) {

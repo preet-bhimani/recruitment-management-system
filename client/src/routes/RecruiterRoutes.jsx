@@ -10,6 +10,8 @@ import RecruiterAddWalkInDrive from "../recruiter/RecruiterAddWalkInDrive";
 import RecruiterJobOpening from "../recruiter/RecruiterJobOpening";
 import RecruiterAddJobOpening from "../recruiter/RecruiterAddJobOpening";
 import RecruiterUpdateJobOpening from "../recruiter/RecruiterUpdateJobOpening";
+import RecruiterMeetingScheduling from "../recruiter/RecruiterMeetingScheduling";
+import RecruiterSentOfferLetter from "../recruiter/RecruiterSentOfferLetter";
 
 const RecruiterRoutes = (
     <Route element={<ProtectedRoute allowedRoles={["Recruiter"]} />}>
@@ -22,6 +24,8 @@ const RecruiterRoutes = (
         <Route path="/recruiter-jobopening" element={<RecruiterJobOpening />} />
         <Route path="/recruiter-add-jobopening" element={<RecruiterAddJobOpening />} />
         <Route path="/recruiter-update-jobopening/:id" element={<RecruiterUpdateJobOpening />} />
+        <Route path="/recruiter-meeting-scheduling" element={<RecruiterMeetingScheduling />} />
+        <Route path="/recruiter-sent-offer-letter/:id" element={<RecruiterSentOfferLetter />} />
     </Route>
 );
 

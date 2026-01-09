@@ -4,10 +4,9 @@ import { CandidateProvider, useCandidates } from '../contexts/CandidateContext';
 import { UIProvider } from '../contexts/UIContext';
 import CommonNavbar from '../components/CommonNavbar';
 import Footer from '../components/Footer';
-import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import CommonLoader from '../components/CommonLoader';
+import axiosInstance from '../routes/axiosInstance';
 
 // Find File Type
 const getFileType = (url) => {
@@ -76,22 +75,15 @@ const HRDocumentsCheckContent = () => {
         return candidates.find(c => String(c.jaId) === String(candidateId)) ?? null;
     }, [candidates, candidateId]);
 
-    const { token } = useAuth();
-
     // Document Review Handlers 
     const handleApproveClick = async () => {
         try {
             setLoading(true);
-            await axios.put(
-                `https://localhost:7119/api/DocumentList/review/${candidate.jaId}`,
-                { status: "Approved" },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            await axiosInstance.post(`DocumentList/review/${candidate.jaId}`, { status: "Approved" });
             toast.success("Documents approved successfully.");
             navigate("/hr-feedback");
         }
         catch (err) {
-            console.error(err);
             toast.error(err.response?.data || "Failed to approve documents!");
         }
         finally {
@@ -102,17 +94,11 @@ const HRDocumentsCheckContent = () => {
     const handleRejectClick = async () => {
         try {
             setLoading(true);
-            await axios.put(
-                `https://localhost:7119/api/DocumentList/review/${candidate.jaId}`,
-                { status: "Rejected" },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-
+            await axiosInstance.post(`DocumentList/review/${candidate.jaId}`, { status: "Rejected" })
             toast.success("Documents rejected successfully!");
             navigate("/hr-feedback");
         }
         catch (err) {
-            console.error(err);
             toast.error(err.response?.data || "Failed to reject documents!");
         }
         finally {

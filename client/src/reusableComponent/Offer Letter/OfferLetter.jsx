@@ -6,18 +6,21 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
+import axiosInstance from "../../routes/axiosInstance";
+import { useAuth } from "../../contexts/AuthContext";
 
 const OfferLetter = () => {
 
     const [offerLetters, setOfferLetters] = useState([]);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { role } = useAuth();
 
     // Fetch Offer Letters
     const fetchOfferLetters = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/OfferLetter`);
+            const res = await axiosInstance.get(`OfferLetter`)
             setOfferLetters(res.data || []);
         }
         catch (err) {
@@ -87,7 +90,7 @@ const OfferLetter = () => {
         if (!window.confirm("Move this offer letter to Hold?")) return;
 
         try {
-            await axios.put(`https://localhost:7119/api/OfferLetter/hold/${id}`);
+            await axiosInstance.put(`OfferLetter/hold/${id}`)
 
             toast.success("Offer letter moved to Hold.");
             fetchOfferLetters();
@@ -275,17 +278,18 @@ const OfferLetter = () => {
                                     onClick={() => { navigate(`/view-offerletter/${offer.olId}`) }}>
                                     <Eye size={14} /> View
                                 </button>
-
-                                <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                    onClick={() => { navigate(`/admin-update-offerletter/${offer.olId}`) }}>
-                                    <Edit size={14} /> Update
-                                </button>
-                                {offer.offerLetterStatus !== "Hold" && (
-                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
-                                        onClick={() => handleDelete(offer.olId)}>
-                                        <Trash2 size={14} /> Delete
+                                {role === "Admin" && (<>
+                                    <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                                        onClick={() => { navigate(`/admin-update-offerletter/${offer.olId}`) }}>
+                                        <Edit size={14} /> Update
                                     </button>
-                                )}
+                                    {offer.offerLetterStatus !== "Hold" && (
+                                        <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                            onClick={() => handleDelete(offer.olId)}>
+                                            <Trash2 size={14} /> Delete
+                                        </button>
+                                    )}
+                                </>)}
                             </div>
                         </div>
                     ))}

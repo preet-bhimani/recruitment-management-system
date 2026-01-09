@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const SentOfferLetter = ({ id }) => {
 
@@ -34,7 +35,7 @@ const SentOfferLetter = ({ id }) => {
     // Fetch UserId, JOId using JAId
     const fetchCandidateIds = async () => {
         try {
-            const res = await axios.get(`https://localhost:7119/api/OfferLetter/${id}`);
+            const res = await axiosInstance.get(`OfferLetter/${id}`)
             if (res.data) {
                 const data = Array.isArray(res.data) ? res.data[0] : res.data;
                 setFormData((prev) => ({
@@ -112,7 +113,7 @@ const SentOfferLetter = ({ id }) => {
         console.log(formData);
         try {
             setLoading(true);
-            const res = await axios.post(`https://localhost:7119/api/OfferLetter/generate`, formData);
+            const res = await axios.post(`OfferLetter/generate`, formData);
 
             toast.success(res.data.message || "Offer letter generated and sent successfully!");
             navigate(-1);

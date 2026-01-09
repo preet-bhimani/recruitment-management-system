@@ -26,6 +26,7 @@ namespace server.Controllers
         }
 
         // Generate PDF from form data and sent to email
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPost("generate")]
         public async Task<IActionResult> GenerateOfferLetter(GenerateOfferLetter golDto)
         {
@@ -89,6 +90,7 @@ namespace server.Controllers
         }
 
         // Fetch all pending offer letter to sent
+        [Authorize(Roles = "Admin")]
         [HttpGet("pending")]
         public async Task<IActionResult> GetPendingOfferLetter()
         {
@@ -113,10 +115,10 @@ namespace server.Controllers
         }
 
         // Get Job application by ID to set UserId, JAId, JOId
+        [Authorize(Roles = "Admin,Recruiter,Viewer")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetOfferLetterByID(Guid id)
         {
-
             var result = await dbContext.JobApplications
                 .Where(ja => ja.JAId == id)
                 .Select(ja => new
@@ -131,6 +133,7 @@ namespace server.Controllers
         }
 
         // Fetch offer letters by ID
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("fetch/{id:guid}")]
         public async Task<IActionResult> GetOfferLetterDataByID(Guid id)
         {
@@ -171,6 +174,7 @@ namespace server.Controllers
         }
 
         // Fetch all candidates from offerletter table
+        [Authorize(Roles = "Admin,Recruiter,Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllOfferLetters()
         {
@@ -199,6 +203,7 @@ namespace server.Controllers
         }
 
         // Get offer letter details by OLID
+        [Authorize(Roles = "Admin")]
         [HttpGet("details/{id:guid}")]
         public async Task<IActionResult> GetOfferLetterDetailsByID(Guid id)
         {
@@ -347,6 +352,7 @@ namespace server.Controllers
         }
 
         // Delete but insted Hold 
+        [Authorize(Roles = "Admin")]
         [HttpPut("hold/{id:guid}")]
         public async Task<IActionResult> MoveOfferLetterToHold(Guid id)
         {

@@ -47,9 +47,7 @@ export const CandidateProvider = ({ children }) => {
   // Fetch HR Interviews
   const fetchHRInterviews = async () => {
     try {
-      const res = await axios.get(`https://localhost:7119/api/HRInterview/hr`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axiosInstance.get(`HRInterview/hr`);
 
       const hrList = res.data || [];
       setCandidates(prevCandidates =>
@@ -208,7 +206,6 @@ export const CandidateProvider = ({ children }) => {
     });
   };
 
-
   // Fail Round
   const failRound = (id, type, { rating = 0, feedback = '' } = {}) => {
     updateCandidate(id, c => {
@@ -291,10 +288,7 @@ export const CandidateProvider = ({ children }) => {
   // Fetch ALL HR rounds for Recruiter
   const fetchAllHRRounds = async () => {
     try {
-      const res = await axios.get(
-        "https://localhost:7119/api/HRInterview",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await axiosInstance.get(`HRInterview`)
 
       const hrList = res.data || [];
 
@@ -329,8 +323,7 @@ export const CandidateProvider = ({ children }) => {
   // Update HR Round
   const updateHRInterview = async (hiId, payload) => {
     try {
-      await axios.put(`https://localhost:7119/api/HRInterview/update/${hiId}`, payload);
-
+      await axiosInstance.put(`HRInterview/update/${hiId}`, payload)
       toast.success("HR round updated!");
 
       await fetchCandidates();
@@ -348,11 +341,7 @@ export const CandidateProvider = ({ children }) => {
   // Fetch Candidate Documents
   const fetchCandidateDocuments = async (jaId) => {
     try {
-      const res = await axios.get(`https://localhost:7119/api/DocumentList/${jaId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-      );
-
+      const res = await axiosInstance.get(`DocumentList/${jaId}`);
       const doc = res.data;
 
       setCandidates(prev =>
@@ -369,10 +358,7 @@ export const CandidateProvider = ({ children }) => {
 
   // Fetch Candidates Under HR
   const fetchCandidatesUnderHR = async () => {
-    const res = await axios.get("https://localhost:7119/api/OfferLetter/hr", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
+    const res = await axiosInstance.get(`OfferLetter/hr`)
     const data = res.data || [];
 
     setCandidates(prev =>
@@ -386,7 +372,7 @@ export const CandidateProvider = ({ children }) => {
   // Fetch Offer Letter Details
   const fetchOfferLetters = async () => {
     try {
-      const res = await axios.get("https://localhost:7119/api/OfferLetter");
+      const res = await axiosInstance.get(`OfferLetter`)
       const offers = res.data || [];
 
       setCandidates(prev =>
@@ -416,9 +402,7 @@ export const CandidateProvider = ({ children }) => {
   // Update Offer Letter Status
   const updateOfferLetterStatus = async (olId, payload) => {
     try {
-      const res = await axios.put(`https://localhost:7119/api/OfferLetter/update/${olId}`, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axiosInstance.put(`OfferLetter/update/${olId}`, payload)
 
       toast.success(res.data || "Offer Letter Sent Successfully!");
       await fetchCandidates();
@@ -475,11 +459,6 @@ export const CandidateProvider = ({ children }) => {
 
   const updateTemp = (id, field, value) => {
     setTempStatuses(prev => ({ ...prev, [`${id}-${field}`]: value }));
-  };
-
-  const hasTemp = (id, field, original) => {
-    const v = tempStatuses[`${id}-${field}`];
-    return v !== undefined && v !== original;
   };
 
   const value = {

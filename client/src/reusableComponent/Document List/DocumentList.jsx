@@ -6,13 +6,15 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
+import { useAuth } from "../../contexts/AuthContext";
 
-const DocumentList = ({ role = "admin" }) => {
+const DocumentList = () => {
 
     const navigate = useNavigate();
     const [documents, setDocuments] = useState([]);
     const [showFilters, setShowFilters] = useState(false);
     const [loading, setLoading] = useState(false);
+    const { role } = useAuth();
     const [filters, setFilters] = useState({
         jobTitle: "",
     });
@@ -80,7 +82,7 @@ const DocumentList = ({ role = "admin" }) => {
                 </button>
 
                 {/* Add Document Button */}
-                {role === "admin" && (
+                {role === "Admin" && (
                     <button
                         onClick={() => navigate("/admin-add-document")}
                         className="flex items-center gap-2 px-3 py-1 bg-green-700 hover:bg-green-600 rounded text-sm">
@@ -179,7 +181,7 @@ const DocumentList = ({ role = "admin" }) => {
                                     <Eye size={14} /> View
                                 </button>
 
-                                {role === "admin" && (
+                                {role === "Admin" && (
                                     <>
                                         <button
                                             className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"

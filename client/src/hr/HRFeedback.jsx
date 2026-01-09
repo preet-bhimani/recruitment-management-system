@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as XLSX from "xlsx";
+import { useAuth } from '../contexts/AuthContext';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -49,6 +50,7 @@ const HRFeedbackContent = () => {
   const [ratingOpen, setRatingOpen] = useState({});
   const [ratings, setRatings] = useState({});
   const [hoverRating, setHoverRating] = useState({});
+  const { role } = useAuth();
 
   // Badge Colors
   const badge = (s) =>

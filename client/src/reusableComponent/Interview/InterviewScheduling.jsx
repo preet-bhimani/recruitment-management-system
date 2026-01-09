@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Clock } from "lucide-react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const InterviewScheduling = ({ role = "admin" }) => {
 
@@ -173,10 +173,7 @@ const InterviewScheduling = ({ role = "admin" }) => {
                     InterviewerEmail: formData.interviewerEmail
                 };
 
-            const apiUrl = selectedType === "technical"
-                ? "https://localhost:7119/api/TechnicalInterview/schedule"
-                : "https://localhost:7119/api/HRInterview/schedule";
-            const res = await axios.post(apiUrl, payload, { headers: { "Content-Type": "application/json" } });
+            const res = await axiosInstance.post(selectedType === "technical" ? `TechnicalInterview/schedule` : `HRInterview/schedule`, payload)
 
             toast.success(res.data.message || "Technical interview scheduled successfully!");
             navigate(-1);

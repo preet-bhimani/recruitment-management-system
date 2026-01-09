@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useAuth } from "../../contexts/AuthContext";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const UpdateOfferLetter = ({ id }) => {
 
     const navigate = useNavigate();
-    const { token } = useAuth();
     const [loading, setLoading] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -44,9 +42,7 @@ const UpdateOfferLetter = ({ id }) => {
     const fetchOfferLetter = async () => {
         try {
             setLoading(true);
-            const result = await axios.get(
-                `https://localhost:7119/api/OfferLetter/details/${id}`
-            );
+            const result = await axiosInstance.get(`OfferLetter/details/${id}`)
 
             if (!result.data) {
                 toast.error("Invalid Offer Letter ID");
@@ -145,12 +141,7 @@ const UpdateOfferLetter = ({ id }) => {
 
         try {
             setSubmitLoading(true);
-            const res = await axios.put(
-                `https://localhost:7119/api/OfferLetter/update/${id}`,
-                formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            }
-            );
+            const res = await axiosInstance.put(`OfferLetter/update/${id}`, formData)
             toast.success(res.data || "Offer letter updated successfully!");
             navigate(-1);
         }

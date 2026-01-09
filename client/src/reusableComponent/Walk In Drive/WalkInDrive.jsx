@@ -229,7 +229,7 @@ function WalkInDrive() {
                                     <Eye size={14} /> View
                                 </button>
 
-                                {role === "admin" && (
+                                {role === "Admin" && (
                                     <>
                                         <button
                                             className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"

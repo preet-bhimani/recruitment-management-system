@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const AdminUpdateHRInterview = () => {
 
@@ -46,7 +47,7 @@ const AdminUpdateHRInterview = () => {
     const fetchHrIn = async () => {
         try {
             setLoading(true)
-            const res = await axios.get(`https://localhost:7119/api/HRInterview/${id}`);
+            const res = await axiosInstance.get(`HRInterview/${id}`)
             setHRData(res.data || []);
         }
         catch (err) {
@@ -143,8 +144,7 @@ const AdminUpdateHRInterview = () => {
                 HRFeedback: hrData.hrFeedback,
                 HRRating: hrData.hrRating,
             };
-            const res = await axios.put(`https://localhost:7119/api/HRInterview/update/${id}`,
-                payload, { headers: { "Content-Type": "application/json" } });
+            const res = await axiosInstance.put(`HRInterview/update/${id}`, payload)
             toast.success(res.data || "HR interview updated successfully!");
             navigate(-1);
         }

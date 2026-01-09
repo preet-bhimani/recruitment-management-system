@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const AdminAddOfferLetter = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -17,7 +18,7 @@ const AdminAddOfferLetter = () => {
     const fetchPendingOfferLetters = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/OfferLetter/pending`);
+            const res = await axiosInstance.get(`OfferLetter/pending`)
             setCandidates(res.data || []);
         }
         catch (err) {

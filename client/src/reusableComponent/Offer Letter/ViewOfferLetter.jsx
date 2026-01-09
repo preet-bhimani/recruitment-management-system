@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, Mail, FileText } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 function ViewOfferLetter() {
 
@@ -35,14 +35,12 @@ function ViewOfferLetter() {
         return date.split("T")[0];
     };
 
-
     // Fetch Offer Letter Details
     const fetchOfferLetterById = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/OfferLetter/fetch/${id}`);
+            const res = await axiosInstance.get(`OfferLetter/fetch/${id}`)
             setOffer(res.data);
-            console.log(res.data);
         }
         catch (err) {
             toast.error("Failed to load Offer Letter details!");
