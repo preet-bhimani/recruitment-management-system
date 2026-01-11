@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const AdminUserUpdate = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -62,7 +63,7 @@ const AdminUserUpdate = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`https://localhost:7119/api/User/${id}`);
+      const res = await axiosInstance.get(`User/${id}`);
       const names = (res.data.skills ?? []).map(s => s.skillName);
       setSelectedSkills(names);
       setUserData(res.data || {});
@@ -79,7 +80,7 @@ const AdminUserUpdate = () => {
   // Fetch Skills
   const fetchSkills = async () => {
     try {
-      const res = await axios.get("https://localhost:7119/api/Skill");
+      const res = await axiosInstance.get(`Skill`);
       setAllSkills(res.data || []);
     } catch (err) {
       toast.error("Failed to load skills");
@@ -318,10 +319,7 @@ const AdminUserUpdate = () => {
 
     try {
       setSubmitLoading(true);
-      const res = await axios.put(
-        `https://localhost:7119/api/User/update/${id}`,
-        submitData
-      );
+      const res = await axiosInstance.put(`User/update/${id}`, submitData)
       toast.success(res.data.message || "User updated successfully!");
       navigate("/admin-user");
     }

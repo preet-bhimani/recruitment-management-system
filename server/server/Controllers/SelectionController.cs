@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
@@ -18,6 +19,7 @@ namespace server.Controllers
         }
 
         // Get all selected candidates details
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllSelectedCandidateList()
         {
@@ -39,6 +41,7 @@ namespace server.Controllers
         }
 
         // Get candidate from its Id
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetSelectedCandidateById(Guid id)
         {
@@ -77,6 +80,7 @@ namespace server.Controllers
         }
 
         // Update Selection
+        [Authorize(Roles = "Admin")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateSelectionStatus(Guid id, [FromBody] UpdateSelectionDto usDto)
         {
@@ -159,6 +163,7 @@ namespace server.Controllers
         }
 
         // Delete or Hold status
+        [Authorize(Roles = "Admin")]
         [HttpPut("hold/{id:guid}")]
         public async Task<IActionResult> MoveSelectionToHold(Guid id)
         {

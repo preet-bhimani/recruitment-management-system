@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const ViewSelection = () => {
 
@@ -35,7 +36,7 @@ const ViewSelection = () => {
     const fetchSelectionByID = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/Selection/${id}`)
+            const res = await axiosInstance.get(`Selection/${id}`)
             setSelection(res.data || []);
         } 
         catch (err) {

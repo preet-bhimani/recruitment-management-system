@@ -332,6 +332,7 @@ const AdminUpdateTechInterview = () => {
                                         <option value="In Progress">In Progress</option>
                                         <option value="Not Clear">Not Clear</option>
                                         <option value="Pending">Pending</option>
+                                        <option value="Hold">Hold</option>
                                     </select>
                                 </div>
                             </div>

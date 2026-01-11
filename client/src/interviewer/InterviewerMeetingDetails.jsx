@@ -8,7 +8,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const ITEMS_PER_PAGE = 5;
 
-const InterviewerMeetingDetailsContent = ({ role: initialRole = 'Interviewer' }) => {
+const InterviewerMeetingDetailsContent = () => {
     const { candidates } = useCandidates();
     const [jobTitleFilter, setJobTitleFilter] = useState('all');
     const [fromDate, setFromDate] = useState('');

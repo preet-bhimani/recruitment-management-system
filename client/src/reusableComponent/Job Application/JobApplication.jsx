@@ -2,13 +2,13 @@ import React, { useMemo, useState, useEffect } from "react";
 import { Eye, Edit, Trash2, Filter, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CommonPagination, { paginate } from "../CommonPagination";
-import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
 import axiosInstance from "../../routes/axiosInstance";
+import { useAuth } from "../../contexts/AuthContext";
 
-const JobApplication = ({ role = "admin" }) => {
+const JobApplication = () => {
 
     // Color Bage for Overall Status
     const badge = (s) =>
@@ -29,6 +29,7 @@ const JobApplication = ({ role = "admin" }) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [jobapp, setJobApp] = useState([]);
+    const { role } = useAuth();
 
     // Fetch Job Application
     const fetchJobApplications = async () => {
@@ -112,6 +113,20 @@ const JobApplication = ({ role = "admin" }) => {
     ];
     const titles = Array.from(new Set(jobapp.map((j) => j.title))).sort();
 
+    // Handle Delete
+    const handleDelete = async (jaId) => {
+        const confirmDelete = window.confirm("Are you sure you want to hold the job application ?");
+        if (!confirmDelete) return;
+        try {
+            await axiosInstance.put(`JobApplication/delete/${jaId}`)
+            toast.success("Job application hold Successfully");
+            await fetchJobApplications();
+        }
+        catch (err) {
+            toast.error(err.response?.data || "Failed to hold job application")
+        }
+    }
+
     // Export Excel File
     const handleExport = () => {
         var wb = XLSX.utils.book_new();
@@ -128,7 +143,7 @@ const JobApplication = ({ role = "admin" }) => {
             {/* Add and Filter Buttons */}
             <div className="flex flex-wrap gap-2 sm:gap-3 mb-4 justify-end">
 
-                {role == "admin" && (<button
+                {role == "Admin" && (<button
                     className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm w-full sm:w-auto"
                     onClick={() => navigate("/admin-add-jobapplication")}>
                     + Add Job Application
@@ -286,14 +301,15 @@ const JobApplication = ({ role = "admin" }) => {
                                         <Eye size={12} /> View
                                     </button>
 
-                                    {role == "admin" && (<>
+                                    {role == "Admin" && (<>
                                         <button
                                             className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
                                             onClick={() => navigate(`/admin-update-jobapplication/${ja.jaId}`)}>
                                             <Edit size={12} /> Update
                                         </button>
 
-                                        <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
+                                        <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                            onClick={() => handleDelete(ja.jaId)}>
                                             <Trash2 size={12} /> Delete
                                         </button>
                                     </>)}

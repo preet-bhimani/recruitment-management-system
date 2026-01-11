@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
@@ -18,6 +19,7 @@ namespace server.Controllers
         }
 
         // Add skills logic
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPost]
         public async Task<IActionResult> AddSkill(SkillDto skillDto)
         {
@@ -38,6 +40,7 @@ namespace server.Controllers
             var newSkill = new Skill
             {
                 SkillName = skillDto.SkillName,
+                SkillStatus = skillDto.SkillStatus,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -48,6 +51,7 @@ namespace server.Controllers
         }
 
         // Get all skills
+        [Authorize(Roles = "Admin,Viewer,Recruiter")]
         [HttpGet]
         public async Task<IActionResult> GetAllSkills()
         {
@@ -55,6 +59,7 @@ namespace server.Controllers
         }
 
         // Get skills based on Id
+        [Authorize(Roles = "Admin,Recruiter,Viewer")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetSkillById(Guid id)
         {
@@ -69,6 +74,7 @@ namespace server.Controllers
         }
 
         // Update skill logic
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateSkill(Guid id, SkillDto skillDto)
         {
@@ -95,6 +101,7 @@ namespace server.Controllers
             // If everything perfect then update skill
             skill.SkillName = skillDto.SkillName;
             skill.UpdatedAt = DateTime.UtcNow;
+            skill.SkillStatus = skillDto.SkillStatus;
 
             dbContext.Skills.Update(skill);
             await dbContext.SaveChangesAsync();
@@ -103,6 +110,7 @@ namespace server.Controllers
         }
 
         // Delete logic
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteSkill(Guid id)
         {
@@ -115,7 +123,8 @@ namespace server.Controllers
             }
 
             // delete skill
-            dbContext.Skills.Remove(skill);
+            skill.SkillStatus = false;
+            skill.UpdatedAt = DateTime.Now;
             await dbContext.SaveChangesAsync();
 
             return Ok("Skill deleted successfully");

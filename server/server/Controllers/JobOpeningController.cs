@@ -61,30 +61,16 @@ namespace server.Controllers
         }
 
         // Get all Job opening
-        [Authorize(Roles ="Admin,Recruiter,Candidate,Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllJobOpening()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim))
-            {
-                return Unauthorized("Invalid token. User ID not found");
-            }
-
             return Ok(dbContext.JobOpenings.ToList());
         }
 
         // Get Job opening by Id
-        [Authorize(Roles = "Admin,Recruiter,Candidate,Viewer")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetJobOpeningById(Guid id)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim))
-            {
-                return Unauthorized("Invalid token. User ID not found");
-            }
-
             var job = await dbContext.JobOpenings.FindAsync(id);
 
             if (job == null)
@@ -96,16 +82,10 @@ namespace server.Controllers
         }
 
         // Fetch Job Opening only which status is open
-        [Authorize(Roles = "Admin,Recruiter,Candidate,Viewer")]
+        [AllowAnonymous]
         [HttpGet("jobopen")]
         public async Task<IActionResult> GetJobOpeningStatusOpen()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim))
-            {
-                return Unauthorized("Invalid token. User ID not found");
-            }
-
             var job = await dbContext.JobOpenings.Where(j => j.Status == "Open").ToListAsync();
 
             if(!job.Any())

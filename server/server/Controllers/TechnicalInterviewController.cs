@@ -689,6 +689,33 @@ namespace server.Controllers
             return Ok(interviews);
         }
 
+        // Hold technical interview
+        [Authorize(Roles = "Admin")]
+        [HttpPut("delete/{id:guid}")]
+        public async Task<IActionResult> HoldTechnicalInterview(Guid id)
+        {
+            var tech = await dbContext.TechnicalInterviews
+                .Include(t => t.JobApplication)
+                .FirstOrDefaultAsync(t => t.TIId == id);
+
+            if(tech == null)
+            {
+                return NotFound("Technical interview not found");
+            }
+
+            if(tech.TechIsClear == "Hold")
+            {
+                return BadRequest("Technical interview is already Hold");
+            }
+
+            tech.TechIsClear = "Hold";
+            tech.JobApplication.OverallStatus = "Hold";
+            tech.UpdatedAt = DateTime.Now;
+
+            await dbContext.SaveChangesAsync();
+            return Ok("Technical interview move to hold");
+        }
+
         // Get token response
         public class GoogleTokenResponse
         {

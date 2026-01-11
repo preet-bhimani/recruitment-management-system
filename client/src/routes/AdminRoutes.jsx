@@ -28,6 +28,17 @@ import AdminAddOfferLetter from "../admin/Offer Letter/AdminAddOfferLetter";
 import AdminSentOfferLetter from "../admin/Offer Letter/AdminSentOfferLetter";
 import AdminUpdateOfferLetter from "../admin/Offer Letter/AdminUpdateOfferLetter";
 import AdminAddDocuments from "../admin/Documents/AdminAddDocuments";
+import AdminSelection from "../admin/selection/AdminSelection";
+import AdminUpdateSelection from "../admin/selection/AdminUpdateSelection";
+import AdminSkill from "../admin/Skill/AdminSkill";
+import AdminAddSkill from "../admin/Skill/AdminAddSkill";
+import AdminUpdateSkill from "../admin/Skill/AdminUpdateSkill";
+import AdminDashboard from "../admin/AdminDashboard";
+import AdminUser from "../admin/User/AdminUser";
+import AdminAddUser from "../admin/User/AdminAddUser";
+import AdminAddUserExcel from "../admin/User/AdminAddUserExcel";
+import AdminAddUserResume from "../admin/User/AdminAddUserResume";
+import AdminUserUpdate from "../admin/User/AdminUserUpdate";
 
 const AdminRoutes = (
     <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
@@ -58,6 +69,17 @@ const AdminRoutes = (
         <Route path="/admin-add-offerletter" element={<AdminAddOfferLetter />} />
         <Route path="/admin-sent-offerletter/:id" element={<AdminSentOfferLetter />} />
         <Route path="/admin-update-offerletter/:id" element={<AdminUpdateOfferLetter />} />
+        <Route path="/admin-selection" element={<AdminSelection />} />
+        <Route path="/admin-update-selection/:id" element={<AdminUpdateSelection />} />
+        <Route path="/admin-skill" element={<AdminSkill />} />
+        <Route path="/admin-add-skill" element={<AdminAddSkill />} />
+        <Route path="/admin-update-skill/:id" element={<AdminUpdateSkill />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin-user" element={<AdminUser />} />
+        <Route path="/admin-add-user" element={<AdminAddUser />} />
+        <Route path="/admin-add-user-excel" element={<AdminAddUserExcel />} />
+        <Route path="/admin-add-user-resume" element={<AdminAddUserResume />} />
+        <Route path="/admin-user-update/:id" element={<AdminUserUpdate />} />
     </Route>
 );
 

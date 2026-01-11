@@ -27,7 +27,7 @@ const JobDescription = () => {
 
   const fetchJob = async () => {
     try {
-      const res = await axiosInstance.get(`JobOpening/${id}`)
+      const res = await axios.get(`https://localhost:7119/api/JobOpening/${id}`)
       const data = res.data;
       setJobData({
         ...data,
@@ -57,7 +57,7 @@ const JobDescription = () => {
         walkId: selectedMode === "WALKIN" ? selectedWalkId : null,
       };
 
-      await axiosInstance.post(`JobApplication`, payload)
+      await axios.post(`https://localhost:7119/api/JobAppication`, payload);
 
       toast.success("Application submitted successfully!");
       setShowApplyModal(false);

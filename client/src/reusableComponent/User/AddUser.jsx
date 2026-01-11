@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import { useAuth } from "../../contexts/AuthContext";
+import axiosInstance from "../../routes/axiosInstance";
 
-const AddUser = ({ role = "admin" }) => {
+const AddUser = () => {
+
+    const { role } = useAuth();
 
     // All Form Data Fields
     const [formData, setFormData] = useState({
@@ -108,7 +111,7 @@ const AddUser = ({ role = "admin" }) => {
     useEffect(() => {
         const fetchSkills = async () => {
             try {
-                const res = await axios.get("https://localhost:7119/api/Skill");
+                const res = await axiosInstance.get(`Skill`);
                 setAllSkills(res.data || []);
             }
             catch (err) {
@@ -322,10 +325,7 @@ const AddUser = ({ role = "admin" }) => {
 
         try {
             setSubmitLoading(true);
-            const res = await axios.post(
-                "https://localhost:7119/api/User/create",
-                submitData
-            );
+            const res = await axiosInstance.post(`User/create`, submitData)
             toast.success(res.data.message || "User created successfully!");
         }
         catch (err) {
@@ -341,9 +341,6 @@ const AddUser = ({ role = "admin" }) => {
             <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
                 <div className="bg-neutral-900 px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
                     <CommonLoader />
-                    <span className="text-neutral-200 text-sm">
-                        Adding User
-                    </span>
                 </div>
             </div>
         )}
@@ -656,7 +653,7 @@ const AddUser = ({ role = "admin" }) => {
                 {errors.cdid && <p className="text-red-500 text-xs">{errors.cdid}</p>}
             </div>
 
-            {role === 'admin' && (
+            {role === 'Admin' && (
                 <>
                     {/* Role */}
                     <div>

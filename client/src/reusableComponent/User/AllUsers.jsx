@@ -6,18 +6,21 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
+import axiosInstance from "../../routes/axiosInstance";
+import { useAuth } from "../../contexts/AuthContext";
 
-const AllUsers = ({ role = "admin" }) => {
+const AllUsers = () => {
 
     const [users, setUsers] = useState([]);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const { role } =useAuth();
 
     // Fetch Users
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("https://localhost:7119/api/User");
+            const res = await axiosInstance.get(`User`);
             setUsers(res.data || []);
         }
         catch (err) {
@@ -71,7 +74,7 @@ const AllUsers = ({ role = "admin" }) => {
         if (!ok) return;
 
         try {
-            await axios.delete(`https://localhost:7119/api/User/delete/${userId}`);
+            await axiosInstance.delete(`User/delete/${userId}`);
             fetchUsers();
             toast.success(res.data.message || "User deactivated successfully");
         } catch (err) {
@@ -100,7 +103,7 @@ const AllUsers = ({ role = "admin" }) => {
 
             {/* Add New User */}
             <div className="flex flex-wrap gap-3 mb-4 justify-end">
-                {role === "admin" && (
+                {role === "Admin" && (
                     <>
                         <button
                             className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm"
@@ -231,7 +234,7 @@ const AllUsers = ({ role = "admin" }) => {
                                         <Eye size={14} /> View
                                     </button>
 
-                                    {role === "admin" && (
+                                    {role === "Admin" && (
                                         <>
                                             <button
                                                 className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"

@@ -12,6 +12,13 @@ import RecruiterAddJobOpening from "../recruiter/RecruiterAddJobOpening";
 import RecruiterUpdateJobOpening from "../recruiter/RecruiterUpdateJobOpening";
 import RecruiterMeetingScheduling from "../recruiter/RecruiterMeetingScheduling";
 import RecruiterSentOfferLetter from "../recruiter/RecruiterSentOfferLetter";
+import RecruiterSkill from "../recruiter/RecruiterSkill";
+import RecruiterAddSkill from "../recruiter/RecruiterAddSkill"
+import RecruiterUpdateSkill from "../recruiter/RecruiterUpdateSkill";
+import RecruiterAddUser from "../recruiter/RecruiterAddUser";
+import RecruiterAddUserExcel from "../recruiter/RecruiterAddUserExcel";
+import RecruiterCandidate from "../recruiter/RecruiterCandidate";
+import RecruiterAddUserResume from "../recruiter/RecruiterAddUserResume";
 
 const RecruiterRoutes = (
     <Route element={<ProtectedRoute allowedRoles={["Recruiter"]} />}>
@@ -26,6 +33,13 @@ const RecruiterRoutes = (
         <Route path="/recruiter-update-jobopening/:id" element={<RecruiterUpdateJobOpening />} />
         <Route path="/recruiter-meeting-scheduling" element={<RecruiterMeetingScheduling />} />
         <Route path="/recruiter-sent-offer-letter/:id" element={<RecruiterSentOfferLetter />} />
+        <Route path="/recruiter-skill" element={<RecruiterSkill />} />
+        <Route path="/recruiter-add-skill" element={<RecruiterAddSkill />} />
+        <Route path="/recruiter-update-skill/:id" element={<RecruiterUpdateSkill />} />
+        <Route path="/recruiter-add-candidate" element={<RecruiterAddUser />} />
+        <Route path="/recruiter-add-candidate-excel" element={<RecruiterAddUserExcel />} />
+        <Route path="/recruiter-candidate" element={<RecruiterCandidate />} />
+        <Route path="/recruiter-add-candidate-resume" element={<RecruiterAddUserResume />} />
     </Route>
 );
 

@@ -8,7 +8,8 @@ import {
   Users,
   Briefcase,
   University,
-  Footprints
+  Footprints,
+  GraduationCap
 } from "lucide-react";
 
 const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
@@ -47,6 +48,14 @@ const RecruiterSidebar = ({ isCollapsed, setIsCollapsed }) => {
       children: [
         { name: "Walk In Drive", path: "/recruiter-walkindrive" },
         { name: "Add Walk In Drive ", path: "/recruiter-add-walkindrive" },
+      ],
+    },
+    {
+      title: "Skill",
+      icon: <GraduationCap size={20} />,
+      children: [
+        { name: "Skill", path: "/recruiter-skill" },
+        { name: "Add Skill ", path: "/recruiter-add-skill" },
       ],
     },
   ];

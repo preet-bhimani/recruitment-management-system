@@ -9,6 +9,9 @@ import ViewerTechnicalInterview from "../viewer/ViewerTechnicalInterview";
 import ViewerHRInterview from "../viewer/ViewerHRInterview";
 import ViewerDocumentList from "../viewer/ViewerDocumentList";
 import ViewerOfferLetter from "../viewer/ViewerOfferLetter";
+import ViewerSelection from "../viewer/ViewerSelection";
+import ViewerUser from "../viewer/ViewerUser";
+import ViewerSkill from "../viewer/ViewerSkill";
 
 const ViewerRoutes = (
     <Route element={<ProtectedRoute allowedRoles={["Viewer"]} />}>
@@ -20,6 +23,9 @@ const ViewerRoutes = (
         <Route path="/viewer-hrinterview" element={<ViewerHRInterview />} />
         <Route path="/viewer-documentlist" element={<ViewerDocumentList />} />
         <Route path="/viewer-offerletter" element={<ViewerOfferLetter />} />
+        <Route path="/viewer-selection" element={<ViewerSelection />} />
+        <Route path="/viewer-user" element={<ViewerUser />} />
+        <Route path="/viewer-skill" element={<ViewerSkill />} />
     </Route>
 );
 

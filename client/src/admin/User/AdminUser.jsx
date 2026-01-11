@@ -21,7 +21,7 @@ const AdminUser = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4">Admin User</h1>
         </div>
-        <AllUsers role="admin" />
+        <AllUsers />
       </main>
     </div>
   </div >;

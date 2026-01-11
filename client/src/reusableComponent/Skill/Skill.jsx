@@ -2,23 +2,25 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Filter, Download } from "lucide-react";
 import CommonPagination, { paginate } from "../CommonPagination";
-import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
+import { useAuth } from "../../contexts/AuthContext";
+import axiosInstance from "../../routes/axiosInstance";
 
-const Skill = ({ role = "admin" }) => {
+const Skill = () => {
 
     const navigate = useNavigate();
-
     const [allSkills, setAllSkills] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { role } = useAuth();
+    const r = role;
 
     // Fetch  Skills
     const fetchSkills = async () => {
         try {
             setLoading(true);
-            const res = await axios.get("https://localhost:7119/api/Skill");
+            const res = await axiosInstance.get(`Skill`)
             setAllSkills(res.data || []);
         }
         catch (err) {
@@ -34,14 +36,24 @@ const Skill = ({ role = "admin" }) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this skill?");
         if (!confirmDelete) return;
         try {
-            const res = await axios.delete(`https://localhost:7119/api/Skill/${skillId}`);
-            if (res.status === 200) {
-                toast.success("Skill deleted successfully");
-                fetchSkills();
-            }
-        } catch (err) {
+            const res = await axiosInstance.delete(`Skill/${skillId}`);
+            toast.success("Skill deleted successfully");
+            fetchSkills();
+        }
+        catch (err) {
             toast.error(err.response?.data || "Failed to delete skill");
         }
+    };
+
+    // Navigate As Per Role
+    const handleAddJob = () => {
+        const to = r === "Recruiter" ? "/recruiter-add-skill" : "/admin-add-skill";
+        navigate(to);
+    };
+
+    const handleUpdate = (id) => {
+        const to = r === "Recruiter" ? `/recruiter-update-skill/${id}` : `/admin-update-skill/${id}`;
+        navigate(to);
     };
 
     // Fetching Data
@@ -85,10 +97,10 @@ const Skill = ({ role = "admin" }) => {
 
         {/* Add Skill and Filter Button */}
         <div className="flex flex-wrap items-center justify-end gap-3 mb-4">
-            {role === "admin" && (
+            {role !== "Viewer" && (
                 <button
                     className="px-3 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-sm"
-                    onClick={() => navigate("/admin-add-skill")}>
+                    onClick={handleAddJob}>
                     + Add Skill
                 </button>
             )}
@@ -156,18 +168,19 @@ const Skill = ({ role = "admin" }) => {
 
                         {/* Action Buttons */}
                         <div className="flex gap-2 mt-2 sm:mt-0">
-                            {role === "admin" && (
+                            {role !== "Viewer" && (
                                 <>
                                     <button
                                         className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                        onClick={() => navigate(`/admin-update-skill/${skill.skillId}`)}>
+                                        onClick={() => handleUpdate(skill.skillId)}>
                                         Update
                                     </button>
-
-                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
-                                        onClick={() => handleDelete(skill.skillId)}>
-                                        Delete
-                                    </button>
+                                    {skill.skillStatus && (
+                                        <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                            onClick={() => handleDelete(skill.skillId)}>
+                                            Delete
+                                        </button>
+                                    )}
                                 </>
                             )}
                         </div>

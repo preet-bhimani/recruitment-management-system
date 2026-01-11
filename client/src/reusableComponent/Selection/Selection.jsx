@@ -6,8 +6,9 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
+import axiosInstance from "../../routes/axiosInstance";
 
-const Selection = ({ role = "admin" }) => {
+const Selection = () => {
 
     const [selection, setSelection] = useState([]);
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Selection = ({ role = "admin" }) => {
     const fetchSelection = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/Selection`);
+            const res = await axiosInstance.get(`Selection`)
             setSelection(res.data || []);
         }
         catch (err) {
@@ -70,7 +71,7 @@ const Selection = ({ role = "admin" }) => {
         if (!window.confirm("Move this selection to Hold?")) return;
 
         try {
-            await axios.put(`https://localhost:7119/api/Selection/hold/${id}`);
+            await axiosInstance.put(`Selection/hold/${id}`)
             toast.success("Selection moved to Hold!");
             fetchSelection();
         }

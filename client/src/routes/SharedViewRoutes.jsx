@@ -9,6 +9,8 @@ import ViewTechnicalInterview from "../reusableComponent/Technical Interview/Vie
 import ViewHRInterview from "../reusableComponent/Hr Interview/ViewHRInterview";
 import ViewDocumentList from "../reusableComponent/Document List/ViewDocumentList";
 import ViewOfferLetter from "../reusableComponent/Offer Letter/ViewOfferLetter";
+import ViewSelection from "../reusableComponent/Selection/ViewSelection";
+import ViewUser from "../reusableComponent/User/ViewUser";
 
 const SharedViewRoutes = (
     <Route element={<ProtectedRoute allowedRoles={["Admin", "Viewer", "Recruiter"]} />}>
@@ -20,6 +22,8 @@ const SharedViewRoutes = (
         <Route path="/view-hrinterview/:id" element={<ViewHRInterview />} />
         <Route path="/view-documentlist/:id" element={<ViewDocumentList />} />
         <Route path="/view-offerletter/:id" element={<ViewOfferLetter />} />
+        <Route path="/view-selection/:id" element={<ViewSelection />} />
+        <Route path="/view-user/:id" element={<ViewUser />} />
     </Route>
 );
 

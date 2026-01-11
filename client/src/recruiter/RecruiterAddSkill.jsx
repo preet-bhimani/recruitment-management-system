@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import CommonNavbar from "../components/CommonNavbar";
 import RecruiterSidebar from "./RecruiterSidebar";
-import AddUser from "../reusableComponent/User/AddUser";
+import AddSkill from "../reusableComponent/Skill/AddSkill";
 import Footer from "../components/Footer";
 
-const RecruiterAddUser = () => {
+const RecruiterAddSkill = () => {
 
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
     return <div className="min-h-screen flex flex-col bg-neutral-950">
         {/* Navbar */}
-        <CommonNavbar isLoggedIn={true} role="recruiter" />
+        <CommonNavbar isLoggedIn={true} role="Recruiter" />
 
         {/* Main Layout */}
         <div className="flex flex-1 overflow-hidden">
@@ -18,11 +18,11 @@ const RecruiterAddUser = () => {
             <RecruiterSidebar isCollapsed={sidebarCollapsed} setIsCollapsed={setSidebarCollapsed} />
 
             {/* Main Content */}
-                <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
+            <main className="flex-1 bg-neutral-950 text-white p-6 overflow-y-auto">
                 <div className="text-center mt-8 mb-8">
-                    <h1 className="text-4xl font-bold text-center text-white mb-4">Add Candidate</h1>
+                    <h1 className="text-4xl font-bold text-center text-white mb-4">Add Skill</h1>
                 </div>
-                <AddUser />
+                <AddSkill />
             </main>
         </div>
         {/* Footer */}
@@ -30,4 +30,4 @@ const RecruiterAddUser = () => {
     </div>;
 };
 
-export default RecruiterAddUser;
+export default RecruiterAddSkill;

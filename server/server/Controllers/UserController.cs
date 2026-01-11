@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ namespace server.Controllers
             this.templateService = templateService;
         }
 
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromForm] UserDto userDto, [FromForm] IFormFile? photo, [FromForm] IFormFile? resume)
         {
@@ -163,6 +165,7 @@ namespace server.Controllers
         }
 
         // Add user by Excel file
+        [Authorize(Roles = "Admin,Recruiter")]
         [HttpPost("import-excel")]
         public async Task<IActionResult> AddUsersByExcel(IFormFile file)
         {
@@ -271,6 +274,7 @@ namespace server.Controllers
         }
 
         // Fetch all users
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -290,6 +294,7 @@ namespace server.Controllers
         }
 
         // Get user based on Id
+        [Authorize(Roles = "Admin,Viewer")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
@@ -337,6 +342,7 @@ namespace server.Controllers
         }
 
         // Update user
+        [Authorize(Roles = "Admin")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromForm] UserDto userDto, [FromForm] IFormFile? photo, [FromForm] IFormFile? resume)
         {
@@ -473,6 +479,7 @@ namespace server.Controllers
         }
 
         // Delete or just deactive user
+        [Authorize(Roles = "Admin")]
         [HttpDelete("delete/{id:guid}")]
         public async Task<IActionResult> DeleteById(Guid id)
         {

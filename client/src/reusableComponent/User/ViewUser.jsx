@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const ViewUser = () => {
 
@@ -22,7 +23,7 @@ const ViewUser = () => {
   const fetchUserDataByID = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`https://localhost:7119/api/User/${id}`)
+      const res = await axiosInstance.get(`User/${id}`);
       setUserData(res.data || []);
     }
     catch (err) {

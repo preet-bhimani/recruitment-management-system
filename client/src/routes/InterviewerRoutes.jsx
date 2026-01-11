@@ -7,7 +7,6 @@ import InterviewerMeetingDetails from "../interviewer/InterviewerMeetingDetails"
 const InterviewerRoutes = (
     <Route element={<ProtectedRoute allowedRoles={["Interviewer"]} />}>
         <Route path="/interviewer-feedback" element={<InterviewerFeedback />} />
-        <Route path="/interview-meeting-details" element={<InterviewerMeetingDetails />} />
     </Route>
 );
 

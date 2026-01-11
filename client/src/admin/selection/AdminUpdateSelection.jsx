@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const AdminUpdateSelection = () => {
 
@@ -13,14 +14,13 @@ const AdminUpdateSelection = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [submitLoading, setSubmitLoading] = useState(false);
-
     const [selection, setSelection] = useState({})
 
     // Fetch Selection by ID
     const fetchSelection = async () => {
         try {
             setLoading(true);
-            const res = await axios.get(`https://localhost:7119/api/Selection/${id}`);
+            const res = await axiosInstance.get(`Selection/${id}`)
             setSelection(res.data);
         }
         catch (err) {
@@ -35,9 +35,9 @@ const AdminUpdateSelection = () => {
         e.preventDefault();
         try {
             setSubmitLoading(true);
-            const res = await axios.put(`https://localhost:7119/api/Selection/update/${selection.selectionId}`, {
+            const res = await axiosInstance.put(`Selection/update/${selection.selectionId}`, {
                 selectionStatus: selection.selectionStatus
-            });
+            })
             toast.success(res.data.message || "Selection updated successfully!");
             navigate(-1);
         }

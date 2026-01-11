@@ -527,5 +527,31 @@ namespace server.Controllers
 
             return Ok(SendDto(jobapp));
         }
+
+        // Hold job application
+        [Authorize(Roles = "Admin")]
+        [HttpPut("delete/{id:guid}")]
+        public async Task<IActionResult> HoldJobApplication(Guid id)
+        {
+            var Jobapp = await dbContext.JobApplications.FindAsync(id);
+
+            if(Jobapp == null)
+            {
+                return NotFound("Job application not founnd");
+            }
+
+            if(Jobapp.Status == "Hold")
+            {
+                return BadRequest("Job Application is already Hold");
+            }
+
+            Jobapp.Status = "Hold";
+            Jobapp.OverallStatus = "Hold";
+            Jobapp.UpdatedAt = DateTime.Now;
+
+            await dbContext.SaveChangesAsync();
+
+            return Ok("Job application move to Hold");
+        }
     }
 }

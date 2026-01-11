@@ -76,6 +76,20 @@ const TechnicalInterview = () => {
     setCurrentPage(1);
   }, [filters]);
 
+  // Hold TechIsClear
+  const handleDelete = async (tiId) => {
+    const confirmDelete = window.confirm("Are you sure you want to hold the technical interview ?");
+    if (!confirmDelete) return;
+    try {
+      await axiosInstance.put(`TechnicalInterview/delete/${tiId}`)
+      toast.success("Technical interview hold Successfully");
+      await fetchTechin();
+    }
+    catch (err) {
+      toast.error(err.response?.data || "Failed to hold technical interview")
+    }
+  }
+
   // Export Excel File
   const handleExport = () => {
     var wb = XLSX.utils.book_new();
@@ -294,7 +308,8 @@ const TechnicalInterview = () => {
                       onClick={() => navigate(`/admin-update-techinterview/${tech.tiId}`)}>
                       <Edit size={14} /> Update
                     </button>
-                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
+                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                      onClick={() => handleDelete(tech.tiId)}>
                       <Trash2 size={14} /> Delete
                     </button>
                   </>

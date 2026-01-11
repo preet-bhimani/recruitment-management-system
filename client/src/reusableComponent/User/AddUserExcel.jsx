@@ -3,6 +3,7 @@ import { Upload, FileSpreadsheet } from "lucide-react";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import CommonLoader from "../../components/CommonLoader";
+import axiosInstance from "../../routes/axiosInstance";
 
 const AddUserExcel = () => {
 
@@ -25,10 +26,8 @@ const AddUserExcel = () => {
 
         try {
             setLoading(true);
-            const res = await axios.post(
-                "https://localhost:7119/api/User/import-excel", formData,
-                { headers: { "Content-Type": "multipart/form-data" } }
-            );
+            const res = await axiosInstance.post(`User/import-excel`, formData,
+                { headers: { "Content-Type": "multipart/form-data" } });
 
             setResult(res.data);
             setShowModal(true);

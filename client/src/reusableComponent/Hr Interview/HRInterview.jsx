@@ -13,7 +13,7 @@ const HRInterview = () => {
 
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const { role } =useAuth();
+    const { role } = useAuth();
     const [hrin, setHrin] = useState([]);
 
     const fetchHrin = async () => {
@@ -86,6 +86,20 @@ const HRInterview = () => {
     useEffect(() => {
         setCurrentPage(1);
     }, [filters]);
+
+    // Hold HRIsClear
+    const handleDelete = async (hiId) => {
+        const confirmDelete = window.confirm("Are you sure you want to hold the hr interview ?");
+        if (!confirmDelete) return;
+        try {
+            await axiosInstance.put(`HRInterview/delete/${hiId}`)
+            toast.success("HR interview hold Successfully");
+            await fetchHrin();
+        }
+        catch (err) {
+            toast.error(err.response?.data || "Failed to hold hr interview")
+        }
+    }
 
     // Export Excel File
     const handleExport = () => {
@@ -311,7 +325,8 @@ const HRInterview = () => {
                                         <Edit size={14} /> Update
                                     </button>
 
-                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
+                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                        onClick={() => handleDelete(hr.hiId)}>
                                         <Trash2 size={14} /> Delete
                                     </button>
                                 </>

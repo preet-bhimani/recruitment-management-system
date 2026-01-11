@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import UploadDocumentPopup from "./UploadDocumentPopup ";
 import CommonLoader from "../components/CommonLoader";
 import axiosInstance from "../routes/axiosInstance";
+import axios from "axios";
+import { useAuth } from "../contexts/AuthContext";
 
 const CandidateDashboard = () => {
 
@@ -16,12 +18,13 @@ const CandidateDashboard = () => {
   const [pendingList, setPendingList] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { token } = useAuth();
 
   // Fetch Jobs
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const res = await axiosInstance.get(`JobOpening/jobopen`)
+      const res = await axios.get(`https://localhost:7119/api/JobOpening/jobopen`)
       setJobs(res.data || []);
     }
     catch (err) {
@@ -86,7 +89,9 @@ const CandidateDashboard = () => {
 
   useEffect(() => {
     fetchJobs();
-    fetchPendingDocuments();
+    if (token) {
+      fetchPendingDocuments();
+    }
   }, [])
 
   const navigate = useNavigate();
