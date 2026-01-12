@@ -7,12 +7,14 @@ import { useNavigate } from "react-router-dom";
 import CommonLoader from "../../components/CommonLoader";
 import * as XLSX from "xlsx";
 import axiosInstance from "../../routes/axiosInstance";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Selection = () => {
 
     const [selection, setSelection] = useState([]);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const { role } = useAuth();
 
     // Fetch Selected Candidates
     const fetchSelection = async () => {
@@ -201,16 +203,19 @@ const Selection = () => {
                                 <button className="flex items-center gap-1 px-2 py-1 bg-purple-800 hover:bg-purple-700 rounded text-xs" onClick={() => navigate(`/view-selection/${c.selectionId}`)}>
                                     <Eye size={14} /> View
                                 </button>
-                                <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
-                                    onClick={() => navigate(`/admin-update-selection/${c.selectionId}`)}>
-                                    <Edit size={14} /> Update
-                                </button>
-                                {c.selectionStatus !== "Hold" && (
-                                    <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
-                                        onClick={() => handleDelete(c.selectionId)}>
-                                        <Trash2 size={14} /> Delete
+
+                                {role === "Admin" && (<>
+                                    <button className="flex items-center gap-1 px-2 py-1 bg-amber-700 hover:bg-amber-600 rounded text-xs"
+                                        onClick={() => navigate(`/admin-update-selection/${c.selectionId}`)}>
+                                        <Edit size={14} /> Update
                                     </button>
-                                )}
+                                    {c.selectionStatus !== "Hold" && (
+                                        <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs"
+                                            onClick={() => handleDelete(c.selectionId)}>
+                                            <Trash2 size={14} /> Delete
+                                        </button>
+                                    )}
+                                </>)}
                             </div>
                         </div>
                     ))}

@@ -48,6 +48,17 @@ namespace server.Controllers
             string? storedPANName = existing?.PANCard;
             string? storedExpName = existing?.ExperienceLetter;
 
+            // Find joid
+            var joId = await dbContext.JobApplications
+                .Where(j => j.JAId == dto.JAId)
+                .Select(j => j.JOId)
+                .FirstOrDefaultAsync();
+
+            if (joId == Guid.Empty)
+            {
+                return BadRequest("JOId not found");
+            }
+
             // Aadhar card upload
             if (AadharFile != null && AadharFile.Length > 0)
             {
@@ -169,7 +180,7 @@ namespace server.Controllers
                 var doc = new DocumentList
                 {
                     UserId = userId,
-                    JOId = dto.JOId,
+                    JOId = joId,
                     JAId = dto.JAId,
                     BankAccNo = dto.BankAccNo,
                     BankIFSC = dto.BankIFSC,

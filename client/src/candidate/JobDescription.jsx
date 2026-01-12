@@ -57,7 +57,7 @@ const JobDescription = () => {
         walkId: selectedMode === "WALKIN" ? selectedWalkId : null,
       };
 
-      await axios.post(`https://localhost:7119/api/JobAppication`, payload);
+      await axiosInstance.post(`JobApplication`, payload);
 
       toast.success("Application submitted successfully!");
       setShowApplyModal(false);

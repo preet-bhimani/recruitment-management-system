@@ -20,13 +20,13 @@ const Footer = () => {
 
         {/* All Links */}
         <div className="flex items-center gap-8">
-          <a href="/about" className="text-neutral-400 hover:text-white text-sm transition">
+          <a className="text-neutral-400 hover:text-white text-sm transition">
             About
           </a>
-          <a href="/life-at-company" className="text-neutral-400 hover:text-white text-sm transition">
+          <a className="text-neutral-400 hover:text-white text-sm transition">
             Life At Company
           </a>
-          <a href="/jobs" className="text-neutral-400 hover:text-white text-sm transition">
+          <a className="text-neutral-400 hover:text-white text-sm transition">
             Jobs
           </a>
         </div>

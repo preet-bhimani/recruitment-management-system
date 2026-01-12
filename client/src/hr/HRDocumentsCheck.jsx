@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CandidateProvider, useCandidates } from '../contexts/CandidateContext';
 import { UIProvider } from '../contexts/UIContext';
@@ -79,11 +79,12 @@ const HRDocumentsCheckContent = () => {
     const handleApproveClick = async () => {
         try {
             setLoading(true);
-            await axiosInstance.post(`DocumentList/review/${candidate.jaId}`, { status: "Approved" });
+            await axiosInstance.put(`DocumentList/review/${candidate.jaId}`, { status: "Approved" });
             toast.success("Documents approved successfully.");
             navigate("/hr-feedback");
         }
         catch (err) {
+            console.log(err?.response?.data)
             toast.error(err.response?.data || "Failed to approve documents!");
         }
         finally {
@@ -94,7 +95,7 @@ const HRDocumentsCheckContent = () => {
     const handleRejectClick = async () => {
         try {
             setLoading(true);
-            await axiosInstance.post(`DocumentList/review/${candidate.jaId}`, { status: "Rejected" })
+            await axiosInstance.put(`DocumentList/review/${candidate.jaId}`, { status: "Rejected" })
             toast.success("Documents rejected successfully!");
             navigate("/hr-feedback");
         }

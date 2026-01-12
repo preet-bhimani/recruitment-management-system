@@ -165,7 +165,7 @@ const UpdateProfile = () => {
 
     try {
       setSubmitLoading(true);
-      const res = await axiosInstance.post(`User/update-profile/${userId}`, formData)
+      const res = await axiosInstance.put(`User/update-profile/${userId}`, formData)
       toast.success(res.data.message || "User profile updated successfully!");
       navigate(-1);
     }

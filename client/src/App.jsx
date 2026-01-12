@@ -41,7 +41,7 @@ function App() {
           <Route path='/update-password-mail' element={<UpdatePasswordMail />} />
           <Route path='/update-password-otp' element={<UpdatePasswordOTP />} />
           <Route path='/update-password' element={<UpdatePassword />} />
-          <Route path='/upload-documents/:id' element={<UploadDocuments />} />
+          <Route path='/upload-documents/:jaId' element={<UploadDocuments />} />
           <Route element={<ProtectedRoute allowedRoles={["Interviewer", "HR"]} />}>
           <Route path='/interview-meeting-details' element={<InterviewerMeetingDetails />} />
           </Route>

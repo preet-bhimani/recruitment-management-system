@@ -29,17 +29,6 @@ const CommonNavbar = ({ hasPendingDocuments = false, pendingJAId = null, openUpl
                     </div>
                 </div>
 
-                {/* Search Bar */}
-                <div className="flex-1 max-w-md mx-8">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-                        <input
-                            type="text"
-                            placeholder="Search jobs"
-                            className="w-full pl-10 pr-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
-                    </div>
-                </div>
-
                 {/* Right Section */}
                 {isLoggedIn ? (
                     <div className="flex items-center gap-4">

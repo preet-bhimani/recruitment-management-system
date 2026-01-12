@@ -48,16 +48,6 @@ const Navbar = () => {
         Dashboard
       </div>
 
-      {/* Search Bar */}
-      <div className="flex items-center bg-neutral-800 rounded-lg px-2 w-1/2 max-w-md">
-        <input
-          type="text"
-          placeholder="Search..."
-          className="flex-1 bg-transparent text-neutral-200 px-2 py-1 focus:outline-none placeholder-neutral-400"
-        />
-        <Search className="text-neutral-400" size={18} />
-      </div>
-
       {/* Profile Section */}
       <div className="flex items-center gap-3">
         <button

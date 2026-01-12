@@ -9,9 +9,6 @@ namespace server.Models.Dto
         public Guid UserId { get; set; }
 
         [Required]
-        public Guid JOId { get; set; }
-
-        [Required]
         public Guid JAId { get; set; }
 
         public string? AadharCard { get; set; }

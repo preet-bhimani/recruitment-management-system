@@ -161,7 +161,6 @@ const UploadDocuments = () => {
     // FormData Logic
     const data = new FormData();
     data.append("UserId", userId);
-    if (formData.joId) data.append("JOId", formData.joId);
     data.append("JAId", jaIdFinal);
     data.append("BankAccNo", formData.bankAccNo);
     data.append("BankIFSC", formData.bankIFSC);
@@ -176,12 +175,11 @@ const UploadDocuments = () => {
 
     try {
       setSubmitLoading(true);
-      const res = await axios.post(`https://localhost:7119/api/DocumentList`, data, {
+      const res = await axiosInstance.post(`DocumentList`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
         }
-      });
+      })
 
       toast.success("Documents uploaded successfully!");
       navigate(-1);

@@ -188,9 +188,6 @@ const DocumentList = () => {
                                             onClick={() => navigate(`/admin-add-update-candidate-documents/${doc.jaId}`)}>
                                             <Edit size={14} /> Update
                                         </button>
-                                        <button className="flex items-center gap-1 px-2 py-1 bg-rose-800 hover:bg-rose-700 rounded text-xs">
-                                            <Trash2 size={14} /> Delete
-                                        </button>
                                     </>
                                 )}
                             </div>

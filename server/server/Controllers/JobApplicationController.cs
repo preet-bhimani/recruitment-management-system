@@ -20,7 +20,7 @@ namespace server.Controllers
             this.dbContext = dbContext;
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Candidate")]
         [HttpPost]
         public async Task<IActionResult> AddJobApplication(JobApplicationDto jaDto)
         {
@@ -120,12 +120,6 @@ namespace server.Controllers
             var hasActiveWalkIn = await dbContext.WalkInDrives
                 .AnyAsync(w => w.JOId == jaDto.JOId && w.IsActive && w.DriveDate >= today);
 
-            // If no walk in drive or campus drive for job
-            if (!hasActiveCampus && !hasActiveWalkIn)
-            {
-                return BadRequest("No active Campus or Walk In drive available for this job");
-            }
-
             // If the campus drive date is gone then not allowed to apply.
             if (jaDto.CDID.HasValue)
             {
@@ -213,7 +207,7 @@ namespace server.Controllers
         }
 
         // Get Job Application by Id
-        [Authorize(Roles = "Admin,Recruiter")]
+        [Authorize(Roles = "Admin,Recruiter,Viewer")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetJobApplicationById(Guid id)
         {
@@ -308,7 +302,7 @@ namespace server.Controllers
         }
 
         // Update job application based on its status
-        [Authorize(Roles = "Admin,Recruiter")]
+        [Authorize(Roles = "Admin,Recruiter,Reviewer")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateJobApplicationBasedItsStatus(Guid id, JobApplicationDto jaDto)
         {

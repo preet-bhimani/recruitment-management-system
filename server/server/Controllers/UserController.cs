@@ -294,7 +294,7 @@ namespace server.Controllers
         }
 
         // Get user based on Id
-        [Authorize(Roles = "Admin,Viewer")]
+        [Authorize(Roles = "Admin,Viewer,Candidate")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
@@ -342,7 +342,7 @@ namespace server.Controllers
         }
 
         // Update user
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Candidate")]
         [HttpPut("update/{id:guid}")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromForm] UserDto userDto, [FromForm] IFormFile? photo, [FromForm] IFormFile? resume)
         {

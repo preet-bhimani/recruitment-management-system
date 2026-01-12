@@ -51,7 +51,7 @@ namespace server.Controllers
         }
 
         // Get all skills
-        [Authorize(Roles = "Admin,Viewer,Recruiter")]
+        [Authorize(Roles = "Admin,Viewer,Recruiter,Candidate")]
         [HttpGet]
         public async Task<IActionResult> GetAllSkills()
         {

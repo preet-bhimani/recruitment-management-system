@@ -110,16 +110,15 @@ const SentOfferLetter = ({ id }) => {
         setErrors(newErrors);
         if (hasError) return;
 
-        console.log(formData);
         try {
             setLoading(true);
-            const res = await axios.post(`OfferLetter/generate`, formData);
+            const res = await axiosInstance.post(`OfferLetter/generate`, formData);
 
             toast.success(res.data.message || "Offer letter generated and sent successfully!");
             navigate(-1);
         }
-        catch (error) {
-            toast.error(error.response?.data?.message || "Failed to generate offer letter!");
+        catch (err) {
+            toast.error(err.response?.data?.message || "Failed to generate offer letter!");
         }
         finally {
             setLoading(false);
